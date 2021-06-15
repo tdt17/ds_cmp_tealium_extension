@@ -64,7 +64,7 @@ This is an example of how to list things you need to use the software and how to
 
 1. Clone the repo
    ```sh
-   git clone https://github.com/github_username/repo_name.git
+   git clone https://github.com/spring-media/ds_cmp_tealium_extension.git
    ```
 2. Install NPM packages
    ```sh
@@ -85,7 +85,7 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 <!-- ROADMAP -->
 ## Roadmap
 
-See the [open issues](https://github.com/github_username/repo_name/issues) for a list of proposed features (and known issues).
+See the [open issues](https://github.com/spring-media/ds_cmp_tealium_extension/issues) for a list of proposed features (and known issues).
 
 
 

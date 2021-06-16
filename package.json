@@ -5,6 +5,6 @@
     "test": "ava"
   },
   "dependencies": {
-    "ava": "^1.0.0"
+    "jest": "^27.0.4"
   }
 }

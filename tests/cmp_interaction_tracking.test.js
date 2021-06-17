@@ -1,5 +1,5 @@
 const functions = require('../extensions/cmp_interaction_tracking');
-const localStorage = require('../tests/browserMocks');
+const localStorage = require('./mocks/browserMocks');
 
 let data = {}
 

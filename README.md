@@ -1,6 +1,8 @@
 # ds_cmp_tealium_extension
 Repository for Development and Testing of the general Telium Extension
 
+https://github.com/spring-media/ds_cmp_tealium_extension/actions/workflows/node.js.yml/badge.svg
+
 <!-- TABLE OF CONTENTS -->
 <details open="open">
   <summary><h2 style="display: inline-block">Table of Contents</h2></summary>

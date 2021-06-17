@@ -93,8 +93,6 @@
                         }, function() {})
 
                     },[23]);
-
-
                 }, 300);
                 b['cmp_interactions_true'] = 'false';
             }

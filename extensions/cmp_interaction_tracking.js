@@ -73,7 +73,7 @@
                             }, function () {
                             })
 
-                        }, [12]);
+                        }, [22]);
                     }, 300);
                 b['cmp_interactions_true'] = 'false';
             }

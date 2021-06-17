@@ -17,25 +17,7 @@
             localStorage.setItem('cmp_ab_bucket', data.bucket);
         }
 
-        if (!window._sp_ || !window._sp_.config) {
-            return;
-        }
-        if (!window._sp_.config.events) {
-            window._sp_.config.events = {};
-        }
-        if (!window.__utag_cmp_message_received_listener) {
-            window.__utag_cmp_message_received_listener = true;
-            if (window.__cmp_onMessageReceiveData) {
-                processMessageData(window.__cmp_onMessageReceiveData);
-            } else {
-                window._sp_queue = window._sp_queue || [];
-                window._sp_queue.push(() => {
-                    window._sp_.addEventListener('onMessageReceiveData', function (data) {
-                        processMessageData(data);
-                    });
-                });
-            }
-        }
+        //Functions
 
         // Function for Message Handling
         function messageChoiceSelectHandler(id, eventType) {
@@ -54,15 +36,6 @@
 
         }
 
-        if (!window.__utag_cmp_message_choice_listener) {
-            window.__utag_cmp_message_choice_listener = true;
-
-            window._sp_queue = window._sp_queue || [];
-            window._sp_queue.push(() => {
-                window._sp_.addEventListener('onMessageChoiceSelect', messageChoiceSelectHandler);
-            });
-        }
-
         // Function for Privacy Manager Handling
         function privacyManagerActionHandler(type) {
             if (PRIVACY_MANAGER_EVENTS[type] || type.purposeConsent) {
@@ -77,15 +50,6 @@
                 });
                 b['cmp_interactions_true'] = 'false';
             }
-        }
-
-        if (!window.__utag_cmp_pm_action_listener) {
-            window.__utag_cmp_pm_action_listener = true;
-
-            window._sp_queue = window._sp_queue || [];
-            window._sp_queue.push(() => {
-                window._sp_.addEventListener('onPrivacyManagerAction', privacyManagerActionHandler);
-            })
         }
 
         // Function for CMP Layer Handling
@@ -113,6 +77,39 @@
                     }, 300);
                 b['cmp_interactions_true'] = 'false';
             }
+        }
+
+        if (!window._sp_ || !window._sp_.config) {
+            return;
+        }
+        if (!window._sp_.config.events) {
+            window._sp_.config.events = {};
+        }
+        if (!window.__utag_cmp_message_received_listener) {
+            if (window.__cmp_onMessageReceiveData) {
+                processMessageData(window.__cmp_onMessageReceiveData);
+            }
+            else {
+                window._sp_queue = window._sp_queue || [];
+                window._sp_queue.push(() => {
+                    window._sp_.addEventListener('onMessageReceiveData', processMessageData);
+                });
+            }
+            window.__utag_cmp_message_received_listener = true;
+        }
+        if (!window.__utag_cmp_message_choice_listener) {
+            window._sp_queue = window._sp_queue || [];
+            window._sp_queue.push(() => {
+                window._sp_.addEventListener('onMessageChoiceSelect', messageChoiceSelectHandler);
+            });
+            window.__utag_cmp_message_choice_listener = true;
+        }
+        if (!window.__utag_cmp_pm_action_listener) {
+            window._sp_queue = window._sp_queue || [];
+            window._sp_queue.push(() => {
+                window._sp_.addEventListener('onPrivacyManagerAction', privacyManagerActionHandler);
+            })
+            window.__utag_cmp_pm_action_listener = true;
         }
 
         if (!window.__utag_cmp_interaction_called) {

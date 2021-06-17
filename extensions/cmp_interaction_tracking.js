@@ -79,42 +79,55 @@
             }
         }
 
+        function registerEventHandler(){
+            if (window.__cmp_onMessageReceiveData) {
+                processMessageData(window.__cmp_onMessageReceiveData);
+            }
+            else {
+                window._sp_queue.push(window._sp_.addEventListener('onMessageReceiveData', processMessageData));
+            }
+            window._sp_queue.push(window._sp_.addEventListener('onMessageChoiceSelect', messageChoiceSelectHandler));
+            window._sp_queue.push(window._sp_.addEventListener('onPrivacyManagerAction', privacyManagerActionHandler));
+            window.__tcfapi('addEventListener', 2, cmpLayerShownHandler);
+        }
+
         if (!window._sp_ || !window._sp_.config) {
             return;
         }
         if (!window._sp_.config.events) {
             window._sp_.config.events = {};
         }
-        if (!window.__utag_cmp_message_received_listener) {
-            if (window.__cmp_onMessageReceiveData) {
-                processMessageData(window.__cmp_onMessageReceiveData);
-            }
-            else {
-                window._sp_queue = window._sp_queue || [];
-                window._sp_queue.push(() => {
-                    window._sp_.addEventListener('onMessageReceiveData', processMessageData);
-                });
-            }
-            window.__utag_cmp_message_received_listener = true;
-        }
-        if (!window.__utag_cmp_message_choice_listener) {
-            window._sp_queue = window._sp_queue || [];
-            window._sp_queue.push(() => {
-                window._sp_.addEventListener('onMessageChoiceSelect', messageChoiceSelectHandler);
-            });
-            window.__utag_cmp_message_choice_listener = true;
-        }
-        if (!window.__utag_cmp_pm_action_listener) {
-            window._sp_queue = window._sp_queue || [];
-            window._sp_queue.push(() => {
-                window._sp_.addEventListener('onPrivacyManagerAction', privacyManagerActionHandler);
-            })
-            window.__utag_cmp_pm_action_listener = true;
+
+        if (!window._sp_queue || !window._sp_queue.length) {
+            window._sp_queue = [];
+            registerEventHandler();
         }
 
-        if (!window.__utag_cmp_interaction_called) {
-            window.__utag_cmp_interaction_called = true;
-            window.__tcfapi('addEventListener', 2, cmpLayerShownHandler());
-        }
+
+        // if (!window.__utag_cmp_message_received_listener) {
+        //     if (window.__cmp_onMessageReceiveData) {
+        //         processMessageData(window.__cmp_onMessageReceiveData);
+        //     }
+        //     else {
+        //         window._sp_queue = window._sp_queue || [];
+        //         window._sp_queue.push(window._sp_.addEventListener('onMessageReceiveData', processMessageData));
+        //     }
+        //     window.__utag_cmp_message_received_listener = true;
+        // }
+        // if (!window.__utag_cmp_message_choice_listener) {
+        //     window._sp_queue = window._sp_queue || [];
+        //     window._sp_queue.push(window._sp_.addEventListener('onMessageChoiceSelect', messageChoiceSelectHandler));
+        //     window.__utag_cmp_message_choice_listener = true;
+        // }
+        // if (!window.__utag_cmp_pm_action_listener) {
+        //     window._sp_queue = window._sp_queue || [];
+        //     window._sp_queue.push(window._sp_.addEventListener('onPrivacyManagerAction', privacyManagerActionHandler));
+        //     window.__utag_cmp_pm_action_listener = true;
+        // }
+        //
+        // if (!window.__utag_cmp_interaction_called) {
+        //     window.__utag_cmp_interaction_called = true;
+        //     window.__tcfapi('addEventListener', 2, cmpLayerShownHandler());
+        // }
     }
 )();

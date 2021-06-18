@@ -11,11 +11,7 @@
     const TCFAPI_COMMON_EVENTS = {
         'onCmpuishown': 'cm_layer_shown',
     };
-    const processMessageData = function (data) {
-        localStorage.setItem('cmp_ab_desc', data.msgDescription);
-        localStorage.setItem('cmp_ab_id', data.messageId);
-        localStorage.setItem('cmp_ab_bucket', data.bucket);
-    }
+
     const ADOBE_TAG_IDS = {
         'www.autobild.de': 23,
         'www.bild.de': 12,
@@ -30,10 +26,13 @@
         'www.travelbook.de': 42
     }
 
-    var isFirstRun = true;
-
     var adobeTagId;
 
+    function onMessageReceiveData(data) {
+        localStorage.setItem('cmp_ab_desc', data.msgDescription);
+        localStorage.setItem('cmp_ab_id', data.messageId);
+        localStorage.setItem('cmp_ab_bucket', data.bucket);
+    }
 
     // Function for Message Handling
     function onMessageChoiceSelect(id, eventType) {
@@ -49,7 +48,6 @@
             });
             b['cmp_interactions_true'] = 'false';
         }
-
     }
 
     // Function for Privacy Manager Handling
@@ -94,34 +92,39 @@
         }
     }
 
-    function getAdobeTagId(domain) {
-        return ADOBE_TAG_IDS[domain];
+    function setAdobeTagId(domain) {
+        adobeTagId = ADOBE_TAG_IDS[domain];
     }
 
     function registerEventHandler() {
-        if (!window.__cmp_onMessageReceiveData) {
-            window._sp_queue.push(window._sp_.addEventListener('onMessageReceiveData', processMessageData));
-        }
+        window._sp_.addEventListener('onMessageReceiveData', onMessageReceiveData);
         window._sp_.addEventListener('onMessageChoiceSelect', onMessageChoiceSelect);
         window._sp_.addEventListener('onPrivacyManagerAction', onPrivacyManagerAction);
         window.__tcfapi('addEventListener', 2, onCmpuishown);
     }
 
-    function init() {
-        isFirstRun = false;
+    function configSourcepoint() {
         if (!window._sp_.config.events) {
             window._sp_.config.events = {};
         }
-        adobeTagId = getAdobeTagId(document.domain);
-        if (window.__cmp_onMessageReceiveData) {
-            processMessageData(window.__cmp_onMessageReceiveData);
-        }
-        registerEventHandler();
     }
 
-    if (isFirstRun && window._sp_ && window._sp_.config) {
+    function processMissedMessage() {
+        if (window.__cmp_onMessageReceiveData) {
+            onMessageReceiveData(window.__cmp_onMessageReceiveData);
+        }
+    }
+
+    function init() {
+        configSourcepoint();
+        setAdobeTagId(document.domain);
+        registerEventHandler();
+        processMissedMessage();
+        window.__utag_cmp_event_tracking = true; // Protection against multiple executions.
+    }
+
+    if (window._sp_ && window._sp_.config && window.__utag_cmp_event_tracking) {
         init();
     }
-
 
 })();

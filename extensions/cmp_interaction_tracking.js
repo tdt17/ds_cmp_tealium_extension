@@ -74,7 +74,6 @@
                     b['cmp_events'] = TCFAPI_COMMON_EVENTS.cmpuishown;
                     b['cmp_interactions_true'] = 'true';
                     b['first_pv'] = 'true';
-                    console.log(b['first_pv']);
                     utag.view(utag.data, function () {
                         utag.link({
                             'event_name': 'cmp_interactions',
@@ -87,13 +86,16 @@
                         })
 
                     }, [adobeTagId]);
-                }, 300);
+                }, 300); //fixme: decide for a proper timeout value
             b['cmp_interactions_true'] = 'false';
         }
     }
 
     function setAdobeTagId(domain) {
         adobeTagId = ADOBE_TAG_IDS[domain];
+        if (!adobeTagId) {
+            throw new Error('Cannot find Adobe Tag ID for domain: ' + domain);
+        }
     }
 
     function registerEventHandler() {
@@ -104,6 +106,8 @@
     }
 
     function configSourcepoint() {
+        //fixme: find out if _sp_queue is needed
+        window._sp_queue = [];
         if (!window._sp_.config.events) {
             window._sp_.config.events = {};
         }
@@ -116,14 +120,18 @@
     }
 
     function init() {
-        configSourcepoint();
-        setAdobeTagId(document.domain);
-        registerEventHandler();
-        processMissedMessage();
-        window.__utag_cmp_event_tracking = true; // Protection against multiple executions.
+        try {
+            configSourcepoint();
+            setAdobeTagId(document.domain);
+            registerEventHandler();
+            processMissedMessage();
+            window.__utag_cmp_event_tracking = true; // Protection against multiple executions.
+        } catch (e) {
+            console.error(e);
+        }
     }
 
-    if (window._sp_ && window._sp_.config && window.__utag_cmp_event_tracking) {
+    if (window._sp_ && window._sp_.config && !window.__utag_cmp_event_tracking) {
         init();
     }
 

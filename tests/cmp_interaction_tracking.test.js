@@ -72,5 +72,3 @@ describe('Interaction Tracking (Tealium Extension)', ()=> {
 
 
 });
-
-// https://medium.com/@DavideRama/mock-spy-exported-functions-within-a-single-module-in-jest-cdf2b61af642

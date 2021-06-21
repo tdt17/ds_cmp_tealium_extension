@@ -64,13 +64,16 @@ describe("Test CMP Interaction Tracking", () => {
             value: localStorageMock
         });
 
+        beforeAll(() => {
+            Object.defineProperty(global, 'b', {
+                value: {}
+            });
+        })
+
         beforeEach(() => {
             localStorage.setItem('cmp_ab_id','test');
             localStorage.setItem('cmp_ab_desc','test');
             localStorage.setItem('cmp_ab_bucket','test');
-            Object.defineProperty(global, 'b', {
-                value: {}
-            });
         })
 
 
@@ -86,21 +89,20 @@ describe("Test CMP Interaction Tracking", () => {
         })
 
 
-      /*  it('should throw an error if domain is not present in ADOBE_TAG_IDS',() => {
-            expect(setAdobeTagId('example.com')).toThrow();
-        });*/
-    /*    it('should call utag.link with correct values when onPrivacyManagerAction is called with a message',() => {
-            onPrivacyManagerAction('test');
+        it('should return correct tag ids present in ADOBE_TAG_IDS',() => {
+            expect(setAdobeTagId('www.autobild.de')).toBe(23);
+        });
+        it('should call utag.link with correct values when onPrivacyManagerAction is called with a message',() => {
+            onPrivacyManagerAction('SAVE_AND_EXIT');
             expect(linkSpy).toHaveBeenCalledWith(
                 {
                     'event_name': 'cmp_interactions',
                     'event_action': 'click',
-                    'event_label': b['cmp_events'],
+                    'event_label': 'pm_save_and_exit',
                     'event_data': 'test' + ' ' + 'test' + ' ' + 'test'
                 },expect.any(Function));
         })
     })
-*/
 
-});});
+});
 

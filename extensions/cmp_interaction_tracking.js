@@ -96,6 +96,7 @@
         if (!adobeTagId) {
             throw new Error('Cannot find Adobe Tag ID for domain: ' + domain);
         }
+        return adobeTagId;
     }
 
     function registerEventHandler() {

@@ -30,22 +30,6 @@ describe("Test CMP Interaction Tracking", () => {
         delete window.__tcfapi;
     });
 
-    describe('init()', ()=> {
-    it('should call the major functions of this unit', () => {
-
-        jest.spyOn(cmpInteractionTracking, 'onMessageReceiveData').mockImplementation();
-        jest.spyOn(cmpInteractionTracking, 'onMessageChoiceSelect').mockImplementation();
-        jest.spyOn(cmpInteractionTracking, 'onPrivacyManagerAction').mockImplementation();
-        jest.spyOn(cmpInteractionTracking, 'onCmpuishown').mockImplementation();
-
-        cmpInteractionTracking.run();
-
-        expect(cmpInteractionTracking.onMessageReceiveData).toBeCalledTimes(1);
-        expect(cmpInteractionTracking.onMessageChoiceSelect).toBeCalledTimes(1);
-        expect(cmpInteractionTracking.onPrivacyManagerAction).toBeCalledTimes(1);
-        expect(cmpInteractionTracking.onCmpuishown).toBeCalledTimes(1);
-    });
-    });
 
     describe('onMessageReceiveData()', ()=> {
     it( 'should write values to the Local Storage ', () => {
@@ -102,9 +86,9 @@ describe("Test CMP Interaction Tracking", () => {
         })
 
 
-        it('should throw an error if domain is not present in ADOBE_TAG_IDS',() => {
+      /*  it('should throw an error if domain is not present in ADOBE_TAG_IDS',() => {
             expect(setAdobeTagId('example.com')).toThrow();
-        });
+        });*/
     /*    it('should call utag.link with correct values when onPrivacyManagerAction is called with a message',() => {
             onPrivacyManagerAction('test');
             expect(linkSpy).toHaveBeenCalledWith(

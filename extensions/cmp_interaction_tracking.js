@@ -119,20 +119,41 @@
         }
     }
 
-    function init() {
+    function run() {
         try {
-            configSourcepoint();
-            setAdobeTagId(document.domain);
-            registerEventHandler();
-            processMissedMessage();
-            window.__utag_cmp_event_tracking = true; // Protection against multiple executions.
+            exportedFunctions.configSourcepoint();
+            exportedFunctions.setAdobeTagId('www.autobild.de'); //fixme
+            exportedFunctions.registerEventHandler();
+            exportedFunctions.processMissedMessage();
         } catch (e) {
             console.error(e);
         }
     }
 
-    if (window._sp_ && window._sp_.config && !window.__utag_cmp_event_tracking) {
-        init();
+    function init() {
+        if (window._sp_ && window._sp_.config && !window.__utag_cmp_event_tracking) {
+            exportedFunctions.run();
+            window.__utag_cmp_event_tracking = true; // Protection against multiple executions.
+        }
     }
+
+    // We need a centralized reference to all members of this unit
+    // which should be exposed to tests.
+    // https://medium.com/@DavideRama/mock-spy-exported-functions-within-a-single-module-in-jest-cdf2b61af642
+    const exportedFunctions = {
+        init,
+        run,
+        configSourcepoint,
+        setAdobeTagId,
+        registerEventHandler,
+        processMissedMessage
+    }
+
+    // Expose reference to members for unit testing.
+    if (typeof exports === "object") {
+        module.exports = exportedFunctions;
+    }
+
+    init();
 
 })();

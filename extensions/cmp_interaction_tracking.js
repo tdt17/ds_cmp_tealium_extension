@@ -135,4 +135,9 @@
         init();
     }
 
+    module.exports = {
+        onMessageReceiveData, onMessageChoiceSelect, onPrivacyManagerAction,onCmpuishown, setAdobeTagId,
+        registerEventHandler,configSourcepoint,processMissedMessage,init
+    }
+
 })();

@@ -177,7 +177,7 @@ describe("CMP Interaction Tracking", () => {
         });
     });
 
-    describe('', () => {
+    describe('mock LocalStorage, define Getters and Setters', () => {
         //browserMocks.js
         let localStorageMock = (function () {
             let store = {};

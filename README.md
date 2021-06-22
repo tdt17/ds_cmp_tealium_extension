@@ -61,8 +61,6 @@ tests accordingly.
 
 To get a local copy up and running follow these simple steps:
 
-* GIT 
-
 git clone https://github.com/spring-media/ds_cmp_tealium_extension.git
 
 ### Prerequisites
@@ -85,7 +83,7 @@ This is an example of how to list things you need to use the software and how to
    ```
 3. Run the Tests
 
- ```sh
+   ```sh
    npm run test
    ```
 
@@ -94,7 +92,6 @@ This is an example of how to list things you need to use the software and how to
 ## Roadmap
 
 See the [open issues](https://github.com/spring-media/ds_cmp_tealium_extension/issues) for a list of proposed features (and known issues).
-
 
 
 <!-- CONTRIBUTING -->
@@ -114,7 +111,6 @@ Contributions are what make the open source community such an amazing place to b
 ## License
 
 Distributed under the MIT License. See `LICENSE` for more information.
-
 
 
 <!-- CONTACT -->

@@ -34,25 +34,34 @@ Repository for Development and Testing of the general Telium Extension
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
+The DS_CMP_TEALIUM_EXTENSION Project aims to centralize the Tealium Extensions in use for all different AS Media Brands; 
+hereby, the individual Tealium Extensions for each </br>
+Media Brand can be removed and the individual configuration for the
+Extension for each AS Media Brand passed as parameters to the General Tealium Extension. 
 
-Here's a blank template to get started:
-**To avoid retyping too much info. Do a search and replace with your text editor for the following:**
-`github_username`, `repo_name`, `twitter_handle`, `email`, `project_title`, `project_description`
+The project is hosted on Github in order to allow Developers to make changes in the Extension and deploy those changes
+directly to Tealium. 
 
+The aim of this project is hence to provide more Transparency and less individual Configuration of the Extensions for
+each AS Media Brand. 
+
+The Tealium Extension is unit tested with JEST; changes to the extension should be aligned with the implementation of 
+tests accordingly. 
 
 ### Built With
 
-* []()
-* []()
-* []()
+* [https://nodejs.org/en/](14.8.0)
+* [https://www.npmjs.com/](7.5.2)
+* [https://jestjs.io/](^27.0.4)
 
 
 
 <!-- GETTING STARTED -->
 ## Getting Started
 
-To get a local copy up and running follow these simple steps.
+To get a local copy up and running follow these simple steps:
+
+git clone https://github.com/spring-media/ds_cmp_tealium_extension.git
 
 ### Prerequisites
 
@@ -68,27 +77,21 @@ This is an example of how to list things you need to use the software and how to
    ```sh
    git clone https://github.com/spring-media/ds_cmp_tealium_extension.git
    ```
-2. Install NPM packages
+2. Change into Root Directory and Install NPM packages
    ```sh
    npm install
    ```
+3. Run the Tests
 
-
-
-<!-- USAGE EXAMPLES -->
-## Usage
-
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
-
-_For more examples, please refer to the [Documentation](https://example.com)_
-
+   ```sh
+   npm run test
+   ```
 
 
 <!-- ROADMAP -->
 ## Roadmap
 
 See the [open issues](https://github.com/spring-media/ds_cmp_tealium_extension/issues) for a list of proposed features (and known issues).
-
 
 
 <!-- CONTRIBUTING -->
@@ -110,7 +113,6 @@ Contributions are what make the open source community such an amazing place to b
 Distributed under the MIT License. See `LICENSE` for more information.
 
 
-
 <!-- CONTACT -->
 ## Contact
 
@@ -118,13 +120,4 @@ Bastian Bechtle - bastian.bechtle.extern@axelspringer.com
 Heiko   Kampe   - heiko.kampe.extern@axelspringer.com  
 
 Project Link: [https://github.com/spring-media/ds_cmp_tealium_extension](https://github.com/spring-media/ds_cmp_tealium_extension)
-
-
-
-<!-- ACKNOWLEDGEMENTS -->
-## Acknowledgements
-
-* []()
-* []()
-* []()
 

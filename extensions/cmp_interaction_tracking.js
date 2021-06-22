@@ -13,17 +13,25 @@
     };
 
     const ADOBE_TAG_IDS = {
-        'www.autobild.de': 23,
-        'www.bild.de': 12,
-        'www.bz-berlin.de': 9,
-        'www.fitbook.de': 40,
-        'www.metal-hammer.de': 22,
-        'www.musikexpress.de': 14,
-        'www.myhomebook.de': 37,
-        'www.rollingstone.de': 16,
-        'www.stylebook.de': 30,
-        'www.techbook.de': 82,
-        'www.travelbook.de': 42
+        'abo-autobild.de': 23,
+        'ac-autobild': 10,
+        'ac-computerbild': 9,
+        'asmb-metal-hammer.de': 22,
+        'asmb-musikexpress.de': 14,
+        'asmb-rollingstone.de': 16,
+        'bild-bild.de': 12,
+        'bild-fitbook.de': 40,
+        'bild-myhomebook.de': 37,
+        'bild-sportbild.de': 16,
+        'bild-stylebook.de': 30,
+        'bild-techbook.de': 82,
+        'bild-travelbook.de': 42,
+        'bild-offer': 24,
+        'bild': 386,
+        'bz-bz-berlin.de': 9,
+        'cbo-computerbild.de': 25,
+        'shop.bild': 181,
+        'welt': 233
     }
 
     var adobeTagId;
@@ -91,8 +99,9 @@
         }
     }
 
-    function setAdobeTagId(domain) {
-        adobeTagId = ADOBE_TAG_IDS[domain];
+    function setAdobeTagId() {
+        const tealiumProfileName = window.utag_data.ut.profile;
+        adobeTagId = ADOBE_TAG_IDS[tealiumProfileName];
         if (!adobeTagId) {
             throw new Error('Cannot find Adobe Tag ID for domain: ' + domain);
         }
@@ -123,7 +132,7 @@
     function init() {
         try {
             configSourcepoint();
-            setAdobeTagId(document.domain);
+            setAdobeTagId();
             registerEventHandler();
             processMissedMessage();
             window.__utag_cmp_event_tracking = true; // Protection against multiple executions.

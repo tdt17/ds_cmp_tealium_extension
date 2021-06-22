@@ -88,10 +88,6 @@ describe("Test CMP Interaction Tracking", () => {
                 },expect.any(Function));
         })
 
-
-        it('should return correct tag ids present in ADOBE_TAG_IDS',() => {
-            expect(setAdobeTagId('www.autobild.de')).toBe(23);
-        });
         it('should call utag.link with correct values when onPrivacyManagerAction is called with a message',() => {
             onPrivacyManagerAction('SAVE_AND_EXIT');
             expect(linkSpy).toHaveBeenCalledWith(

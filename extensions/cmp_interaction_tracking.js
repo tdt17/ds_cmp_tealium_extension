@@ -12,18 +12,26 @@
         'onCmpuishown': 'cm_layer_shown',
     };
 
-    const ADOBE_TAG_IDS = {
-        'www.autobild.de': 23,
-        'www.bild.de': 12,
-        'www.bz-berlin.de': 9,
-        'www.fitbook.de': 40,
-        'www.metal-hammer.de': 22,
-        'www.musikexpress.de': 14,
-        'www.myhomebook.de': 37,
-        'www.rollingstone.de': 16,
-        'www.stylebook.de': 30,
-        'www.techbook.de': 82,
-        'www.travelbook.de': 42
+    const TEALIUM_PROFILES = {
+        'abo-autobild.de': 23,
+        'ac-autobild': 10,
+        'ac-computerbild': 9,
+        'asmb-metal-hammer.de': 22,
+        'asmb-musikexpress.de': 14,
+        'asmb-rollingstone.de': 16,
+        'bild-bild.de': 12,
+        'bild-fitbook.de': 40,
+        'bild-myhomebook.de': 37,
+        'bild-sportbild.de': 16,
+        'bild-stylebook.de': 30,
+        'bild-techbook.de': 82,
+        'bild-travelbook.de': 42,
+        'bild-offer': 24,
+        'bild': 386,
+        'bz-bz-berlin.de': 9,
+        'cbo-computerbild.de': 25,
+        'shop.bild': 181,
+        'welt': 233
     }
 
     var adobeTagId;
@@ -91,11 +99,12 @@
         }
     }
 
-    function setAdobeTagId(domain) {
-        adobeTagId = ADOBE_TAG_IDS[domain];
+    function getAdobeTagId(tealiumProfileName) {
+        const adobeTagId = TEALIUM_PROFILES[tealiumProfileName];
         if (!adobeTagId) {
             throw new Error('Cannot find Adobe Tag ID for domain: ' + domain);
         }
+        return adobeTagId;
     }
 
     function registerEventHandler() {
@@ -118,8 +127,8 @@
 
     function run() {
         try {
+            adobeTagId = exportedFunctions.getAdobeTagId(window.utag_data.ut.profile);
             exportedFunctions.configSourcepoint();
-            exportedFunctions.setAdobeTagId('www.autobild.de'); //fixme
             exportedFunctions.registerEventHandler();
             exportedFunctions.processMissedMessage();
         } catch (e) {
@@ -140,7 +149,7 @@
         init,
         run,
         configSourcepoint,
-        setAdobeTagId,
+        getAdobeTagId,
         registerEventHandler,
         processMissedMessage,
         onMessageReceiveData,

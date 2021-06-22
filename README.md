@@ -121,12 +121,3 @@ Heiko   Kampe   - heiko.kampe.extern@axelspringer.com
 
 Project Link: [https://github.com/spring-media/ds_cmp_tealium_extension](https://github.com/spring-media/ds_cmp_tealium_extension)
 
-
-
-<!-- ACKNOWLEDGEMENTS -->
-## Acknowledgements
-
-* []()
-* []()
-* []()
-

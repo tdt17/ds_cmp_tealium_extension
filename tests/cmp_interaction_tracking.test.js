@@ -1,4 +1,5 @@
-const {cmpInteractionTracking,onMessageChoiceSelect,setAdobeTagId,onPrivacyManagerAction} = require('../extensions/cmp_interaction_tracking');
+const {cmpInteractionTracking,onMessageChoiceSelect,setAdobeTagId,onPrivacyManagerAction,
+onCmpuishown} = require('../extensions/cmp_interaction_tracking');
 //const localStorage = require('./mocks/browserMocks');
 
 const spMock = {
@@ -89,10 +90,6 @@ describe("Test CMP Interaction Tracking", () => {
         })
 
 
-   /*     it('should throw an error if domain is not present in ADOBE_TAG_IDS',() => {
-            expect(setAdobeTagId('www.autobild.de')).toThrow();
-        });*/
-
         it('should call utag.link with correct values when onPrivacyManagerAction is called with a message',() => {
             onPrivacyManagerAction('SAVE_AND_EXIT');
             expect(linkSpy).toHaveBeenCalledWith(
@@ -100,6 +97,17 @@ describe("Test CMP Interaction Tracking", () => {
                     'event_name': 'cmp_interactions',
                     'event_action': 'click',
                     'event_label': 'pm_save_and_exit',
+                    'event_data': 'test' + ' ' + 'test' + ' ' + 'test'
+                },expect.any(Function));
+        })
+
+        it('should call utag.link with correct values when onCmpuishown is called with a message',() => {
+            onCmpuishown('onCmpuishown');
+            expect(linkSpy).toHaveBeenCalledWith(
+                {
+                    'event_name': 'cmp_interactions',
+                    'event_action': 'click',
+                    'event_label': 'cm_accept_all',
                     'event_data': 'test' + ' ' + 'test' + ' ' + 'test'
                 },expect.any(Function));
         })

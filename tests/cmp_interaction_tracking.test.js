@@ -20,8 +20,6 @@ describe("CMP Interaction Tracking", () => {
     beforeEach(() => {
         window._sp_ = spMock;
         window.__tcfapi = tcfapiMock;
-        delete window.__cmp_onMessageReceiveData;
-        delete window.utag_data;
     })
 
     afterEach(() => {
@@ -29,6 +27,8 @@ describe("CMP Interaction Tracking", () => {
         delete window._sp_;
         delete window.__utag_cmp_event_tracking;
         delete window.__tcfapi;
+        delete window.__cmp_onMessageReceiveData;
+        delete window.utag_data;
     });
 
     describe('init()', () => {

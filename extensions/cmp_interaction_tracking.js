@@ -106,16 +106,13 @@
     }
 
     function configSourcepoint() {
-        //fixme: find out if _sp_queue is needed
-        window._sp_queue = [];
-        if (!window._sp_.config.events) {
-            window._sp_.config.events = {};
-        }
+        window._sp_queue = []; //fixme: find out if _sp_queue is needed
+        window._sp_.config.events = window._sp_.config.events || {};
     }
 
     function processMissedMessage() {
         if (window.__cmp_onMessageReceiveData) {
-            onMessageReceiveData(window.__cmp_onMessageReceiveData);
+            exportedFunctions.onMessageReceiveData(window.__cmp_onMessageReceiveData);
         }
     }
 
@@ -137,8 +134,7 @@
         }
     }
 
-    // We need a centralized reference to all members of this unit
-    // which should be exposed to tests.
+    // We need a centralized reference to all members of this unit which needs be exposed to tests.
     // https://medium.com/@DavideRama/mock-spy-exported-functions-within-a-single-module-in-jest-cdf2b61af642
     const exportedFunctions = {
         init,
@@ -146,7 +142,11 @@
         configSourcepoint,
         setAdobeTagId,
         registerEventHandler,
-        processMissedMessage
+        processMissedMessage,
+        onMessageReceiveData,
+        onMessageChoiceSelect,
+        onPrivacyManagerAction,
+        onCmpuishown
     }
 
     // Expose reference to members for unit testing.

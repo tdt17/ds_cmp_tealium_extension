@@ -78,7 +78,7 @@
     // Function for CMP Layer Handling
     function onCmpuishown(tcData) {
         if (tcData && tcData.eventStatus === 'onCmpuishown') {
-            window.utag.data.cmp_events = 'cm_layer_shown',
+            window.utag.data.cmp_events = 'cm_layer_shown';
                 setTimeout(function () {
                     b['cmp_events'] = TCFAPI_COMMON_EVENTS.cmpuishown;
                     b['cmp_interactions_true'] = 'true';

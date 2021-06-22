@@ -7,9 +7,16 @@ const spMock = {
 
 const tcfapiMock = jest.fn();
 const linkSpy = jest.fn();
+const viewSpy = jest.fn();
 global.utag = {
-    link: linkSpy
+    link: linkSpy,
+    view: viewSpy,
+    data: {
+        cmp_events: ''
+    }
 }
+
+window.utag = global.utag;
 
 window.b = {};
 
@@ -170,7 +177,6 @@ describe("CMP Interaction Tracking", () => {
         });
     });
 
-
     describe('', () => {
         //browserMocks.js
         let localStorageMock = (function () {
@@ -194,10 +200,17 @@ describe("CMP Interaction Tracking", () => {
             value: localStorageMock
         });
 
+
         beforeAll(() => {
             Object.defineProperty(global, 'b', {
                 value: {}
             });
+        })
+
+        afterEach(() => {
+            global.b = {};
+            jest.clearAllMocks();
+
         })
 
         beforeEach(() => {
@@ -216,10 +229,20 @@ describe("CMP Interaction Tracking", () => {
                     'event_label': 'cm_accept_all',
                     'event_data': 'test' + ' ' + 'test' + ' ' + 'test'
                 }, expect.any(Function));
+            expect(b).toEqual({
+                'cmp_events': 'cm_accept_all',
+                'cmp_interactions_true': 'false'
+            })
         })
 
 
-        it('should call utag.link with correct values when onPrivacyManagerAction is called with a message', () => {
+        it('should not call utag.link when onMessageChoiceSelect is called with an event type which doesn\'t exist in CONSENT_MESSAGE_EVENTS', () => {
+            cmpInteractionTracking.onMessageChoiceSelect('test', '91');
+            expect(linkSpy).not.toHaveBeenCalled();
+        })
+
+
+        it('should call utag.link with correct values when onPrivacyManagerAction is called with a type that exists in PRIVACY_MANAGER_EVENTS', () => {
             cmpInteractionTracking.onPrivacyManagerAction('SAVE_AND_EXIT');
             expect(linkSpy).toHaveBeenCalledWith(
                 {
@@ -228,18 +251,77 @@ describe("CMP Interaction Tracking", () => {
                     'event_label': 'pm_save_and_exit',
                     'event_data': 'test' + ' ' + 'test' + ' ' + 'test'
                 }, expect.any(Function));
+            expect(b).toEqual({
+                'cmp_events': 'pm_save_and_exit',
+                'cmp_interactions_true': 'false'
+            })
         })
 
-        it('should call utag.link with correct values when onCmpuishown is called with a message', () => {
-            cmpInteractionTracking.onCmpuishown('onCmpuishown');
+        it('should call utag.link with correct values when onPrivacyManagerAction is called with an all purposeConsent', () => {
+            cmpInteractionTracking.onPrivacyManagerAction({purposeConsent:'all'});
             expect(linkSpy).toHaveBeenCalledWith(
                 {
                     'event_name': 'cmp_interactions',
                     'event_action': 'click',
-                    'event_label': 'cm_accept_all',
+                    'event_label': 'pm_accept_all',
                     'event_data': 'test' + ' ' + 'test' + ' ' + 'test'
                 }, expect.any(Function));
+            expect(b).toEqual({
+                'cmp_events': 'pm_accept_all',
+                'cmp_interactions_true': 'false'
+            })
         })
+
+        it('should call utag.link with correct values when onPrivacyManagerAction is called with a purposeConsent other from all', () => {
+            cmpInteractionTracking.onPrivacyManagerAction({purposeConsent:'test'});
+            expect(linkSpy).toHaveBeenCalledWith(
+                {
+                    'event_name': 'cmp_interactions',
+                    'event_action': 'click',
+                    'event_label': 'pm_save_and_exit',
+                    'event_data': 'test' + ' ' + 'test' + ' ' + 'test'
+                }, expect.any(Function));
+            expect(b).toEqual({
+                'cmp_events': 'pm_save_and_exit',
+                'cmp_interactions_true': 'false'
+            })
+        })
+
+        it('should not call utag.link with correct values when onPrivacyManagerAction is called with an invalid type', () => {
+            cmpInteractionTracking.onPrivacyManagerAction('test');
+            expect(linkSpy).not.toHaveBeenCalled();
+        })
+
+        it('should call utag.view with correct values when onCmpuishown is called with a message with event status of onCmpuishown', () => {
+            jest.useFakeTimers();
+            cmpInteractionTracking.onCmpuishown({eventStatus:'onCmpuishown'});
+            jest.runAllTimers();
+            expect(viewSpy).toHaveBeenCalledWith(
+                {
+                    'cmp_events': 'cm_layer_shown'
+                }, expect.any(Function),expect.anything());
+            jest.runOnlyPendingTimers();
+            jest.useRealTimers();
+        });
+
+        it('should not call utag.view when onCmpuishown is called with a message without event status', () => {
+            jest.useFakeTimers();
+            cmpInteractionTracking.onCmpuishown('onCmpuishown');
+            jest.runAllTimers();
+            expect(viewSpy).not.toHaveBeenCalled();
+            jest.runOnlyPendingTimers();
+            jest.useRealTimers();
+        });
+
+        it('should not call utag.view when onCmpuishown is called with a message with event status other than onCmpuishown', () => {
+            jest.useFakeTimers();
+            cmpInteractionTracking.onCmpuishown({eventStatus: 'random'});
+            jest.runAllTimers();
+            expect(viewSpy).not.toHaveBeenCalled();
+            jest.runOnlyPendingTimers();
+            jest.useRealTimers();
+        });
+
     })
 
 });

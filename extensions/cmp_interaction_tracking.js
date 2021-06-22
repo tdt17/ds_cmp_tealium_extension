@@ -44,6 +44,7 @@
 
     // Function for Message Handling
     function onMessageChoiceSelect(id, eventType) {
+        //TODO: Test If-Condition, Test Variable Assigments
         if (CONSENT_MESSAGE_EVENTS[eventType]) {
             b['cmp_events'] = CONSENT_MESSAGE_EVENTS[eventType];
             b['cmp_interactions_true'] = 'true';
@@ -115,7 +116,8 @@
     }
 
     function configSourcepoint() {
-        window._sp_queue = []; //fixme: find out if _sp_queue is needed
+        //TODO: Check if _sp_queue is necessary
+        window._sp_queue = [];
         window._sp_.config.events = window._sp_.config.events || {};
     }
 
@@ -144,7 +146,7 @@
     }
 
     // We need a centralized reference to all members of this unit which needs be exposed to tests.
-    // https://medium.com/@DavideRama/mock-spy-exported-functions-within-a-single-module-in-jest-cdf2b61af642
+
     const exportedFunctions = {
         init,
         run,

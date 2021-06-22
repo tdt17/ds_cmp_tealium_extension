@@ -12,7 +12,7 @@
         'onCmpuishown': 'cm_layer_shown',
     };
 
-    const ADOBE_TAG_IDS = {
+    const TEALIUM_PROFILES = {
         'abo-autobild.de': 23,
         'ac-autobild': 10,
         'ac-computerbild': 9,
@@ -99,9 +99,8 @@
         }
     }
 
-    function setAdobeTagId() {
-        const tealiumProfileName = window.utag_data.ut.profile;
-        adobeTagId = ADOBE_TAG_IDS[tealiumProfileName];
+    function getAdobeTagId(tealiumProfileName) {
+        const adobeTagId = TEALIUM_PROFILES[tealiumProfileName];
         if (!adobeTagId) {
             throw new Error('Cannot find Adobe Tag ID for domain: ' + domain);
         }
@@ -116,38 +115,54 @@
     }
 
     function configSourcepoint() {
-        //fixme: find out if _sp_queue is needed
-        window._sp_queue = [];
-        if (!window._sp_.config.events) {
-            window._sp_.config.events = {};
-        }
+        window._sp_queue = []; //fixme: find out if _sp_queue is needed
+        window._sp_.config.events = window._sp_.config.events || {};
     }
 
     function processMissedMessage() {
         if (window.__cmp_onMessageReceiveData) {
-            onMessageReceiveData(window.__cmp_onMessageReceiveData);
+            exportedFunctions.onMessageReceiveData(window.__cmp_onMessageReceiveData);
         }
     }
 
-    function init() {
+    function run() {
         try {
-            configSourcepoint();
-            setAdobeTagId();
-            registerEventHandler();
-            processMissedMessage();
-            window.__utag_cmp_event_tracking = true; // Protection against multiple executions.
+            adobeTagId = exportedFunctions.getAdobeTagId(window.utag_data.ut.profile);
+            exportedFunctions.configSourcepoint();
+            exportedFunctions.registerEventHandler();
+            exportedFunctions.processMissedMessage();
         } catch (e) {
             console.error(e);
         }
     }
 
-    if (window._sp_ && window._sp_.config && !window.__utag_cmp_event_tracking) {
-        init();
+    function init() {
+        if (window._sp_ && window._sp_.config && !window.__utag_cmp_event_tracking) {
+            exportedFunctions.run();
+            window.__utag_cmp_event_tracking = true; // Protection against multiple executions.
+        }
     }
 
-    module.exports = {
-        onMessageReceiveData, onMessageChoiceSelect, onPrivacyManagerAction,onCmpuishown, setAdobeTagId,
-        registerEventHandler,configSourcepoint,processMissedMessage,init
+    // We need a centralized reference to all members of this unit which needs be exposed to tests.
+    // https://medium.com/@DavideRama/mock-spy-exported-functions-within-a-single-module-in-jest-cdf2b61af642
+    const exportedFunctions = {
+        init,
+        run,
+        configSourcepoint,
+        getAdobeTagId,
+        registerEventHandler,
+        processMissedMessage,
+        onMessageReceiveData,
+        onMessageChoiceSelect,
+        onPrivacyManagerAction,
+        onCmpuishown
     }
+
+    // Expose reference to members for unit testing.
+    if (typeof exports === "object") {
+        module.exports = exportedFunctions;
+    }
+
+    init();
 
 })();

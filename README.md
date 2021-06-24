@@ -1,5 +1,5 @@
 # ds_cmp_tealium_extension
-Repository for Development and Testing of the general Telium Extension
+Repository for Javascript Tealium extensions
 
 ![example workflow](https://github.com/spring-media/ds_cmp_tealium_extension/actions/workflows/node.js.yml/badge.svg)
 
@@ -20,6 +20,7 @@ Repository for Development and Testing of the general Telium Extension
         <li><a href="#installation">Installation</a></li>
       </ul>
     </li>
+    <li><a href="#extensions">Extensions</a></li>
     <li><a href="#usage">Usage</a></li>
     <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#contributing">Contributing</a></li>
@@ -34,18 +35,17 @@ Repository for Development and Testing of the general Telium Extension
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-The DS_CMP_TEALIUM_EXTENSION Project aims to centralize the Tealium Extensions in use for all different AS Media Brands; 
-hereby, the individual Tealium Extensions for each </br>
-Media Brand can be removed and the individual configuration for the
-Extension for each AS Media Brand passed as parameters to the General Tealium Extension. 
+The DS_CMP_TEALIUM_EXTENSION project aims to centralize the Tealium extensions in use for all different AS Media Brands. 
+Hereby, the individual Tealium extensions for each </br>
+media brand can be removed and the individual configuration for the
+extension for each AS media brand passed as parameters to the general Tealium extension. 
 
-The project is hosted on Github in order to allow Developers to make changes in the Extension and deploy those changes
-directly to Tealium. 
+The project is hosted on Github in order to allow developers to make changes in the extension which will be automatically synced by Tealium. 
 
-The aim of this project is hence to provide more Transparency and less individual Configuration of the Extensions for
-each AS Media Brand. 
+The aim of this project is hence to provide more transparency and less individual Configuration of the extensions for
+each AS media brand. 
 
-The Tealium Extension is unit tested with JEST; changes to the extension should be aligned with the implementation of 
+The Tealium extension is unit tested with JEST; changes to the extension should be aligned with the implementation of 
 tests accordingly. 
 
 ### Built With
@@ -87,6 +87,14 @@ This is an example of how to list things you need to use the software and how to
    npm run test
    ```
 
+
+## Extensions
+### CMP Interaction Tracking
+Extension for triggering Adobe Analytics tracking events of the consent layer application (cmp).
+
+In order to make the extension work in all Tealium profiles, the Adobe TagId of each profile needs to be determined.
+This is done by a static mapping of the profile's name to a certain TagId. Be careful to update the 
+mapping table inside the extension, in case profiles or Adobe tags are changing.
 
 <!-- ROADMAP -->
 ## Roadmap

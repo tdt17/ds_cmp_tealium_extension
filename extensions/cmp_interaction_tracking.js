@@ -12,6 +12,7 @@
         'onCmpuishown': 'cm_layer_shown',
     };
 
+    // Tealium profile to Adobe TagId mapping.
     const TEALIUM_PROFILES = {
         'abo-autobild.de': 23,
         'ac-autobild': 10,

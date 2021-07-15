@@ -48,7 +48,7 @@
         if (CONSENT_MESSAGE_EVENTS[eventType]) {
             b['cmp_events'] = CONSENT_MESSAGE_EVENTS[eventType];
             b['cmp_interactions_true'] = 'true';
-            utag.link({
+            window.utag.link({
                 'event_name': 'cmp_interactions',
                 'event_action': 'click',
                 'event_label': CONSENT_MESSAGE_EVENTS[eventType],
@@ -64,7 +64,7 @@
         if (PRIVACY_MANAGER_EVENTS[type] || type.purposeConsent) {
             b['cmp_events'] = type.purposeConsent ? (type.purposeConsent === 'all' ? PRIVACY_MANAGER_EVENTS.ACCEPT_ALL : PRIVACY_MANAGER_EVENTS.SAVE_AND_EXIT) : PRIVACY_MANAGER_EVENTS[type];
             b['cmp_interactions_true'] = 'true';
-            utag.link({
+            window.utag.link({
                 'event_name': 'cmp_interactions',
                 'event_action': 'click',
                 'event_label': b['cmp_events'],
@@ -83,8 +83,8 @@
                     b['cmp_events'] = TCFAPI_COMMON_EVENTS.cmpuishown;
                     b['cmp_interactions_true'] = 'true';
                     b['first_pv'] = 'true';
-                    utag.view(utag.data, function () {
-                        utag.link({
+                    window.utag.view(window.utag.data, function () {
+                        window.utag.link({
                             'event_name': 'cmp_interactions',
                             'event_action': 'click',
                             'event_label': TCFAPI_COMMON_EVENTS.cmpuishown,
@@ -122,7 +122,7 @@
 
     function run() {
         try {
-            adobeTagId = exportedFunctions.getAdobeTagId(window.utag_data.ut.profile);
+            adobeTagId = exportedFunctions.getAdobeTagId(window.utag.data.ut.profile);
             exportedFunctions.configSourcepoint();
             exportedFunctions.registerEventHandler();
         } catch (e) {

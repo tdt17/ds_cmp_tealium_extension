@@ -1,4 +1,5 @@
 const cmpInteractionTracking = require('../extensions/cmp_interaction_tracking');
+const browserMocks = require('../tests/mocks/browserMocks');
 
 const spMock = {
     addEventListener: jest.fn(),
@@ -8,18 +9,6 @@ const spMock = {
 const tcfapiMock = jest.fn();
 const linkSpy = jest.fn();
 const viewSpy = jest.fn();
-global.utag = {
-    link: linkSpy,
-    view: viewSpy,
-    data: {
-        cmp_events: ''
-    }
-}
-
-window.utag = global.utag;
-
-window.b = {};
-
 
 describe("CMP Interaction Tracking", () => {
     // General Setup
@@ -27,6 +16,11 @@ describe("CMP Interaction Tracking", () => {
     beforeEach(() => {
         window._sp_ = spMock;
         window.__tcfapi = tcfapiMock;
+        window.utag = {
+            link: linkSpy,
+            view: viewSpy,
+            data: {}
+        }
     })
 
     afterEach(() => {
@@ -35,8 +29,7 @@ describe("CMP Interaction Tracking", () => {
         delete window._sp_queue;
         delete window.__utag_cmp_event_tracking;
         delete window.__tcfapi;
-        delete window.__cmp_onMessageReceiveData;
-        delete window.utag_data;
+        delete window.utag;
     });
 
     describe('init()', () => {
@@ -64,10 +57,8 @@ describe("CMP Interaction Tracking", () => {
 
     describe('run()', () => {
         it('should call the major functions of this unit', () => {
-            window.utag_data = {
-                ut: {
-                    profile: 'welt'
-                }
+            window.utag.data.ut = {
+                profile: 'welt'
             };
 
             jest.spyOn(cmpInteractionTracking, 'configSourcepoint').mockImplementation();
@@ -170,26 +161,9 @@ describe("CMP Interaction Tracking", () => {
     });
 
     describe('mock LocalStorage, define Getters and Setters', () => {
-        //browserMocks.js
-        let localStorageMock = (function () {
-            let store = {};
-
-            return {
-                getItem: function (key) {
-                    return store[key] || null;
-                },
-                setItem: function (key, value) {
-                    store[key] = value.toString();
-                },
-                clear: function () {
-                    store = {};
-                }
-            };
-
-        })();
 
         Object.defineProperty(global, 'localStorage', {
-            value: localStorageMock
+            value: browserMocks.localStorageMock
         });
 
         beforeAll(() => {

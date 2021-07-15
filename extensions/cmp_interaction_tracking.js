@@ -12,6 +12,7 @@
         'onCmpuishown': 'cm_layer_shown',
     };
 
+    // Tealium profile to Adobe TagId mapping.
     const TEALIUM_PROFILES = {
         'abo-autobild.de': 23,
         'ac-autobild': 10,
@@ -77,7 +78,7 @@
     // Function for CMP Layer Handling
     function onCmpuishown(tcData) {
         if (tcData && tcData.eventStatus === 'onCmpuishown') {
-            window.utag.data.cmp_events = 'cm_layer_shown',
+            window.utag.data.cmp_events = 'cm_layer_shown';
                 setTimeout(function () {
                     b['cmp_events'] = TCFAPI_COMMON_EVENTS.cmpuishown;
                     b['cmp_interactions_true'] = 'true';
@@ -102,27 +103,21 @@
     function getAdobeTagId(tealiumProfileName) {
         const adobeTagId = TEALIUM_PROFILES[tealiumProfileName];
         if (!adobeTagId) {
-            throw new Error('Cannot find Adobe Tag ID for domain: ' + domain);
+            throw new Error('Cannot find Adobe Tag ID for profile: ' + tealiumProfileName);
         }
         return adobeTagId;
     }
 
     function registerEventHandler() {
-        window._sp_.addEventListener('onMessageReceiveData', onMessageReceiveData);
-        window._sp_.addEventListener('onMessageChoiceSelect', onMessageChoiceSelect);
-        window._sp_.addEventListener('onPrivacyManagerAction', onPrivacyManagerAction);
-        window.__tcfapi('addEventListener', 2, onCmpuishown);
+        window._sp_queue = window._sp_queue || [];
+        window._sp_queue.push(()=>{ window._sp_.addEventListener('onMessageReceiveData', onMessageReceiveData); });
+        window._sp_queue.push(()=>{ window._sp_.addEventListener('onMessageChoiceSelect', onMessageChoiceSelect); });
+        window._sp_queue.push(()=>{ window._sp_.addEventListener('onPrivacyManagerAction', onPrivacyManagerAction); });
+        window._sp_queue.push(()=>{ window.__tcfapi('addEventListener', 2, onCmpuishown); });
     }
 
     function configSourcepoint() {
-        window._sp_queue = []; //fixme: find out if _sp_queue is needed
         window._sp_.config.events = window._sp_.config.events || {};
-    }
-
-    function processMissedMessage() {
-        if (window.__cmp_onMessageReceiveData) {
-            exportedFunctions.onMessageReceiveData(window.__cmp_onMessageReceiveData);
-        }
     }
 
     function run() {
@@ -130,7 +125,6 @@
             adobeTagId = exportedFunctions.getAdobeTagId(window.utag_data.ut.profile);
             exportedFunctions.configSourcepoint();
             exportedFunctions.registerEventHandler();
-            exportedFunctions.processMissedMessage();
         } catch (e) {
             console.error(e);
         }
@@ -144,14 +138,13 @@
     }
 
     // We need a centralized reference to all members of this unit which needs be exposed to tests.
-    // https://medium.com/@DavideRama/mock-spy-exported-functions-within-a-single-module-in-jest-cdf2b61af642
+
     const exportedFunctions = {
         init,
         run,
         configSourcepoint,
         getAdobeTagId,
         registerEventHandler,
-        processMissedMessage,
         onMessageReceiveData,
         onMessageChoiceSelect,
         onPrivacyManagerAction,

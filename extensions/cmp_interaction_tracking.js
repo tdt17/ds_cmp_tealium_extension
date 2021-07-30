@@ -151,11 +151,12 @@
         onCmpuishown
     }
 
-    // Expose reference to members for unit testing.
+    // Evaluate runtime environment (Browser or Node.js)
     if (typeof exports === "object") {
+        // Expose reference to members for unit testing.
         module.exports = exportedFunctions;
+    } else {
+        init();
     }
-
-    init();
 
 })();

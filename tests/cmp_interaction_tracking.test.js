@@ -1,42 +1,42 @@
 const cmpInteractionTracking = require('../extensions/cmp_interaction_tracking');
 const browserMocks = require('../tests/mocks/browserMocks');
 
-const spMock = {
-    addEventListener: jest.fn(),
-    config: null
+const windowMock = {
+    localStorage: browserMocks.localStorageMock,
+    _sp_: {
+        addEventListener: jest.fn(),
+        config: 'any-config'
+    },
+    __tcfapi: jest.fn(),
+    __utag_cmp_event_tracking: null,
+    _sp_queue: null,
+    utag: {
+        link: jest.fn(),
+        view: jest.fn(),
+        data: {}
+    }
 }
 
-const tcfapiMock = jest.fn();
-const linkSpy = jest.fn();
-const viewSpy = jest.fn();
+let windowSpy;
 
 describe("CMP Interaction Tracking", () => {
     // General Setup
 
     beforeEach(() => {
-        window._sp_ = spMock;
-        window.__tcfapi = tcfapiMock;
-        window.utag = {
-            link: linkSpy,
-            view: viewSpy,
-            data: {}
-        }
+        windowSpy = jest.spyOn(global, "window", "get")
+            .mockImplementation(() => (windowMock));
     })
 
     afterEach(() => {
+        delete windowMock.__utag_cmp_event_tracking;
+        delete windowMock._sp_queue;
+        windowMock.utag.data = {};
         jest.restoreAllMocks();
-        delete window._sp_;
-        delete window._sp_queue;
-        delete window.__utag_cmp_event_tracking;
-        delete window.__tcfapi;
-        delete window.utag;
     });
 
     describe('init()', () => {
         it('should execute extension when global Source Point API (window._sp_) is available', () => {
             jest.spyOn(cmpInteractionTracking, 'run').mockImplementation();
-
-            spMock.config = 'any-config';
 
             cmpInteractionTracking.init();
 
@@ -45,8 +45,6 @@ describe("CMP Interaction Tracking", () => {
 
         it('should execute extension only once', () => {
             jest.spyOn(cmpInteractionTracking, 'run').mockImplementation();
-
-            spMock.config = 'any-config';
 
             cmpInteractionTracking.init();
             cmpInteractionTracking.init();
@@ -96,15 +94,16 @@ describe("CMP Interaction Tracking", () => {
             {profileName: 'welt', tagId: 233}
         ];
 
-        it.each(TEALIUM_PROFILES)('should return the Adobe TagID ($tagId) for the current Tealium Profile ($profileName)', ({
-                                                                                                                                profileName,
-                                                                                                                                tagId
-                                                                                                                            }) => {
+        it.each(TEALIUM_PROFILES)('should return the Adobe TagID ($tagId) for the current Tealium Profile ($profileName)',
+            ({
+                 profileName,
+                 tagId
+             }) => {
 
-            const result = cmpInteractionTracking.getAdobeTagId(profileName);
+                const result = cmpInteractionTracking.getAdobeTagId(profileName);
 
-            expect(result).toBe(tagId);
-        });
+                expect(result).toBe(tagId);
+            });
 
         it('should throw an error when there is no Adobe TagID of the current Tealium profile', function () {
             expect(() => {
@@ -141,30 +140,24 @@ describe("CMP Interaction Tracking", () => {
                 handler();
             });
 
-            expect(spMock.addEventListener).toBeCalledTimes(3);
-            expect(tcfapiMock).toBeCalledTimes(1);
-            expect(spMock.addEventListener).toHaveBeenCalledWith('onMessageReceiveData', cmpInteractionTracking.onMessageReceiveData);
-            expect(spMock.addEventListener).toHaveBeenCalledWith('onMessageChoiceSelect', cmpInteractionTracking.onMessageChoiceSelect);
-            expect(spMock.addEventListener).toHaveBeenCalledWith('onPrivacyManagerAction', cmpInteractionTracking.onPrivacyManagerAction);
-            expect(tcfapiMock).toHaveBeenCalledWith('addEventListener', 2, cmpInteractionTracking.onCmpuishown);
+            expect(windowMock._sp_.addEventListener).toBeCalledTimes(3);
+            expect(windowMock.__tcfapi).toBeCalledTimes(1);
+            expect(windowMock._sp_.addEventListener).toHaveBeenCalledWith('onMessageReceiveData', cmpInteractionTracking.onMessageReceiveData);
+            expect(windowMock._sp_.addEventListener).toHaveBeenCalledWith('onMessageChoiceSelect', cmpInteractionTracking.onMessageChoiceSelect);
+            expect(windowMock._sp_.addEventListener).toHaveBeenCalledWith('onPrivacyManagerAction', cmpInteractionTracking.onPrivacyManagerAction);
+            expect(windowMock.__tcfapi).toHaveBeenCalledWith('addEventListener', 2, cmpInteractionTracking.onCmpuishown);
         });
     });
 
 
     describe('onMessageReceiveData()', () => {
         it('should write values to the Local Storage ', () => {
-            const mockFn = jest.fn(localStorage.setItem);
-            localStorage.setItem = mockFn;
-            localStorage.setItem('cmp_ab_desc', 'cmp_ab_id', 'cmp_ab_bucket');
-            expect(mockFn).toHaveBeenCalledTimes(1);
+            window.localStorage.setItem('cmp_ab_desc', 'cmp_ab_id', 'cmp_ab_bucket');
+            expect(windowMock.localStorage.setItem).toHaveBeenCalledTimes(1);
         });
     });
 
     describe('mock LocalStorage, define Getters and Setters', () => {
-
-        Object.defineProperty(global, 'localStorage', {
-            value: browserMocks.localStorageMock
-        });
 
         beforeAll(() => {
             Object.defineProperty(global, 'b', {
@@ -184,10 +177,9 @@ describe("CMP Interaction Tracking", () => {
             localStorage.setItem('cmp_ab_bucket', 'test');
         })
 
-
         it('should call utag.link with correct values when onMessageChoiceSelect is called with a message', () => {
             cmpInteractionTracking.onMessageChoiceSelect('test', '11');
-            expect(linkSpy).toHaveBeenCalledWith(
+            expect(windowMock.utag.link).toHaveBeenCalledWith(
                 {
                     'event_name': 'cmp_interactions',
                     'event_action': 'click',
@@ -203,13 +195,13 @@ describe("CMP Interaction Tracking", () => {
 
         it('should not call utag.link when onMessageChoiceSelect is called with an event type which doesn\'t exist in CONSENT_MESSAGE_EVENTS', () => {
             cmpInteractionTracking.onMessageChoiceSelect('test', '91');
-            expect(linkSpy).not.toHaveBeenCalled();
+            expect(windowMock.utag.link).not.toHaveBeenCalled();
         })
 
 
         it('should call utag.link with correct values when onPrivacyManagerAction is called with a type that exists in PRIVACY_MANAGER_EVENTS', () => {
             cmpInteractionTracking.onPrivacyManagerAction('SAVE_AND_EXIT');
-            expect(linkSpy).toHaveBeenCalledWith(
+            expect(windowMock.utag.link).toHaveBeenCalledWith(
                 {
                     'event_name': 'cmp_interactions',
                     'event_action': 'click',
@@ -224,7 +216,7 @@ describe("CMP Interaction Tracking", () => {
 
         it('should call utag.link with correct values when onPrivacyManagerAction is called with an all purposeConsent', () => {
             cmpInteractionTracking.onPrivacyManagerAction({purposeConsent: 'all'});
-            expect(linkSpy).toHaveBeenCalledWith(
+            expect(windowMock.utag.link).toHaveBeenCalledWith(
                 {
                     'event_name': 'cmp_interactions',
                     'event_action': 'click',
@@ -239,7 +231,7 @@ describe("CMP Interaction Tracking", () => {
 
         it('should call utag.link with correct values when onPrivacyManagerAction is called with a purposeConsent other from all', () => {
             cmpInteractionTracking.onPrivacyManagerAction({purposeConsent: 'test'});
-            expect(linkSpy).toHaveBeenCalledWith(
+            expect(windowMock.utag.link).toHaveBeenCalledWith(
                 {
                     'event_name': 'cmp_interactions',
                     'event_action': 'click',
@@ -254,14 +246,14 @@ describe("CMP Interaction Tracking", () => {
 
         it('should not call utag.link with correct values when onPrivacyManagerAction is called with an invalid type', () => {
             cmpInteractionTracking.onPrivacyManagerAction('test');
-            expect(linkSpy).not.toHaveBeenCalled();
+            expect(windowMock.utag.link).not.toHaveBeenCalled();
         })
 
         it('should call utag.view with correct values when onCmpuishown is called with a message with event status of onCmpuishown', () => {
             jest.useFakeTimers();
             cmpInteractionTracking.onCmpuishown({eventStatus: 'onCmpuishown'});
             jest.runAllTimers();
-            expect(viewSpy).toHaveBeenCalledWith(
+            expect(windowMock.utag.view).toHaveBeenNthCalledWith(1,
                 {
                     'cmp_events': 'cm_layer_shown'
                 }, expect.any(Function), expect.anything());
@@ -273,7 +265,7 @@ describe("CMP Interaction Tracking", () => {
             jest.useFakeTimers();
             cmpInteractionTracking.onCmpuishown('onCmpuishown');
             jest.runAllTimers();
-            expect(viewSpy).not.toHaveBeenCalled();
+            expect(windowMock.utag.view).not.toHaveBeenCalled();
             jest.runOnlyPendingTimers();
             jest.useRealTimers();
         });
@@ -282,7 +274,7 @@ describe("CMP Interaction Tracking", () => {
             jest.useFakeTimers();
             cmpInteractionTracking.onCmpuishown({eventStatus: 'random'});
             jest.runAllTimers();
-            expect(viewSpy).not.toHaveBeenCalled();
+            expect(windowMock.utag.view).not.toHaveBeenCalled();
             jest.runOnlyPendingTimers();
             jest.useRealTimers();
         });

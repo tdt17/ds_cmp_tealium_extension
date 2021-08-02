@@ -1,36 +1,48 @@
 const cmpInteractionTracking = require('../extensions/cmp_interaction_tracking');
 const browserMocks = require('../tests/mocks/browserMocks');
 
-const windowMock = {
-    localStorage: browserMocks.localStorageMock,
-    _sp_: {
-        addEventListener: jest.fn(),
-        config: 'any-config'
-    },
-    __tcfapi: jest.fn(),
-    __utag_cmp_event_tracking: null,
-    _sp_queue: null,
-    utag: {
-        link: jest.fn(),
-        view: jest.fn(),
-        data: {}
+const ABTestingProperties = {
+    msgDescription: 'any-description',
+    messageId: 'any-id',
+    bucket: 'any-bucket'
+};
+
+function setABTestingProperties() {
+    window.localStorage.setItem('cmp_ab_id', ABTestingProperties.messageId);
+    window.localStorage.setItem('cmp_ab_desc', ABTestingProperties.msgDescription);
+    window.localStorage.setItem('cmp_ab_bucket', ABTestingProperties.bucket);
+}
+
+function createWindowMock() {
+    return {
+        localStorage: browserMocks.localStorageMock,
+        _sp_: {
+            addEventListener: jest.fn(),
+            config: 'any-config'
+        },
+        __tcfapi: jest.fn(),
+        __utag_cmp_event_tracking: null,
+        _sp_queue: null,
+        utag: {
+            link: jest.fn(),
+            view: jest.fn(),
+            data: {}
+        }
     }
 }
 
-let windowSpy;
 
 describe("CMP Interaction Tracking", () => {
-    // General Setup
 
     beforeEach(() => {
-        windowSpy = jest.spyOn(global, "window", "get")
+        // Create a fresh window mock for each test.
+        const windowMock = createWindowMock();
+        jest.spyOn(global, "window", "get")
             .mockImplementation(() => (windowMock));
+
     })
 
     afterEach(() => {
-        delete windowMock.__utag_cmp_event_tracking;
-        delete windowMock._sp_queue;
-        windowMock.utag.data = {};
         jest.restoreAllMocks();
     });
 
@@ -140,146 +152,161 @@ describe("CMP Interaction Tracking", () => {
                 handler();
             });
 
-            expect(windowMock._sp_.addEventListener).toBeCalledTimes(3);
-            expect(windowMock.__tcfapi).toBeCalledTimes(1);
-            expect(windowMock._sp_.addEventListener).toHaveBeenCalledWith('onMessageReceiveData', cmpInteractionTracking.onMessageReceiveData);
-            expect(windowMock._sp_.addEventListener).toHaveBeenCalledWith('onMessageChoiceSelect', cmpInteractionTracking.onMessageChoiceSelect);
-            expect(windowMock._sp_.addEventListener).toHaveBeenCalledWith('onPrivacyManagerAction', cmpInteractionTracking.onPrivacyManagerAction);
-            expect(windowMock.__tcfapi).toHaveBeenCalledWith('addEventListener', 2, cmpInteractionTracking.onCmpuishown);
+            expect(window._sp_.addEventListener).toBeCalledTimes(3);
+            expect(window.__tcfapi).toBeCalledTimes(1);
+            expect(window._sp_.addEventListener).toHaveBeenCalledWith('onMessageReceiveData', cmpInteractionTracking.onMessageReceiveData);
+            expect(window._sp_.addEventListener).toHaveBeenCalledWith('onMessageChoiceSelect', cmpInteractionTracking.onMessageChoiceSelect);
+            expect(window._sp_.addEventListener).toHaveBeenCalledWith('onPrivacyManagerAction', cmpInteractionTracking.onPrivacyManagerAction);
+            expect(window.__tcfapi).toHaveBeenCalledWith('addEventListener', 2, cmpInteractionTracking.onCmpuishown);
         });
     });
-
 
     describe('onMessageReceiveData()', () => {
-        it('should write values to the Local Storage ', () => {
-            window.localStorage.setItem('cmp_ab_desc', 'cmp_ab_id', 'cmp_ab_bucket');
-            expect(windowMock.localStorage.setItem).toHaveBeenCalledTimes(1);
+        it('should save AP-Testing properties in Local Storage ', () => {
+            const receivedData = {
+                msgDescription: 'any-description',
+                messageId: 'any-id',
+                bucket: 'any-bucket'
+            };
+            cmpInteractionTracking.onMessageReceiveData(receivedData);
+            expect(window.localStorage.setItem).toHaveBeenNthCalledWith(1, 'cmp_ab_desc', receivedData.msgDescription);
+            expect(window.localStorage.setItem).toHaveBeenNthCalledWith(2, 'cmp_ab_id', receivedData.messageId);
+            expect(window.localStorage.setItem).toHaveBeenNthCalledWith(3, 'cmp_ab_bucket', receivedData.bucket);
         });
     });
 
-    describe('mock LocalStorage, define Getters and Setters', () => {
+    describe('onMessageChoiceSelect()', () => {
 
-        beforeAll(() => {
-            Object.defineProperty(global, 'b', {
-                value: {}
-            });
-        })
-
-        afterEach(() => {
-            global.b = {};
-            jest.clearAllMocks();
-
-        })
-
-        beforeEach(() => {
-            localStorage.setItem('cmp_ab_id', 'test');
-            localStorage.setItem('cmp_ab_desc', 'test');
-            localStorage.setItem('cmp_ab_bucket', 'test');
-        })
-
-        it('should call utag.link with correct values when onMessageChoiceSelect is called with a message', () => {
+        it('should set utag.data properties', () => {
             cmpInteractionTracking.onMessageChoiceSelect('test', '11');
-            expect(windowMock.utag.link).toHaveBeenCalledWith(
+            expect(window.utag.data).toEqual({
+                'cmp_events': 'cm_accept_all',
+                'cmp_interactions_true': 'false'
+            });
+        });
+
+        it('should call utag.link with correct values', () => {
+            setABTestingProperties();
+            cmpInteractionTracking.onMessageChoiceSelect('test', '11');
+            expect(window.utag.link).toHaveBeenCalledWith(
                 {
                     'event_name': 'cmp_interactions',
                     'event_action': 'click',
                     'event_label': 'cm_accept_all',
-                    'event_data': 'test' + ' ' + 'test' + ' ' + 'test'
+                    'event_data': `${ABTestingProperties.messageId} ${ABTestingProperties.msgDescription} ${ABTestingProperties.bucket}`
                 }, expect.any(Function));
-            expect(b).toEqual({
-                'cmp_events': 'cm_accept_all',
-                'cmp_interactions_true': 'false'
-            })
-        })
+        });
 
 
-        it('should not call utag.link when onMessageChoiceSelect is called with an event type which doesn\'t exist in CONSENT_MESSAGE_EVENTS', () => {
+        it('should NOT call utag.link when called with wrong event type', () => {
             cmpInteractionTracking.onMessageChoiceSelect('test', '91');
-            expect(windowMock.utag.link).not.toHaveBeenCalled();
-        })
+            expect(window.utag.link).not.toHaveBeenCalled();
+        });
+
+    });
 
 
-        it('should call utag.link with correct values when onPrivacyManagerAction is called with a type that exists in PRIVACY_MANAGER_EVENTS', () => {
+    describe('onPrivacyManagerAction()', () => {
+        it('should set utag.data properties', () => {
             cmpInteractionTracking.onPrivacyManagerAction('SAVE_AND_EXIT');
-            expect(windowMock.utag.link).toHaveBeenCalledWith(
+
+            expect(window.utag.data).toEqual({
+                'cmp_events': 'pm_save_and_exit',
+                'cmp_interactions_true': 'false'
+            });
+        });
+
+        it('should call utag.link with correct values', () => {
+            setABTestingProperties();
+            cmpInteractionTracking.onPrivacyManagerAction('SAVE_AND_EXIT');
+            expect(window.utag.link).toHaveBeenCalledWith(
                 {
                     'event_name': 'cmp_interactions',
                     'event_action': 'click',
                     'event_label': 'pm_save_and_exit',
-                    'event_data': 'test' + ' ' + 'test' + ' ' + 'test'
+                    'event_data': `${ABTestingProperties.messageId} ${ABTestingProperties.msgDescription} ${ABTestingProperties.bucket}`
                 }, expect.any(Function));
-            expect(b).toEqual({
-                'cmp_events': 'pm_save_and_exit',
-                'cmp_interactions_true': 'false'
-            })
-        })
+        });
 
-        it('should call utag.link with correct values when onPrivacyManagerAction is called with an all purposeConsent', () => {
+        it('should set utag.data properties when called with an all purposeConsent', () => {
             cmpInteractionTracking.onPrivacyManagerAction({purposeConsent: 'all'});
-            expect(windowMock.utag.link).toHaveBeenCalledWith(
+            expect(window.utag.data).toEqual({
+                'cmp_events': 'pm_accept_all',
+                'cmp_interactions_true': 'false'
+            });
+        });
+
+        it('should call utag.link with correct values when called with an all purposeConsent', () => {
+            setABTestingProperties();
+            cmpInteractionTracking.onPrivacyManagerAction({purposeConsent: 'all'});
+            expect(window.utag.link).toHaveBeenCalledWith(
                 {
                     'event_name': 'cmp_interactions',
                     'event_action': 'click',
                     'event_label': 'pm_accept_all',
-                    'event_data': 'test' + ' ' + 'test' + ' ' + 'test'
+                    'event_data': `${ABTestingProperties.messageId} ${ABTestingProperties.msgDescription} ${ABTestingProperties.bucket}`
                 }, expect.any(Function));
-            expect(b).toEqual({
-                'cmp_events': 'pm_accept_all',
-                'cmp_interactions_true': 'false'
-            })
-        })
+        });
 
-        it('should call utag.link with correct values when onPrivacyManagerAction is called with a purposeConsent other from all', () => {
-            cmpInteractionTracking.onPrivacyManagerAction({purposeConsent: 'test'});
-            expect(windowMock.utag.link).toHaveBeenCalledWith(
+        it('should set utag.data properties when called with a purposeConsent other from all', () => {
+            cmpInteractionTracking.onPrivacyManagerAction({purposeConsent: 'any-purpose-consent'});
+            expect(window.utag.data).toEqual({
+                'cmp_events': 'pm_save_and_exit',
+                'cmp_interactions_true': 'false'
+            });
+        });
+
+        it('should call utag.link with correct values when called with a purposeConsent other from all', () => {
+            setABTestingProperties();
+            cmpInteractionTracking.onPrivacyManagerAction({purposeConsent: 'any-purpose-consent'});
+            expect(window.utag.link).toHaveBeenCalledWith(
                 {
                     'event_name': 'cmp_interactions',
                     'event_action': 'click',
                     'event_label': 'pm_save_and_exit',
-                    'event_data': 'test' + ' ' + 'test' + ' ' + 'test'
+                    'event_data': `${ABTestingProperties.messageId} ${ABTestingProperties.msgDescription} ${ABTestingProperties.bucket}`
                 }, expect.any(Function));
-            expect(b).toEqual({
-                'cmp_events': 'pm_save_and_exit',
-                'cmp_interactions_true': 'false'
-            })
-        })
+        });
 
-        it('should not call utag.link with correct values when onPrivacyManagerAction is called with an invalid type', () => {
+        it('should NOT call utag.link when called with wrong type', () => {
             cmpInteractionTracking.onPrivacyManagerAction('test');
-            expect(windowMock.utag.link).not.toHaveBeenCalled();
-        })
+            expect(window.utag.link).not.toHaveBeenCalled();
+        });
+    });
 
-        it('should call utag.view with correct values when onCmpuishown is called with a message with event status of onCmpuishown', () => {
+    describe('onCmpuishown()', () => {
+        it('should call utag.view with correct values', () => {
             jest.useFakeTimers();
             cmpInteractionTracking.onCmpuishown({eventStatus: 'onCmpuishown'});
             jest.runAllTimers();
-            expect(windowMock.utag.view).toHaveBeenNthCalledWith(1,
+            expect(window.utag.view).toHaveBeenNthCalledWith(1,
                 {
-                    'cmp_events': 'cm_layer_shown'
-                }, expect.any(Function), expect.anything());
+                    'cmp_events': 'cm_layer_shown',
+                    'cmp_interactions_true': 'true',
+                    'first_pv': 'true'
+                }, expect.any(Function), undefined);
             jest.runOnlyPendingTimers();
             jest.useRealTimers();
         });
 
-        it('should not call utag.view when onCmpuishown is called with a message without event status', () => {
+        it('should NOT call utag.view when called without event status', () => {
             jest.useFakeTimers();
-            cmpInteractionTracking.onCmpuishown('onCmpuishown');
+            cmpInteractionTracking.onCmpuishown();
             jest.runAllTimers();
-            expect(windowMock.utag.view).not.toHaveBeenCalled();
+            expect(window.utag.view).not.toHaveBeenCalled();
             jest.runOnlyPendingTimers();
             jest.useRealTimers();
         });
 
-        it('should not call utag.view when onCmpuishown is called with a message with event status other than onCmpuishown', () => {
+        it('should NOT call utag.view when onCmpuishown is called with invalid event status', () => {
             jest.useFakeTimers();
-            cmpInteractionTracking.onCmpuishown({eventStatus: 'random'});
+            cmpInteractionTracking.onCmpuishown({eventStatus: 'any-invalid-status'});
             jest.runAllTimers();
-            expect(windowMock.utag.view).not.toHaveBeenCalled();
+            expect(window.utag.view).not.toHaveBeenCalled();
             jest.runOnlyPendingTimers();
             jest.useRealTimers();
         });
-
-    })
+    });
 
 });
 

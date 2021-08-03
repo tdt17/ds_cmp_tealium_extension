@@ -339,7 +339,7 @@ describe("CMP Interaction Tracking", () => {
         });
 
         it('should set correct utag.data properties', () => {
-            cmpInteractionTracking.onCmpuishown({eventStatus: 'onCmpuishown'});
+            cmpInteractionTracking.onCmpuishown({eventStatus: 'cmpuishown'});
 
             expect(window.utag.data).toEqual({
                 'cmp_events': 'cm_layer_shown',
@@ -348,7 +348,7 @@ describe("CMP Interaction Tracking", () => {
         });
 
         it('should call utag.view with correct values', () => {
-            cmpInteractionTracking.onCmpuishown({eventStatus: 'onCmpuishown'});
+            cmpInteractionTracking.onCmpuishown({eventStatus: 'cmpuishown'});
             jest.runAllTimers();
             expect(window.utag.view).toHaveBeenNthCalledWith(1,
                 {
@@ -372,7 +372,7 @@ describe("CMP Interaction Tracking", () => {
 
         it('should call utag.link with correct values', () => {
             setABTestingProperties();
-            cmpInteractionTracking.onCmpuishown({eventStatus: 'onCmpuishown'});
+            cmpInteractionTracking.onCmpuishown({eventStatus: 'cmpuishown'});
             jest.runAllTimers();
             const utagViewCallback = window.utag.view.mock.calls[0][1];
             utagViewCallback();

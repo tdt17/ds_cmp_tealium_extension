@@ -84,7 +84,7 @@
     }
 
     function onCmpuishown(tcData) {
-        if (tcData && tcData.eventStatus === 'onCmpuishown') {
+        if (tcData && tcData.eventStatus === 'cmpuishown') {
             window.utag.data.cmp_events = 'cm_layer_shown';
                 setTimeout(function () {
                     console.log('firstPV with tagID: ', adobeTagId);

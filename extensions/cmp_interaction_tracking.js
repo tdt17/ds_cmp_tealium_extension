@@ -68,9 +68,9 @@
         }
     }
 
-    function onPrivacyManagerAction(type) {
-        if (PRIVACY_MANAGER_EVENTS[type] || type.purposeConsent) {
-            window.utag.data['cmp_events'] = type.purposeConsent ? (type.purposeConsent === 'all' ? PRIVACY_MANAGER_EVENTS.ACCEPT_ALL : PRIVACY_MANAGER_EVENTS.SAVE_AND_EXIT) : PRIVACY_MANAGER_EVENTS[type];
+    function onPrivacyManagerAction(eventType) {
+        if (PRIVACY_MANAGER_EVENTS[eventType] || eventType.purposeConsent) {
+            window.utag.data['cmp_events'] = eventType.purposeConsent ? (eventType.purposeConsent === 'all' ? PRIVACY_MANAGER_EVENTS.ACCEPT_ALL : PRIVACY_MANAGER_EVENTS.SAVE_AND_EXIT) : PRIVACY_MANAGER_EVENTS[eventType];
             window.utag.data['cmp_interactions_true'] = 'true';
             window.utag.link({
                 'event_name': 'cmp_interactions',
@@ -87,6 +87,7 @@
         if (tcData && tcData.eventStatus === 'onCmpuishown') {
             window.utag.data.cmp_events = 'cm_layer_shown';
                 setTimeout(function () {
+                    console.log('firstPV with tagID: ', adobeTagId);
                     window.utag.data['cmp_events'] = TCFAPI_COMMON_EVENTS.CMP_UI_SHOWN;
                     window.utag.data['cmp_interactions_true'] = 'true';
                     window.utag.data['first_pv'] = 'true';
@@ -140,8 +141,7 @@
         }
     }
 
-    // We need a centralized reference to all members of this unit which needs be exposed to tests.
-
+    // Create a centralized reference to all members of this unit which needs be exposed for unit testing.
     const exportedFunctions = {
         init,
         run,
@@ -159,6 +159,7 @@
         // Expose reference to members for unit testing.
         module.exports = exportedFunctions;
     } else {
+        // Call entry point in browser context.
         init();
     }
 

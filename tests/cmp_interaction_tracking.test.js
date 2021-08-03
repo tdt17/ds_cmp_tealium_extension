@@ -1,6 +1,28 @@
 const cmpInteractionTracking = require('../extensions/cmp_interaction_tracking');
 const browserMocks = require('../tests/mocks/browserMocks');
 
+const TEALIUM_PROFILES = [
+    {profileName: 'abo-autobild.de', tagId: 23},
+    {profileName: 'ac-autobild', tagId: 10},
+    {profileName: 'ac-computerbild', tagId: 9},
+    {profileName: 'asmb-metal-hammer.de', tagId: 22},
+    {profileName: 'asmb-musikexpress.de', tagId: 14},
+    {profileName: 'asmb-rollingstone.de', tagId: 16},
+    {profileName: 'bild-bild.de', tagId: 12},
+    {profileName: 'bild-fitbook.de', tagId: 40},
+    {profileName: 'bild-myhomebook.de', tagId: 37},
+    {profileName: 'bild-sportbild.de', tagId: 16},
+    {profileName: 'bild-stylebook.de', tagId: 30},
+    {profileName: 'bild-techbook.de', tagId: 82},
+    {profileName: 'bild-travelbook.de', tagId: 42},
+    {profileName: 'bild-offer', tagId: 24},
+    {profileName: 'bild', tagId: 386},
+    {profileName: 'bz-bz-berlin.de', tagId: 9},
+    {profileName: 'cbo-computerbild.de', tagId: 25},
+    {profileName: 'shop.bild', tagId: 181},
+    {profileName: 'welt', tagId: 233}
+];
+
 const ABTestingProperties = {
     msgDescription: 'any-description',
     messageId: 'any-id',
@@ -31,7 +53,6 @@ function createWindowMock() {
     }
 }
 
-
 describe("CMP Interaction Tracking", () => {
 
     beforeEach(() => {
@@ -39,7 +60,6 @@ describe("CMP Interaction Tracking", () => {
         const windowMock = createWindowMock();
         jest.spyOn(global, "window", "get")
             .mockImplementation(() => (windowMock));
-
     })
 
     afterEach(() => {
@@ -84,28 +104,6 @@ describe("CMP Interaction Tracking", () => {
     });
 
     describe('getAdobeTagId()', () => {
-        const TEALIUM_PROFILES = [
-            {profileName: 'abo-autobild.de', tagId: 23},
-            {profileName: 'ac-autobild', tagId: 10},
-            {profileName: 'ac-computerbild', tagId: 9},
-            {profileName: 'asmb-metal-hammer.de', tagId: 22},
-            {profileName: 'asmb-musikexpress.de', tagId: 14},
-            {profileName: 'asmb-rollingstone.de', tagId: 16},
-            {profileName: 'bild-bild.de', tagId: 12},
-            {profileName: 'bild-fitbook.de', tagId: 40},
-            {profileName: 'bild-myhomebook.de', tagId: 37},
-            {profileName: 'bild-sportbild.de', tagId: 16},
-            {profileName: 'bild-stylebook.de', tagId: 30},
-            {profileName: 'bild-techbook.de', tagId: 82},
-            {profileName: 'bild-travelbook.de', tagId: 42},
-            {profileName: 'bild-offer', tagId: 24},
-            {profileName: 'bild', tagId: 386},
-            {profileName: 'bz-bz-berlin.de', tagId: 9},
-            {profileName: 'cbo-computerbild.de', tagId: 25},
-            {profileName: 'shop.bild', tagId: 181},
-            {profileName: 'welt', tagId: 233}
-        ];
-
         it.each(TEALIUM_PROFILES)('should return the Adobe TagID ($tagId) for the current Tealium Profile ($profileName)',
             ({
                  profileName,
@@ -175,17 +173,16 @@ describe("CMP Interaction Tracking", () => {
         });
     });
 
-    describe('onMessageChoiceSelect()', () => {
-
-        it('should set utag.data properties', () => {
-            cmpInteractionTracking.onMessageChoiceSelect('test', '11');
+    describe('onMessageChoiceSelect(id, eventType)', () => {
+        it('should set correct utag.data properties when eventType === 11', () => {
+            cmpInteractionTracking.onMessageChoiceSelect('any-id', 11);
             expect(window.utag.data).toEqual({
                 'cmp_events': 'cm_accept_all',
                 'cmp_interactions_true': 'false'
             });
         });
 
-        it('should call utag.link with correct values', () => {
+        it('should call utag.link with correct values when eventType === 11', () => {
             setABTestingProperties();
             cmpInteractionTracking.onMessageChoiceSelect('test', '11');
             expect(window.utag.link).toHaveBeenCalledWith(
@@ -197,17 +194,55 @@ describe("CMP Interaction Tracking", () => {
                 }, expect.any(Function));
         });
 
-
-        it('should NOT call utag.link when called with wrong event type', () => {
-            cmpInteractionTracking.onMessageChoiceSelect('test', '91');
-            expect(window.utag.link).not.toHaveBeenCalled();
+        it('should set correct utag.data properties when eventType === 12', () => {
+            cmpInteractionTracking.onMessageChoiceSelect('any-id', 12);
+            expect(window.utag.data).toEqual({
+                'cmp_events': 'cm_show_privacy_manager',
+                'cmp_interactions_true': 'false'
+            });
         });
 
+        it('should call utag.link with correct values when eventType === 12', () => {
+            setABTestingProperties();
+            cmpInteractionTracking.onMessageChoiceSelect('test', '12');
+            expect(window.utag.link).toHaveBeenCalledWith(
+                {
+                    'event_name': 'cmp_interactions',
+                    'event_action': 'click',
+                    'event_label': 'cm_show_privacy_manager',
+                    'event_data': `${ABTestingProperties.messageId} ${ABTestingProperties.msgDescription} ${ABTestingProperties.bucket}`
+                }, expect.any(Function));
+        });
+
+        it('should set correct utag.data properties when eventType === 13', () => {
+            cmpInteractionTracking.onMessageChoiceSelect('any-id', 13);
+            expect(window.utag.data).toEqual({
+                'cmp_events': 'cm_reject_all',
+                'cmp_interactions_true': 'false'
+            });
+        });
+
+        it('should call utag.link with correct values when eventType === 13', () => {
+            setABTestingProperties();
+            cmpInteractionTracking.onMessageChoiceSelect('test', '13');
+            expect(window.utag.link).toHaveBeenCalledWith(
+                {
+                    'event_name': 'cmp_interactions',
+                    'event_action': 'click',
+                    'event_label': 'cm_reject_all',
+                    'event_data': `${ABTestingProperties.messageId} ${ABTestingProperties.msgDescription} ${ABTestingProperties.bucket}`
+                }, expect.any(Function));
+        });
+
+        it('should NOT call utag.link when called with wrong event type', () => {
+            cmpInteractionTracking.onMessageChoiceSelect('test', '999');
+            expect(window.utag.link).not.toHaveBeenCalled();
+        });
     });
 
 
-    describe('onPrivacyManagerAction()', () => {
-        it('should set utag.data properties', () => {
+    describe('onPrivacyManagerAction(eventType)', () => {
+        it('should set correct utag.data properties when eventType === SAVE_AND_EXIT', () => {
             cmpInteractionTracking.onPrivacyManagerAction('SAVE_AND_EXIT');
 
             expect(window.utag.data).toEqual({
@@ -216,7 +251,7 @@ describe("CMP Interaction Tracking", () => {
             });
         });
 
-        it('should call utag.link with correct values', () => {
+        it('should call utag.link with correct values when eventType === SAVE_AND_EXIT', () => {
             setABTestingProperties();
             cmpInteractionTracking.onPrivacyManagerAction('SAVE_AND_EXIT');
             expect(window.utag.link).toHaveBeenCalledWith(
@@ -224,6 +259,27 @@ describe("CMP Interaction Tracking", () => {
                     'event_name': 'cmp_interactions',
                     'event_action': 'click',
                     'event_label': 'pm_save_and_exit',
+                    'event_data': `${ABTestingProperties.messageId} ${ABTestingProperties.msgDescription} ${ABTestingProperties.bucket}`
+                }, expect.any(Function));
+        });
+
+        it('should set correct utag.data properties when eventType === ACCEPT_ALL', () => {
+            cmpInteractionTracking.onPrivacyManagerAction('ACCEPT_ALL');
+
+            expect(window.utag.data).toEqual({
+                'cmp_events': 'pm_accept_all',
+                'cmp_interactions_true': 'false'
+            });
+        });
+
+        it('should call utag.link with correct values when eventType === ACCEPT_ALL', () => {
+            setABTestingProperties();
+            cmpInteractionTracking.onPrivacyManagerAction('ACCEPT_ALL');
+            expect(window.utag.link).toHaveBeenCalledWith(
+                {
+                    'event_name': 'cmp_interactions',
+                    'event_action': 'click',
+                    'event_label': 'pm_accept_all',
                     'event_data': `${ABTestingProperties.messageId} ${ABTestingProperties.msgDescription} ${ABTestingProperties.bucket}`
                 }, expect.any(Function));
         });
@@ -268,15 +324,30 @@ describe("CMP Interaction Tracking", () => {
                 }, expect.any(Function));
         });
 
-        it('should NOT call utag.link when called with wrong type', () => {
-            cmpInteractionTracking.onPrivacyManagerAction('test');
+        it('should NOT call utag.link when called with wrong eventType', () => {
+            cmpInteractionTracking.onPrivacyManagerAction('any-invalid-type');
             expect(window.utag.link).not.toHaveBeenCalled();
         });
     });
 
     describe('onCmpuishown()', () => {
-        it('should call utag.view with correct values', () => {
+        beforeEach(() => {
             jest.useFakeTimers();
+        });
+        afterEach(() => {
+            jest.useRealTimers();
+        });
+
+        it('should set correct utag.data properties', () => {
+            cmpInteractionTracking.onCmpuishown({eventStatus: 'onCmpuishown'});
+
+            expect(window.utag.data).toEqual({
+                'cmp_events': 'cm_layer_shown',
+                'cmp_interactions_true': 'false'
+            });
+        });
+
+        it('should call utag.view with correct values', () => {
             cmpInteractionTracking.onCmpuishown({eventStatus: 'onCmpuishown'});
             jest.runAllTimers();
             expect(window.utag.view).toHaveBeenNthCalledWith(1,
@@ -285,28 +356,34 @@ describe("CMP Interaction Tracking", () => {
                     'cmp_interactions_true': 'true',
                     'first_pv': 'true'
                 }, expect.any(Function), undefined);
-            jest.runOnlyPendingTimers();
-            jest.useRealTimers();
         });
 
         it('should NOT call utag.view when called without event status', () => {
-            jest.useFakeTimers();
             cmpInteractionTracking.onCmpuishown();
             jest.runAllTimers();
             expect(window.utag.view).not.toHaveBeenCalled();
-            jest.runOnlyPendingTimers();
-            jest.useRealTimers();
         });
 
         it('should NOT call utag.view when onCmpuishown is called with invalid event status', () => {
-            jest.useFakeTimers();
             cmpInteractionTracking.onCmpuishown({eventStatus: 'any-invalid-status'});
             jest.runAllTimers();
             expect(window.utag.view).not.toHaveBeenCalled();
-            jest.runOnlyPendingTimers();
-            jest.useRealTimers();
+        });
+
+        it('should call utag.link with correct values', () => {
+            setABTestingProperties();
+            cmpInteractionTracking.onCmpuishown({eventStatus: 'onCmpuishown'});
+            jest.runAllTimers();
+            const utagViewCallback = window.utag.view.mock.calls[0][1];
+            utagViewCallback();
+            expect(window.utag.link).toHaveBeenNthCalledWith(1,
+                {
+                    'event_name': 'cmp_interactions',
+                    'event_action': 'click',
+                    'event_label': 'cm_layer_shown',
+                    'event_data': `${ABTestingProperties.messageId} ${ABTestingProperties.msgDescription} ${ABTestingProperties.bucket}`
+                }, expect.any(Function));
         });
     });
 
 });
-

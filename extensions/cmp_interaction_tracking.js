@@ -126,7 +126,7 @@
 
     function run() {
         try {
-            adobeTagId = exportedFunctions.getAdobeTagId(window.utag.data.ut.profile);
+            adobeTagId = exportedFunctions.getAdobeTagId(window.utag.data.tealium_profile);
             exportedFunctions.configSourcepoint();
             exportedFunctions.registerEventHandler();
         } catch (e) {

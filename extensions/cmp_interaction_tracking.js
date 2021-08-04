@@ -98,7 +98,7 @@
                             'event_label': TCFAPI_COMMON_EVENTS.CMP_UI_SHOWN,
                             'event_data': getABTestingProperties()
                         }, function () {});
-                    }, adobeTagId);
+                    }, [adobeTagId]);
                 }, 300); //fixme: decide for a proper timeout value
             window.utag.data['cmp_interactions_true'] = 'false';
         }

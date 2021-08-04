@@ -355,7 +355,7 @@ describe("CMP Interaction Tracking", () => {
                     'cmp_events': 'cm_layer_shown',
                     'cmp_interactions_true': 'true',
                     'first_pv': 'true'
-                }, expect.any(Function), undefined);
+                }, expect.any(Function), [undefined]);
         });
 
         it('should NOT call utag.view when called without event status', () => {

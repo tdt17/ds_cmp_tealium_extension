@@ -37,6 +37,19 @@
 
     var adobeTagId;
 
+    // Create a centralized reference to all members of this unit which needs be exposed for unit testing.
+    const exportedFunctions = {
+        init,
+        run,
+        configSourcepoint,
+        getAdobeTagId,
+        registerEventHandler,
+        onMessageReceiveData,
+        onMessageChoiceSelect,
+        onPrivacyManagerAction,
+        onCmpuishown
+    }
+
     function getABTestingProperties() {
         return window.localStorage.getItem('cmp_ab_id') + ' '
             + window.localStorage.getItem('cmp_ab_desc') + ' '
@@ -139,19 +152,6 @@
             exportedFunctions.run();
             window.__utag_cmp_event_tracking = true; // Protection against multiple executions.
         }
-    }
-
-    // Create a centralized reference to all members of this unit which needs be exposed for unit testing.
-    const exportedFunctions = {
-        init,
-        run,
-        configSourcepoint,
-        getAdobeTagId,
-        registerEventHandler,
-        onMessageReceiveData,
-        onMessageChoiceSelect,
-        onPrivacyManagerAction,
-        onCmpuishown
     }
 
     // Evaluate runtime environment (Browser or Node.js)

@@ -5,12 +5,6 @@
     "test": "jest"
   },
   "dependencies": {
-    "jest": "^27.0.4"
-  },
-  "jest": {
-    "globals": {
-      "window": {},
-      "setupFiles": "ds_cmp_tealium_extension/tests/browserMocks.js"
-    }
+    "jest": "^27.0.6"
   }
 }

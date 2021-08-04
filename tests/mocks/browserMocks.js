@@ -1,23 +1,20 @@
 //browserMocks.js
-var localStorageMock = (function() {
-    var store = {};
+function localStorageMock() {
+    let store = {};
 
     return {
-        getItem: function(key) {
+        getItem: jest.fn().mockImplementation(key => {
             return store[key] || null;
-        },
-        setItem: function(key, value) {
+        }),
+        setItem: jest.fn().mockImplementation((key, value) => {
             store[key] = value.toString();
-        },
-        clear: function() {
+        }),
+        clear: jest.fn().mockImplementation(() => {
             store = {};
-        }
+        })
     };
+}
 
-})();
-
-Object.defineProperty(window, 'localStorage', {
-    value: localStorageMock
-});
-
-module.exports = localStorageMock;
+module.exports = {
+    localStorageMock: localStorageMock()
+};

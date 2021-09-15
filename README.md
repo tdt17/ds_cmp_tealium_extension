@@ -81,23 +81,23 @@ the extension, in case profiles or Adobe tags are changing.
     </tr>
     <tr>
         <td>Fitbook.de</td>
-        <td>&#10060;</td>
+        <td>&#10004;</td>
     </tr>
     <tr>
         <td>myHomebook.de</td>
-        <td>&#10060;</td>
+        <td>&#10004;</td>
     </tr>
     <tr>
         <td>Stylebook.de</td>
-        <td>&#10060;</td>
+        <td>&#10004;</td>
     </tr>
     <tr>
         <td>Techbook.de</td>
-        <td>&#10060;</td>
+        <td>&#10004;</td>
     </tr>
     <tr>
         <td>Travelbook.de</td>
-        <td>&#10060;</td>
+        <td>&#10004;</td>
     </tr>
     <tr>
         <td>RollingStone.de</td>

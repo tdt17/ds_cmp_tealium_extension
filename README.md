@@ -65,7 +65,7 @@ the extension, in case profiles or Adobe tags are changing.
     </tr>
     <tr>
         <td>Bild.de</td>
-        <td>&#10060;</td>
+        <td>&#10004;</td>
     </tr>
     <tr>
         <td>BZ.de</td>

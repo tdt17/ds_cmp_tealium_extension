@@ -32,7 +32,8 @@
         'bz-bz-berlin.de': 9,
         'cbo-computerbild.de': 25,
         'shop.bild': 181,
-        'welt': 233
+        'welt': 233,
+        'welt-shop.welt.de' : 28
     }
 
     var adobeTagId;

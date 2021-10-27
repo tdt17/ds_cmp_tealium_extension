@@ -56,6 +56,8 @@ s.doPlugins = function(s) {
     s.campaign = s.getValOnce(s.campaign, 's_ev0', 0, "m");
     s.eVar88 = b['adobe_campaign'];
 
+    //Referrer für Custom Events
+    s.referrer = document.referrer;
 
     //internal Campaign
     s.getICID = s.Util.getQueryParam('icid') || '';
@@ -258,6 +260,12 @@ s.doPlugins = function(s) {
     s.eVar61 = navigator.userAgent;
 
 }
+
+//height & width für iPhones
+if (navigator.userAgent.indexOf('iPhone') > -1) {
+    s.eVar94 = screen.width + "x" + screen.height;
+}
+
 console.log("RESULT s.events=" + s.events);
 
 

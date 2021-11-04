@@ -1,4 +1,5 @@
 (function () {
+
     const CONSENT_MESSAGE_EVENTS = {
         11: 'cm_accept_all',
         12: 'cm_show_privacy_manager',
@@ -38,6 +39,10 @@
 
     var adobeTagId;
 
+    var cmp_ab_id = '';
+    var cmp_ab_desc = '';
+    var cmp_ab_bucket = '';
+
     // Create a centralized reference to all members of this unit which needs be exposed for unit testing.
     const exportedFunctions = {
         init,
@@ -48,19 +53,27 @@
         onMessageReceiveData,
         onMessageChoiceSelect,
         onPrivacyManagerAction,
-        onCmpuishown
+        onCmpuishown,
+        initABTestingProperties
     }
 
     function getABTestingProperties() {
-        return window.localStorage.getItem('cmp_ab_id') + ' '
-            + window.localStorage.getItem('cmp_ab_desc') + ' '
-            + window.localStorage.getItem('cmp_ab_bucket');
+        return cmp_ab_id + ' '
+            + cmp_ab_desc + ' '
+            + cmp_ab_bucket;
     }
 
     function setABTestingProperties(data){
-        window.localStorage.setItem('cmp_ab_desc', data.msgDescription);
-        window.localStorage.setItem('cmp_ab_id', data.messageId);
-        window.localStorage.setItem('cmp_ab_bucket', data.bucket);
+        cmp_ab_desc = data.msgDescription;
+        cmp_ab_id = data.messageId;
+        cmp_ab_bucket = data.bucket;
+    }
+
+    // Alternative way of setting AB-Testing properties through global variable.
+    function initABTestingProperties() {
+        if (window.__cmp_interaction_data && window.__cmp_interaction_data.onMessageReceiveData) {
+            setABTestingProperties(window.__cmp_interaction_data.onMessageReceiveData);
+        }
     }
 
     function onMessageReceiveData(data) {
@@ -101,7 +114,6 @@
         if (tcData && tcData.eventStatus === 'cmpuishown') {
             window.utag.data.cmp_events = 'cm_layer_shown';
                 setTimeout(function () {
-                    console.log('firstPV with tagID: ', adobeTagId);
                     window.utag.data['cmp_events'] = TCFAPI_COMMON_EVENTS.CMP_UI_SHOWN;
                     window.utag.data['cmp_interactions_true'] = 'true';
                     window.utag.data['first_pv'] = 'true';
@@ -142,6 +154,7 @@
         try {
             adobeTagId = exportedFunctions.getAdobeTagId(window.utag.data['ut.profile']);
             exportedFunctions.configSourcepoint();
+            exportedFunctions.initABTestingProperties();
             exportedFunctions.registerEventHandler();
         } catch (e) {
             console.error(e);

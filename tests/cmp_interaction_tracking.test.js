@@ -30,10 +30,9 @@ const ABTestingProperties = {
     bucket: 'any-bucket'
 };
 
+// Utility function for conveniently setting AP-testing properties
 function setABTestingProperties() {
-    window.localStorage.setItem('cmp_ab_id', ABTestingProperties.messageId);
-    window.localStorage.setItem('cmp_ab_desc', ABTestingProperties.msgDescription);
-    window.localStorage.setItem('cmp_ab_bucket', ABTestingProperties.bucket);
+    cmpInteractionTracking.onMessageReceiveData(ABTestingProperties);
 }
 
 function createWindowMock() {
@@ -95,12 +94,14 @@ describe("CMP Interaction Tracking", () => {
             jest.spyOn(cmpInteractionTracking, 'configSourcepoint').mockImplementation();
             jest.spyOn(cmpInteractionTracking, 'getAdobeTagId').mockImplementation();
             jest.spyOn(cmpInteractionTracking, 'registerEventHandler').mockImplementation();
+            jest.spyOn(cmpInteractionTracking, 'initABTestingProperties').mockImplementation();
 
             cmpInteractionTracking.run();
 
             expect(cmpInteractionTracking.configSourcepoint).toBeCalledTimes(1);
             expect(cmpInteractionTracking.getAdobeTagId).toBeCalledTimes(1);
             expect(cmpInteractionTracking.registerEventHandler).toBeCalledTimes(1);
+            expect(cmpInteractionTracking.initABTestingProperties).toBeCalledTimes(1);
         });
     });
 
@@ -160,17 +161,31 @@ describe("CMP Interaction Tracking", () => {
         });
     });
 
-    describe('onMessageReceiveData()', () => {
-        it('should save AP-Testing properties in Local Storage ', () => {
-            const receivedData = {
-                msgDescription: 'any-description',
-                messageId: 'any-id',
-                bucket: 'any-bucket'
+    describe('initABTestingProperties', () => {
+        it('should store AB-Testing properties when provided through global variable', () => {
+            window.__cmp_interaction_data = {
+                onMessageReceiveData: ABTestingProperties
             };
-            cmpInteractionTracking.onMessageReceiveData(receivedData);
-            expect(window.localStorage.setItem).toHaveBeenNthCalledWith(1, 'cmp_ab_desc', receivedData.msgDescription);
-            expect(window.localStorage.setItem).toHaveBeenNthCalledWith(2, 'cmp_ab_id', receivedData.messageId);
-            expect(window.localStorage.setItem).toHaveBeenNthCalledWith(3, 'cmp_ab_bucket', receivedData.bucket);
+
+            cmpInteractionTracking.initABTestingProperties();
+
+            // getting stored properties by triggering link functions which uses them as argument
+            cmpInteractionTracking.onMessageChoiceSelect('test', '11');
+            const utagLinkCallArguments = window.utag.link.mock.calls[0][0];
+
+            expect(utagLinkCallArguments.event_data).toEqual(`${ABTestingProperties.messageId} ${ABTestingProperties.msgDescription} ${ABTestingProperties.bucket}`);
+        })
+    });
+
+    describe('onMessageReceiveData()', () => {
+        it('should store received AP-Testing properties', () => {
+            cmpInteractionTracking.onMessageReceiveData(ABTestingProperties);
+
+            // getting stored properties by triggering link functions which uses them as argument
+            cmpInteractionTracking.onMessageChoiceSelect('test', '11');
+            const utagLinkCallArguments = window.utag.link.mock.calls[0][0];
+
+            expect(utagLinkCallArguments.event_data).toEqual(`${ABTestingProperties.messageId} ${ABTestingProperties.msgDescription} ${ABTestingProperties.bucket}`);
         });
     });
 

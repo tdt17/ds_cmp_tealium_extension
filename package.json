@@ -2,9 +2,13 @@
   "name": "ds_cmp_tealium_extension",
   "version": "1.0.0",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "lint": "eslint extensions"
   },
   "dependencies": {
     "jest": "^27.0.6"
+  },
+  "devDependencies": {
+    "eslint": "^8.2.0"
   }
 }

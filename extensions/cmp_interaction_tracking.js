@@ -34,14 +34,14 @@
         'cbo-computerbild.de': 25,
         'shop.bild': 181,
         'welt': 233,
-        'welt-shop.welt.de' : 28
-    }
+        'welt-shop.welt.de': 28
+    };
 
-    var adobeTagId;
+    let adobeTagId;
 
-    var cmp_ab_id = '';
-    var cmp_ab_desc = '';
-    var cmp_ab_bucket = '';
+    let cmp_ab_id = '';
+    let cmp_ab_desc = '';
+    let cmp_ab_bucket = '';
 
     // Create a centralized reference to all members of this unit which needs be exposed for unit testing.
     const exportedFunctions = {
@@ -55,7 +55,7 @@
         onPrivacyManagerAction,
         onCmpuishown,
         initABTestingProperties
-    }
+    };
 
     function getABTestingProperties() {
         return cmp_ab_id + ' '
@@ -63,13 +63,13 @@
             + cmp_ab_bucket;
     }
 
-    function setABTestingProperties(data){
+    function setABTestingProperties(data) {
         cmp_ab_desc = data.msgDescription;
         cmp_ab_id = data.messageId;
         cmp_ab_bucket = data.bucket;
     }
 
-    // Alternative way of setting AB-Testing properties through global variable.
+    // Alternative way of setting AB-Testing properties through global letiable.
     function initABTestingProperties() {
         if (window.__cmp_interaction_data && window.__cmp_interaction_data.onMessageReceiveData) {
             setABTestingProperties(window.__cmp_interaction_data.onMessageReceiveData);
@@ -113,19 +113,20 @@
     function onCmpuishown(tcData) {
         if (tcData && tcData.eventStatus === 'cmpuishown') {
             window.utag.data.cmp_events = 'cm_layer_shown';
-                setTimeout(function () {
-                    window.utag.data['cmp_events'] = TCFAPI_COMMON_EVENTS.CMP_UI_SHOWN;
-                    window.utag.data['cmp_interactions_true'] = 'true';
-                    window.utag.data['first_pv'] = 'true';
-                    window.utag.view(window.utag.data, function () {
-                        window.utag.link({
-                            'event_name': 'cmp_interactions',
-                            'event_action': 'click',
-                            'event_label': TCFAPI_COMMON_EVENTS.CMP_UI_SHOWN,
-                            'event_data': getABTestingProperties()
-                        }, function () {});
-                    }, [adobeTagId]);
-                }, 300); //fixme: decide for a proper timeout value
+            setTimeout(function () {
+                window.utag.data['cmp_events'] = TCFAPI_COMMON_EVENTS.CMP_UI_SHOWN;
+                window.utag.data['cmp_interactions_true'] = 'true';
+                window.utag.data['first_pv'] = 'true';
+                window.utag.view(window.utag.data, function () {
+                    window.utag.link({
+                        'event_name': 'cmp_interactions',
+                        'event_action': 'click',
+                        'event_label': TCFAPI_COMMON_EVENTS.CMP_UI_SHOWN,
+                        'event_data': getABTestingProperties()
+                    }, function () {
+                    });
+                }, [adobeTagId]);
+            }, 300); //fixme: decide for a proper timeout value
             window.utag.data['cmp_interactions_true'] = 'false';
         }
     }
@@ -140,10 +141,18 @@
 
     function registerEventHandler() {
         window._sp_queue = window._sp_queue || [];
-        window._sp_queue.push(()=>{ window._sp_.addEventListener('onMessageReceiveData', onMessageReceiveData); });
-        window._sp_queue.push(()=>{ window._sp_.addEventListener('onMessageChoiceSelect', onMessageChoiceSelect); });
-        window._sp_queue.push(()=>{ window._sp_.addEventListener('onPrivacyManagerAction', onPrivacyManagerAction); });
-        window._sp_queue.push(()=>{ window.__tcfapi('addEventListener', 2, onCmpuishown); });
+        window._sp_queue.push(() => {
+            window._sp_.addEventListener('onMessageReceiveData', onMessageReceiveData);
+        });
+        window._sp_queue.push(() => {
+            window._sp_.addEventListener('onMessageChoiceSelect', onMessageChoiceSelect);
+        });
+        window._sp_queue.push(() => {
+            window._sp_.addEventListener('onPrivacyManagerAction', onPrivacyManagerAction);
+        });
+        window._sp_queue.push(() => {
+            window.__tcfapi('addEventListener', 2, onCmpuishown);
+        });
     }
 
     function configSourcepoint() {
@@ -151,14 +160,10 @@
     }
 
     function run() {
-        try {
-            adobeTagId = exportedFunctions.getAdobeTagId(window.utag.data['ut.profile']);
-            exportedFunctions.configSourcepoint();
-            exportedFunctions.initABTestingProperties();
-            exportedFunctions.registerEventHandler();
-        } catch (e) {
-            console.error(e);
-        }
+        adobeTagId = exportedFunctions.getAdobeTagId(window.utag.data['ut.profile']);
+        exportedFunctions.configSourcepoint();
+        exportedFunctions.initABTestingProperties();
+        exportedFunctions.registerEventHandler();
     }
 
     function init() {
@@ -169,7 +174,7 @@
     }
 
     // Evaluate runtime environment (Browser or Node.js)
-    if (typeof exports === "object") {
+    if (typeof exports === 'object') {
         // Expose reference to members for unit testing.
         module.exports = exportedFunctions;
     } else {

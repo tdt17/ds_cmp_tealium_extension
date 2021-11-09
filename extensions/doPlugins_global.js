@@ -26,6 +26,5 @@ s.split = new Function("l","d",""
 //Assignments
 
 //Functions
-s.doPluginsGlobal = function(s) {
-    console.log('Dude');
+s.doPluginsGlobal = function() {
 };

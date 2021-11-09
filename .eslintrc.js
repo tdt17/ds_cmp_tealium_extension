@@ -1,6 +1,7 @@
 module.exports = {
     'env': {
         'browser': true,
+        'commonjs': true,
         'es2021': true
     },
     'extends': 'eslint:recommended',
@@ -23,6 +24,7 @@ module.exports = {
         'semi': [
             'error',
             'always'
-        ]
+        ],
+        'no-console': 2
     }
 };

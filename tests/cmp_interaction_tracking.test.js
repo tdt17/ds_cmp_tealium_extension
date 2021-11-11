@@ -21,7 +21,7 @@ const TEALIUM_PROFILES = [
     {profileName: 'cbo-computerbild.de', tagId: 25},
     {profileName: 'shop.bild', tagId: 181},
     {profileName: 'welt', tagId: 233},
-    {profileName: 'welt-shop.welt.de', tagId : 28}
+    {profileName: 'welt-shop.welt.de', tagId: 28}
 ];
 
 const ABTestingProperties = {
@@ -50,17 +50,17 @@ function createWindowMock() {
             view: jest.fn(),
             data: {}
         }
-    }
+    };
 }
 
-describe("CMP Interaction Tracking", () => {
+describe('CMP Interaction Tracking', () => {
 
     beforeEach(() => {
         // Create a fresh window mock for each test.
         const windowMock = createWindowMock();
-        jest.spyOn(global, "window", "get")
+        jest.spyOn(global, 'window', 'get')
             .mockImplementation(() => (windowMock));
-    })
+    });
 
     afterEach(() => {
         jest.restoreAllMocks();
@@ -107,10 +107,12 @@ describe("CMP Interaction Tracking", () => {
 
     describe('getAdobeTagId()', () => {
         it.each(TEALIUM_PROFILES)('should return the Adobe TagID ($tagId) for the current Tealium Profile ($profileName)',
-            ({
-                 profileName,
-                 tagId
-             }) => {
+            (
+                {
+                    profileName,
+                    tagId
+                }
+            ) => {
 
                 const result = cmpInteractionTracking.getAdobeTagId(profileName);
 
@@ -122,7 +124,7 @@ describe("CMP Interaction Tracking", () => {
                 cmpInteractionTracking.getAdobeTagId('non-existing-profile');
             }).toThrow();
         });
-    })
+    });
 
     describe('configSourcepoint', () => {
         it('should set the Sourcepoint configuration object to our needs', function () {
@@ -174,7 +176,7 @@ describe("CMP Interaction Tracking", () => {
             const utagLinkCallArguments = window.utag.link.mock.calls[0][0];
 
             expect(utagLinkCallArguments.event_data).toEqual(`${ABTestingProperties.messageId} ${ABTestingProperties.msgDescription} ${ABTestingProperties.bucket}`);
-        })
+        });
     });
 
     describe('onMessageReceiveData()', () => {

@@ -27,5 +27,9 @@ jobs:
     - name: NPM install
       run: npm ci
 
-    - name: Run tests
-      run: cd tests && npm run test
+    - name: Check code quality
+      run: npm run lint
+
+    - name: Run Tests
+      if: ${{ success() }}
+      run: npm run test

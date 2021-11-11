@@ -55,10 +55,8 @@ if (navigator.userAgent.indexOf('iPhone') > -1) {
 s.doPluginsGlobal = function() {
 };
 
-// Evaluate runtime environment (Browser or Node.js)
+// Evaluate runtime environment
 if (typeof exports === 'object') {
     // Expose reference to members for unit testing.
-    module.exports = {
-        s
-    };
+    module.exports = s;
 }

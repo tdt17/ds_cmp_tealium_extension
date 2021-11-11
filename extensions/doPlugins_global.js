@@ -1,5 +1,6 @@
 /* eslint-disable */
 var s = s || {};
+var b = b || {};
 
 // START: Pre-defined Adobe Plugins
 /* Adobe Consulting Plugin: getPercentPageViewed v5.0.1 */
@@ -21,9 +22,34 @@ s.split = new Function("l","d",""
 /* eslint-enable */
 // END: Pre-defined Adobe Plugins
 
-//Constants and utils
+//Constants
+const SOCIAL_DOMAINS = 'facebook.com|xing.com|instagram.com|youtube.com|t.co|www.linkedin.com|away.vk.com|www.pinterest.de|linkedin.android|ok.ru|mobile.ok.ru|www.yammer.com|twitter.com|www.netvibes.com|pinterest.com|wordpress.com|blogspot.com|lnkd.in|xing.android|vk.com|com.twitter.android|m.ok.ru|welt.de';
+const SEARCH_ENGINES = '.google.|bing.com|ecosia.org|duckduckgo.com|amp-welt-de.cdn.ampproject.org|qwant.com|suche.t-online.de|.yandex.|.yahoo.com|googleapis.com|nortonsafe.search.ask.com|wikipedia.org|googleadservices.com|search.myway.com|lycos.de';
+const CURRENCY_CODE = 'EUR';
+
+//Utils
 
 //Assignments
+s._appDomain = document.domain;
+/* Todo: investigate usage! */
+s._appDomain = b.ad_track_server; //asmb-lib-music, bild, bild-bild
+s._articleViewType ='';
+s._searchEngines = SEARCH_ENGINES;
+s._socialDomains = SOCIAL_DOMAINS;
+s._referringDomain = document.referrer.split('?')[0];
+
+s.currencyCode = CURRENCY_CODE;
+s.execdoplugins = 0;
+s.expectSupplementalData = false;
+s.myChannels = 0;
+s.usePlugins=true;
+
+
+//height & width für iPhones
+if (navigator.userAgent.indexOf('iPhone') > -1) {
+    s.eVar94 = screen.width + 'x' + screen.height;
+}
+
 
 //Functions
 s.doPluginsGlobal = function() {

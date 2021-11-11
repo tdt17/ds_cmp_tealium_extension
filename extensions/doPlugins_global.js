@@ -1,4 +1,4 @@
-let s = s || {};
+const s = {};
 
 // START: Pre-defined Adobe Plugins
 /* eslint-disable */
@@ -28,3 +28,9 @@ s.split = new Function("l","d",""
 //Functions
 s.doPluginsGlobal = function() {
 };
+
+// Evaluate runtime environment
+if (typeof exports === 'object') {
+    // Expose reference to members for unit testing.
+    module.exports = s;
+}

@@ -1,4 +1,4 @@
-const s = {};
+var s = s || {};
 
 // START: Pre-defined Adobe Plugins
 /* eslint-disable */

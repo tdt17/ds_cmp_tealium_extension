@@ -42,7 +42,6 @@ describe('Adobe Plugins', () => {
 });
 
 
-
 describe('init()', () => {
 
     beforeEach(() => {
@@ -54,6 +53,7 @@ describe('init()', () => {
 
     afterEach(() => {
         jest.restoreAllMocks();
+        delete doPluginsGlobal.s.eVar94;
     });
 
     it('should set global configuration properties of the Adobe s-object', () => {
@@ -77,6 +77,7 @@ describe('init()', () => {
     });
 
     it('should NOT set eVar94 when not viewed on iPhones', () => {
+        doPluginsGlobal.s = {};
         doPluginsGlobal.init();
         expect(doPluginsGlobal.s.eVar94).toBeUndefined();
     });

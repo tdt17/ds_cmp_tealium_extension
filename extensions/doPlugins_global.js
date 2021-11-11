@@ -21,9 +21,6 @@ s.split = new Function("l","d",""
 /* eslint-enable */
 // END: Pre-defined Adobe Plugins
 
-//Constants
-
-//Utils
 
 function init(){
     s.currencyCode = 'EUR';
@@ -38,7 +35,6 @@ function init(){
     }
 }
 
-//Functions
 s.doPluginsGlobal = function() {
 };
 

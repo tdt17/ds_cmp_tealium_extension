@@ -61,7 +61,7 @@ s.setExternalReferringDomainEvents = function (s) {
         {
             domains: ['facebook.com'],
             event: 'event52',
-        }
+        },
     ];
 
     domainsToEventMapping.forEach(domainEventMap => {
@@ -70,7 +70,7 @@ s.setExternalReferringDomainEvents = function (s) {
         if (domainMatches) s.events = s.apl(s.events, event, ',', 1);
     });
 
-}
+};
 
 s.doPluginsGlobal = function() {
 };

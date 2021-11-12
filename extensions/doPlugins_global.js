@@ -24,38 +24,39 @@ s.split = new Function("l","d",""
 //Constants and utils
 
 s.setExternalReferringDomainEvents = function (s) {
-    // Google Discover
-    if(s._referringDomain.substr(s._referringDomain.indexOf("google.com"),100) === "google.com"
-        || s._referringDomain.indexOf("googlequicksearch/")!=-1) {
-            s.events = s.apl(s.events, "event49", ',', 1);     
-    }
+    const domainsToEventMapping = [
+        {
+            domains: ['google.com', 'googlequicksearch/'],
+            event: 'event49',
+        },
+        {
+            domains: ['news.google'],
+            event: 'event48',
+        },
+        {
+            domains: ['instagram.com'],
+            event: 'event53',
+        },
+        {
+            domains: ['youtube.com'],
+            event: 'event50',
+        },
+        {
+            domains: ['t.co', 'twitter.com', 'android-app://com.twitter.android'],
+            event: 'event51',
+        },
+        {
+            domains: ['facebook.com'],
+            event: 'event52',
+        }
+    ];
 
-    //Google News 
-    if(s._referringDomain.indexOf("news.google") != -1) {
-        s.events = s.apl(s.events, "event48", ',', 1);  
-    }
+    domainsToEventMapping.forEach(domainEventMap => {
+        const { domains, event } = domainEventMap;
+        const domainMatches = domains.some(domain => s._referringDomain.includes(domain));
+        if (domainMatches) s.events = s.apl(s.events, event, ',', 1);
+    });
 
-    //Instagram
-    if(s._referringDomain.indexOf("instagram.com") != -1) {    
-        s.events = s.apl(s.events, "event53", ',', 1);  
-    }
-
-    //Youtube
-    if(s._referringDomain.indexOf("youtube.com") != -1) {     
-        s.events = s.apl(s.events, "event50", ',', 1);  
-    }
-    
-    //Twitter
-    if(s._referringDomain.indexOf("t.co") != -1
-        || s._referringDomain.indexOf("twitter.com") != -1
-        || s._referringDomain.indexOf("android-app://com.twitter.android") != -1 ) {
-            s.events = s.apl(s.events, "event51", ',', 1);  
-    }
-
-    //Facebook
-    if(s._referringDomain.indexOf("facebook.com") != -1) {
-        s.events = s.apl(s.events, "event52", ',', 1);  
-    }
 }
 
 //Assignments

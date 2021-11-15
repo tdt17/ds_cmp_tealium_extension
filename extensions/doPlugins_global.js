@@ -35,7 +35,67 @@ function init(){
     }
 }
 
-s.doPluginsGlobal = function() {
+s.doPluginsGlobal = function(s) {
+
+    //Campaign
+    if (typeof b['qp.cid'] !== 'undefined') {
+        (b['adobe_campaign'] = "cid=" + b['qp.cid']);
+
+    } else if (typeof b['qp.wtrid'] !== 'undefined'){
+        (b['adobe_campaign'] = "wtrid=" + b['qp.wtrid']);
+
+    } else if (typeof b['qp.wtmc'] !== 'undefined'){
+        (b['adobe_campaign'] = "wtmc=" + b['qp.wtmc']);
+
+    } else if (typeof b['qp.wt_mc'] !== 'undefined') {
+        (b['adobe_campaign'] = "wt_mc" + b['qp.wt_mc']);
+
+    }
+    //Campaign
+    s.campaign = s.getValOnce(b['adobe_campaign'], 's_ev0', 0, "m");
+   
+    //Campaign
+    s.campaign = s.getValOnce(s.campaign, 's_ev0', 0, "m"); 
+    s.campaign = s.getValOnce(s.campaign,'s_ev0',7);
+    s.eVar0 = s.getValOnce(s.eVar0, 's_ev0', 7);
+
+    s.eVar88 = b["campaign_value"];
+    s.eVar88 = utag.data.campaign_value;
+    s.eVar88 = b['adobe_campaign'];
+
+    //Config
+    s.trackingServer = document.domain.replace(/www/,'as');
+    s.trackingServerSecure =  document.domain.replace(/www/,'as');
+
+    //defaults,config
+    s.currencyCode="EUR";
+    s.trackExternalLinks = true;    
+    s.eVar63 = s.version;
+    s.eVar64 = (typeof s.visitor !== "undefined") ? s.visitor.version : "undefined";       
+
+    //Time & Timeparting
+    s.eVar61 =  s.getTimeParting('n','+1');
+    s.eVar184 = new Date().getHours().toString();
+    s.eVar181 = new Date().getMinutes().toString();
+    cmp.eVar185 = b.myCW;
+    s.eVar186 ='T1';
+
+    //no sdid for A4T
+    s.expectSupplementalData = false; // Force to false;
+
+    cmp.eVar67 = 'Auto BILD';
+
+    //internal Campaign
+    s.getICID = s.Util.getQueryParam('icid') || '';
+    s.eVar78 = s.getICID;
+    s.eVar79 = s.getICID;
+
+    //Referrer for link events
+    s.referrer = document.referrer;
+
+    //last PV Event für Order
+    s.eVar44 = utag.data["cp.utag_main_articleview"];
+
 };
 
 // Evaluate runtime environment

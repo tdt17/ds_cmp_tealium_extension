@@ -215,8 +215,12 @@ s.split = new Function("l", "d", ""
 /**
  * Function sets the referring context of an article page view as an certain event to the events variable.
  */
-function setArticleViewType() {
-    function isArticlePage() {
+const setArticleViewType = {
+    getPageType: function () {
+        return window.utag.data.page_type || window.utag.data.page_document_type || window.utag.data.page_mapped_doctype_for_pagename;
+    },
+
+    isArticlePage: function () {
         const ARTICLE_TYPES = [
             'article',
             'artikel',
@@ -224,86 +228,98 @@ function setArticleViewType() {
             'gallery',
             'video',
             'post',
-            'media'
+            'media',
+            'single'
         ];
 
-        const pageType = window.utag.data.page_type || window.utag.data.page_document_type || window.utag.data.page_mapped_doctype_for_pagename;
+        const pageType = this.getPageType();
 
         return ARTICLE_TYPES.indexOf(pageType) !== -1;
-    }
+    },
 
-    function isFromSearch() {
+    isFromSearch: function () {
         const searchEngines = ['google.', 'bing.com', 'ecosia.org', 'duckduckgo.com', 'amp-welt-de.cdn.ampproject.org', 'qwant.com', 'suche.t-online.de', '.yandex.', 'yahoo.com', 'googleapis.com', 'nortonsafe.search.ask.com', 'wikipedia.org', 'googleadservices.com', 'search.myway.com', 'lycos.de'];
 
         return searchEngines.some( item => {
             return window.document.referrer.indexOf(item) !== -1;
         });
-    }
+    },
 
-    function isFromSocial() {
-        const socialDomains = ['facebook.com','xing.com','instagram.com','youtube.com','t.co','www.linkedin.com','away.vk.com','www.pinterest.de','linkedin.android','ok.ru','mobile.ok.ru','www.yammer.com','twitter.com','www.netvibes.com','pinterest.com','wordpress.com','blogspot.com','lnkd.in','xing.android','vk.com','com.twitter.android','m.ok.ru','welt.de'];
+    isFromSocial: function () {
+        const socialDomains = ['facebook.com', 'xing.com', 'instagram.com', 'youtube.com', 't.co', 'www.linkedin.com', 'away.vk.com', 'www.pinterest.de', 'linkedin.android', 'ok.ru', 'mobile.ok.ru', 'www.yammer.com', 'twitter.com', 'www.netvibes.com', 'pinterest.com', 'wordpress.com', 'blogspot.com', 'lnkd.in', 'xing.android', 'vk.com', 'com.twitter.android', 'm.ok.ru', 'welt.de'];
 
         return socialDomains.some( item => {
             return window.document.referrer.indexOf(item) !== -1;
         });
-    }
+    },
 
-    function isFromInternal() {
+    isFromInternal: function () {
         return window.document.referrer.indexOf(window.document.domain) !== -1;
-    }
+    },
 
-    function isFromHome() {
-        return window.location.pathname === '/';
-    }
+    isFromSubdomain: function () {
+        const urlObject = new URL(window.document.referrer);
+        const referrerDomain = urlObject.hostname;
+        const referrerDomainSegments = referrerDomain.replace('www.', '').split('.');
+        const documentDomainSegments = window.document.domain.replace('www.', '').split('.');
 
-    function isFromTaboola() {
-        const trackingValue = s.Util.getQueryParam('wtrid') || s.Util.getQueryParam('wtmc') || s.Util.getQueryParam('cid');
+        return (referrerDomainSegments.length !== documentDomainSegments.length
+            && referrerDomainSegments[referrerDomainSegments.length-2] === documentDomainSegments[documentDomainSegments.length-2]);
+    },
+
+    isFromHome: function () {
+        const urlObject = new URL(window.document.referrer);
+        return (urlObject.pathname === '/' && !this.isFromSubdomain());
+    },
+
+    getTrackingValue: function() {
+        return s.Util.getQueryParam('cid') || s.Util.getQueryParam('wtrid') || s.Util.getQueryParam('wtmc') || '';
+    },
+
+    isFromTaboola: function () {
+        const trackingValue = this.getTrackingValue();
 
         return trackingValue.indexOf('kooperation.reco.taboola.') !== -1;
-    }
+    },
 
-    function getViewTypeByReferrer() {
+    getViewTypeByReferrer: function () {
         let articleViewType = 'event27'; //Other External
-        if (isFromSearch()) {
+        if (this.isFromSearch()) {
             articleViewType = 'event24'; //Search
-        } else if (isFromSocial()) {
+        } else if (this.isFromSocial()) {
             articleViewType = 'event25'; //Social
-        } else if (isFromInternal() && isFromHome() && isFromTaboola()) {
+        } else if (this.isFromInternal() && this.isFromHome() && this.isFromTaboola()) {
             articleViewType = 'event102'; //Taboola
-        } else if (isFromInternal() && isFromHome()) {
+        } else if (this.isFromInternal() && this.isFromHome()) {
             articleViewType = 'event22'; //Home
-        } else if (isFromInternal()) {
+        } else if (this.isFromInternal()) {
             articleViewType = 'event23'; //Other Internal
         }
         return articleViewType;
-    }
+    },
 
-    function getViewTypeByTrackingProperty() {
-        const trackingValue = s.Util.getQueryParam('wtrid') || s.Util.getQueryParam('wtmc') || s.Util.getQueryParam('cid');
+    getViewTypeByTrackingProperty: function () {
+        const trackingValue = this.getTrackingValue();
         let articleViewType = 'event26'; //Dark Social
 
-        if (trackingValue.indexOf('sea.') === 0) {
+        if (trackingValue.startsWith('sea.')) {
             articleViewType = 'event24'; // Search
-        } else if (trackingValue.indexOf('social') === 0) {
+        } else if (trackingValue.startsWith('social')) {
             articleViewType = 'event25'; //Social
-        } else if (trackingValue.indexOf('kooperation') === 0 || trackingValue.indexOf('affiliate') === 0) {
+        } else if (trackingValue.startsWith('kooperation') || trackingValue.startsWith('affiliate')) {
             articleViewType = 'event23'; //Other Internal
         }
         return articleViewType;
-    }
+    },
 
-    function init() {
-        if (isArticlePage()) {
-            const articleViewType = window.document.referrer ? getViewTypeByReferrer() : getViewTypeByTrackingProperty();
+    init: function () {
+        if (this.isArticlePage()) {
+            const articleViewType = window.document.referrer ? this.getViewTypeByReferrer : this.getViewTypeByTrackingProperty();
             s.events = s.events || '';
             s.apl(s.events, articleViewType, ',', 1);
         }
     }
-
-    return {
-        isArticlePage
-    };
-}
+};
 
 function init() {
     s.currencyCode = 'EUR';
@@ -317,7 +333,7 @@ function init() {
         s.eVar94 = window.screen.width + 'x' + window.screen.height;
     }
 
-    setArticleViewType().init();
+    setArticleViewType.init();
 }
 
 s.doPluginsGlobal = function () {

@@ -42,9 +42,6 @@ describe('Adobe Plugins', () => {
 });
 
 describe('External referring domains', () => {
-    it('should check if the setExternalReferringDomainEvents function is defined in the s object', () => {
-        expect(doPluginsGlobal.s.setExternalReferringDomainEvents).toBeInstanceOf(Function);
-    });
 
     it('should set correct event if the referring domain is google (google.com)', () => {
         const s = {

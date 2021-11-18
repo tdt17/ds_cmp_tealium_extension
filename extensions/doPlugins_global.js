@@ -3,6 +3,7 @@ var s = s || {};
 
 // START: Pre-defined Adobe Plugins
 /* Adobe Consulting Plugin: getPercentPageViewed v5.0.1 */
+/* istanbul ignore next */
 s.getPercentPageViewed = function (pid, ch) {
     var n = pid, r = ch;
 
@@ -83,6 +84,7 @@ s.getPercentPageViewed = function (pid, ch) {
     "undefined" !== typeof m && m.linkType && "o" === m.linkType || (window.ppvID && window.ppvID === n || (window.ppvID = n, window.cookieWrite("s_ppv", ""), p()), window.p_fo("s_gppvLoad") && window.addEventListener && (window.addEventListener("load", p, !1), window.addEventListener("click", p, !1), window.addEventListener("scroll", p, !1)), this._ppvPreviousPage = e[0] ? e[0] : "", this._ppvHighestPercentViewed = e[1] ? e[1] : "", this._ppvInitialPercentViewed = e[2] ? e[2] : "", this._ppvHighestPixelsSeen = e[3] ? e[3] : "", this._ppvFoldsSeen = e[4] ? e[4] : "", this._ppvFoldsAvailable = e[5] ? e[5] : "")
 };
 /* Adobe Consulting Plugin: handlePPVevents helper function (for getPercentPageViewed v4.0 Plugin) */
+/* istanbul ignore next */
 s.handlePPVevents = function () {
     if ("undefined" !== typeof s_c_il) {
         for (var c = 0, g = s_c_il.length; c < g; c++) if (s_c_il[c] && (s_c_il[c].getPercentPageViewed || s_c_il[c].getPreviousPageActivity)) {
@@ -122,6 +124,7 @@ s.handlePPVevents = function () {
     }
 };
 /* Adobe Consulting Plugin: p_fo (pageFirstOnly) v3.0 (Requires AppMeasurement) */
+/* istanbul ignore next */
 s.p_fo = function (c) {
     if ("-v" === c) return {plugin: "p_fo", version: "3.0"};
     a:{
@@ -141,6 +144,7 @@ s.p_fo = function (c) {
     return !0
 };
 /* Adobe Consulting Plugin: apl (appendToList) v4.0 */
+/* istanbul ignore next */
 s.apl = function (lv, va, d1, d2, cc) {
     var b = lv, d = va, e = d1, c = d2, g = cc;
     if ("-v" === b) return {plugin: "apl", version: "4.0"};
@@ -168,6 +172,7 @@ s.apl = function (lv, va, d1, d2, cc) {
     return b
 };
 /* Adobe Consulting Plugin: getValOnce v3.0 (Requires AppMeasurement) */
+/* istanbul ignore next */
 s.getValOnce = function (vtc, cn, et, ep) {
     var e = vtc, k = cn, l = et, m = ep;
     if (arguments && "-v" === arguments[0]) return {plugin: "getValOnce", version: "3.0"};
@@ -205,6 +210,7 @@ s.getValOnce = function (vtc, cn, et, ep) {
     return e && (k = k || "s_gvo", l = l || 0, m = "m" === m ? 6E4 : 864E5, e !== this.c_r(k)) ? (c = new Date, c.setTime(c.getTime() + l * m), cookieWrite(k, e, 0 === l ? 0 : m), e) : ""
 };
 /* Utility Function: split v1.5 - split a string (JS 1.0 compatible) */
+/* istanbul ignore next */
 s.split = new Function("l", "d", ""
     + "var i,x=0,a=new Array;while(l){i=l.indexOf(d);i=i>-1?i:l.length;a[x"
     + "++]=l.substring(0,i);l=l.substring(i+d.length);}return a");
@@ -216,6 +222,8 @@ s.split = new Function("l", "d", ""
  * Function sets the referring context of an article page view as an certain event to the events variable.
  */
 const setArticleViewType = {
+    s: {},
+
     getPageType: function () {
         return window.utag.data.page_type || window.utag.data.page_document_type || window.utag.data.page_mapped_doctype_for_pagename;
     },
@@ -314,7 +322,7 @@ const setArticleViewType = {
 
     init: function () {
         if (this.isArticlePage()) {
-            const articleViewType = window.document.referrer ? this.getViewTypeByReferrer : this.getViewTypeByTrackingProperty();
+            const articleViewType = window.document.referrer ? this.getViewTypeByReferrer() : this.getViewTypeByTrackingProperty();
             s.events = s.events || '';
             s.apl(s.events, articleViewType, ',', 1);
         }

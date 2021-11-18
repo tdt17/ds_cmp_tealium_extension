@@ -450,4 +450,50 @@ describe('setArticleViewType()', () => {
         });
     });
 
+    describe('init()', ()=>{
+        let isArticlePageMock;
+        let getViewTypeByReferrerMock;
+        let getViewTypeByTrackingPropertyMock;
+        let aplMock;
+
+        beforeEach(() => {
+            isArticlePageMock = jest.spyOn(doPluginsGlobal.setArticleViewType, 'isArticlePage');
+            getViewTypeByReferrerMock = jest.spyOn(doPluginsGlobal.setArticleViewType, 'getViewTypeByReferrer').mockImplementation();
+            getViewTypeByTrackingPropertyMock = jest.spyOn(doPluginsGlobal.setArticleViewType, 'getViewTypeByTrackingProperty').mockImplementation();
+            aplMock = jest.spyOn(doPluginsGlobal.s, 'apl');
+        });
+
+        afterEach(() => {
+            jest.restoreAllMocks();
+        });
+
+        it('should set the article-view-type on article pages', function () {
+            const anyViewType = 'any-view-type';
+            isArticlePageMock.mockReturnValue(true);
+            getViewTypeByTrackingPropertyMock.mockReturnValue(anyViewType);
+            doPluginsGlobal.setArticleViewType.init();
+            expect(aplMock).toHaveBeenCalledWith('', anyViewType, ',', 1);
+        });
+
+        it('should NOT set the article-view-type on NON article pages', function () {
+            isArticlePageMock.mockReturnValue(false);
+            doPluginsGlobal.setArticleViewType.init();
+            expect(aplMock).not.toHaveBeenCalled();
+        });
+
+        it('should evaluate referrer URL when available to determine article-view-type', function () {
+            isArticlePageMock.mockReturnValue(true);
+            window.document.referrer = 'any-referrer-url';
+            doPluginsGlobal.setArticleViewType.init();
+            expect(getViewTypeByReferrerMock).toHaveBeenCalled();
+        });
+
+        it('should evaluate tracking URL param when referrer is NOT available', function () {
+            isArticlePageMock.mockReturnValue(true);
+            window.document.referrer = '';
+            doPluginsGlobal.setArticleViewType.init();
+            expect(getViewTypeByTrackingPropertyMock).toHaveBeenCalled();
+        });
+    });
+
 });

@@ -450,7 +450,7 @@ describe('setArticleViewType()', () => {
         });
     });
 
-    describe('init()', ()=>{
+    describe('init()', () => {
         let isArticlePageMock;
         let getViewTypeByReferrerMock;
         let getViewTypeByTrackingPropertyMock;

@@ -28,11 +28,9 @@ s.split = new Function("l","d",""
 // END: Pre-defined Adobe Plugins
 
 /**
- * Function sets the referring context of an article page view as an certain event to the events variable.
+ * Module sets the referring context of an article page view as an certain event to the events variable.
  */
-const setArticleViewType = {
-    s: {},
-
+const articleViewType = {
     getPageType: function () {
         return window.utag.data.page_type || window.utag.data.page_document_type || window.utag.data.page_mapped_doctype_for_pagename;
     },
@@ -128,7 +126,7 @@ const setArticleViewType = {
         return articleViewType;
     },
 
-    init: function () {
+    setViewType: function () {
         if (this.isArticlePage()) {
             const articleViewType = window.document.referrer ? this.getViewTypeByReferrer() : this.getViewTypeByTrackingProperty();
             s.events = s.events || '';
@@ -149,7 +147,7 @@ function init() {
         s.eVar94 = window.screen.width + 'x' + window.screen.height;
     }
 
-    setArticleViewType.init();
+    articleViewType.setViewType();
 }
 
 s.doPluginsGlobal = function () {
@@ -161,7 +159,7 @@ if (typeof exports === 'object') {
     module.exports = {
         s,
         init,
-        setArticleViewType
+        articleViewType
     };
 } else {
     init();

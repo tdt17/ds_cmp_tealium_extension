@@ -41,6 +41,106 @@ describe('Adobe Plugins', () => {
     });
 });
 
+describe('External referring domains', () => {
+
+    it('should set correct event if the referring domain is google (google.com)', () => {
+        const s = {
+            ...doPluginsGlobal.s,
+            _referringDomain: 'google.com',
+        }
+
+        s.setExternalReferringDomainEvents(s);
+        expect(s.events).toMatch('event49')
+
+    });
+
+    it('should set correct event if the referring domain is google (googlequicksearch)', () => {
+        const s = {
+            ...doPluginsGlobal.s,
+            _referringDomain: 'googlequicksearch/',
+        }
+
+        s.setExternalReferringDomainEvents(s);
+        expect(s.events).toMatch('event49')
+
+    });
+
+    it('should set correct event if the referring domain is google news', () => {
+        const s = {
+            ...doPluginsGlobal.s,
+            _referringDomain: 'news.google',
+        }
+
+        s.setExternalReferringDomainEvents(s);
+        expect(s.events).toMatch('event48')
+
+    });
+
+    it('should set correct event if the referring domain is instagram', () => {
+        const s = {
+            ...doPluginsGlobal.s,
+            _referringDomain: 'instagram.com',
+        }
+
+        s.setExternalReferringDomainEvents(s);
+        expect(s.events).toMatch('event53')
+
+    });
+
+    it('should set correct event if the referring domain is youtube', () => {
+        const s = {
+            ...doPluginsGlobal.s,
+            _referringDomain: 'youtube.com',
+        }
+
+        s.setExternalReferringDomainEvents(s);
+        expect(s.events).toMatch('event50')
+
+    });
+
+    it('should set correct event if the referring domain is twitter (twitter.com)', () => {
+        const s = {
+            ...doPluginsGlobal.s,
+            _referringDomain: 'twitter.com',
+        }
+
+        s.setExternalReferringDomainEvents(s);
+        expect(s.events).toMatch('event51')
+
+    });
+
+    it('should set correct event if the referring domain is twitter (android-app://com.twitter.android)', () => {
+        const s = {
+            ...doPluginsGlobal.s,
+            _referringDomain: 'android-app://com.twitter.android',
+        }
+
+        s.setExternalReferringDomainEvents(s);
+        expect(s.events).toMatch('event51')
+
+    });
+    it('should set correct event if the referring domain is twitter (t.co)', () => {
+        const s = {
+            ...doPluginsGlobal.s,
+            _referringDomain: 't.co',
+        }
+
+        s.setExternalReferringDomainEvents(s);
+        expect(s.events).toMatch('event51')
+
+    });
+
+    it('should set correct event if the referring domain is facebook', () => {
+        const s = {
+            ...doPluginsGlobal.s,
+            _referringDomain: 'facebook.com',
+        }
+
+        s.setExternalReferringDomainEvents(s);
+        expect(s.events).toMatch('event52')
+
+    });
+});
 
 describe('init()', () => {
 

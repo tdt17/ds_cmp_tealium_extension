@@ -123,7 +123,7 @@ describe('init()', () => {
     });
 
     it('should NOT set eVar94 when not viewed on iPhones', () => {
-        const s = doPluginsGlobal.s = {};
+        doPluginsGlobal.s = {};
         doPluginsGlobal.init();
         expect(doPluginsGlobal.s.eVar94).toBeUndefined();
     });

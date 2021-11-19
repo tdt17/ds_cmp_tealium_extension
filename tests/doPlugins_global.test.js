@@ -11,6 +11,9 @@ function createWindowMock() {
         screen: {
             width: '',
             height: ''
+        },
+        utag: {
+            data: {}
         }
     };
 }
@@ -41,14 +44,48 @@ describe('Adobe Plugins', () => {
     });
 });
 
-
-describe('init()', () => {
-
+describe('s.doPlugins()', () => {
     beforeEach(() => {
         // Create a fresh window mock for each test.
         const windowMock = createWindowMock();
         jest.spyOn(global, 'window', 'get')
             .mockImplementation(() => (windowMock));
+            
+    });
+
+    afterEach(() => {
+        jest.restoreAllMocks();
+    });
+    
+    it('should set the configurations inside the s.doPlugins function', () => {
+        const s = {
+            ...doPluginsGlobal.s,
+            version: 'test',
+        };
+        window.utag.data.myCW = 'test_cw';
+        
+        s.doPluginsGlobal(s);
+
+        expect(s.campaign).toBeDefined();
+        expect(s.eVar88).toBeDefined();
+        expect(s.eVar63).toBe(s.version);
+        expect(s.eVar184.length).toBeGreaterThanOrEqual(1);
+        expect(s.eVar181.length).toBeGreaterThanOrEqual(1);
+        expect(s.eVar185).toBe(window.utag.data.myCW);
+    });
+
+});
+
+describe('init()', () => {
+    beforeEach(() => {
+        // Create a fresh window mock for each test.
+        const windowMock = createWindowMock();
+        jest.spyOn(global, 'window', 'get')
+            .mockImplementation(() => (windowMock));
+            
+        doPluginsGlobal.s.Util = {
+            getQueryParam: jest.fn()
+        };
     });
 
     afterEach(() => {
@@ -57,6 +94,8 @@ describe('init()', () => {
     });
 
     it('should set global configuration properties of the Adobe s-object', () => {
+        doPluginsGlobal.s.visitor = { version: 'test' };
+        window.document.referrer = 'any_referrer';
         doPluginsGlobal.init();
 
         expect(doPluginsGlobal.s.currencyCode).toBe('EUR');
@@ -64,6 +103,13 @@ describe('init()', () => {
         expect(doPluginsGlobal.s.expectSupplementalData).toBe(false);
         expect(doPluginsGlobal.s.myChannels).toBe(0);
         expect(doPluginsGlobal.s.usePlugins).toBe(true);
+        expect(doPluginsGlobal.s.trackExternalLinks).toBe(true);
+        expect(doPluginsGlobal.s.eVar64).toBe(doPluginsGlobal.s.visitor.version);
+        expect(doPluginsGlobal.s.expectSupplementalData).toBe(false);
+        expect(doPluginsGlobal.s.getICID).toBeDefined();
+        expect(doPluginsGlobal.s.eVar78).toBeDefined();
+        expect(doPluginsGlobal.s.eVar79).toBeDefined();
+        expect(doPluginsGlobal.s.referrer).toBe(window.document.referrer);
     });
 
     it('should set eVar94 to the iPhone screen size', () => {
@@ -77,7 +123,7 @@ describe('init()', () => {
     });
 
     it('should NOT set eVar94 when not viewed on iPhones', () => {
-        doPluginsGlobal.s = {};
+        const s = doPluginsGlobal.s = {};
         doPluginsGlobal.init();
         expect(doPluginsGlobal.s.eVar94).toBeUndefined();
     });

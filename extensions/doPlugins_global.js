@@ -21,7 +21,44 @@ s.split = new Function("l","d",""
 /* eslint-enable */
 // END: Pre-defined Adobe Plugins
 
+//Utils
+s.setExternalReferringDomainEvents = function (s) {
+    const domainsToEventMapping = [
+        {
+            domains: ['google.com', 'googlequicksearch/'],
+            event: 'event49',
+        },
+        {
+            domains: ['news.google'],
+            event: 'event48',
+        },
+        {
+            domains: ['instagram.com'],
+            event: 'event53',
+        },
+        {
+            domains: ['youtube.com'],
+            event: 'event50',
+        },
+        {
+            domains: ['t.co', 'twitter.com', 'android-app://com.twitter.android'],
+            event: 'event51',
+        },
+        {
+            domains: ['facebook.com'],
+            event: 'event52',
+        },
+    ];
 
+    domainsToEventMapping.forEach(domainEventMap => {
+        const { domains, event } = domainEventMap;
+        const domainMatches = domains.some(domain => s._referringDomain.includes(domain));
+        if (domainMatches) s.events = s.apl(s.events, event, ',', 1);
+    });
+
+};
+
+//Assignments
 function init(){
     s.currencyCode = 'EUR';
     s.execdoplugins = 0;

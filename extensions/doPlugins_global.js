@@ -91,23 +91,23 @@ s.doPluginsGlobal = function(s) {
     //Campaign
     //Update/remove after confirmation
     if (typeof window.utag.data['qp.cid'] !== 'undefined') {
-        (window.utag.data['adobe_campaign'] = "cid=" + window.utag.data['qp.cid']);
+        (window.utag.data['adobe_campaign'] = 'cid=' + window.utag.data['qp.cid']);
 
     } else if (typeof window.utag.data['qp.wtrid'] !== 'undefined'){
-        (window.utag.data['adobe_campaign'] = "wtrid=" + window.utag.data['qp.wtrid']);
+        (window.utag.data['adobe_campaign'] = 'wtrid=' + window.utag.data['qp.wtrid']);
 
     } else if (typeof window.utag.data['qp.wtmc'] !== 'undefined'){
-        (window.utag.data['adobe_campaign'] = "wtmc=" + window.utag.data['qp.wtmc']);
+        (window.utag.data['adobe_campaign'] = 'wtmc=' + window.utag.data['qp.wtmc']);
 
     } else if (typeof window.utag.data['qp.wt_mc'] !== 'undefined') {
-        (window.utag.data['adobe_campaign'] = "wt_mc" + window.utag.data['qp.wt_mc']);
+        (window.utag.data['adobe_campaign'] = 'wt_mc' + window.utag.data['qp.wt_mc']);
 
     }
 
     //Update after it is changed in tealium
     const adobe_campaign = s.campaign || window.utag.data['adobe_campaign'] || '';
-    s.campaign = s.getValOnce(adobe_campaign, 's_ev0', 0, "m");
-    s.eVar88 = window.utag.data['adobe_campaign'] || window.utag.data["campaign_value"] || '';
+    s.campaign = s.getValOnce(adobe_campaign, 's_ev0', 0, 'm');
+    s.eVar88 = window.utag.data['adobe_campaign'] || window.utag.data['campaign_value'] || '';
 
     //Config 
     s.eVar63 = s.version;
@@ -117,7 +117,7 @@ s.doPluginsGlobal = function(s) {
     s.eVar181 = new Date().getMinutes().toString();
     s.eVar185 = window.utag.data.myCW || '';
     
-}
+};
 
 // Evaluate runtime environment
 if (typeof exports === 'object') {

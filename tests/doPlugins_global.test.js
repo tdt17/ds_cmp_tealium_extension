@@ -329,10 +329,10 @@ describe('Bild pagename functionalities', () => {
 
 describe('External referring domains', () => {
 
-    it('should set correct event if the referring domain is google (google.com)', () => {
+    it('should set event49 if the referring domain is www.google.com', () => {
         const s = {
             ...doPluginsGlobal.s,
-            _referringDomain: 'google.com',
+            _referringDomain: 'www.google.com',
         };
 
         s.setExternalReferringDomainEvents(s);
@@ -340,10 +340,10 @@ describe('External referring domains', () => {
 
     });
 
-    it('should set correct event if the referring domain is google (googlequicksearch)', () => {
+    it('should set event49 if the referring domain is www.google.de', () => {
         const s = {
             ...doPluginsGlobal.s,
-            _referringDomain: 'googlequicksearch/',
+            _referringDomain: 'www.google.de',
         };
 
         s.setExternalReferringDomainEvents(s);
@@ -351,10 +351,47 @@ describe('External referring domains', () => {
 
     });
 
-    it('should set correct event if the referring domain is google news', () => {
+    it('should not set event49 if the referring domain is not www.google.com', () => {
         const s = {
             ...doPluginsGlobal.s,
-            _referringDomain: 'news.google',
+            _referringDomain: 'www.google.com/',
+        };
+
+        s.setExternalReferringDomainEvents(s);
+
+        const events = s.events || '';
+        expect(events).not.toMatch('event49');
+
+    });
+
+    it('should not set event49 if the referring domain is not www.google.de', () => {
+        const s = {
+            ...doPluginsGlobal.s,
+            _referringDomain: 'www.google.de/',
+        };
+
+        s.setExternalReferringDomainEvents(s);
+
+        const events = s.events || '';
+        expect(events).not.toMatch('event49');
+
+    });
+
+    it('should set event49 if the referring domain includes googlequicksearch/', () => {
+        const s = {
+            ...doPluginsGlobal.s,
+            _referringDomain: 'googlequicksearch/test',
+        };
+
+        s.setExternalReferringDomainEvents(s);
+        expect(s.events).toMatch('event49');
+
+    });
+
+    it('should set event48 if the referring domain includes news.google', () => {
+        const s = {
+            ...doPluginsGlobal.s,
+            _referringDomain: 'news.google/',
         };
 
         s.setExternalReferringDomainEvents(s);
@@ -362,10 +399,10 @@ describe('External referring domains', () => {
 
     });
 
-    it('should set correct event if the referring domain is instagram', () => {
+    it('should set event53 if the referring domain includes instagram.com', () => {
         const s = {
             ...doPluginsGlobal.s,
-            _referringDomain: 'instagram.com',
+            _referringDomain: 'instagram.com/',
         };
 
         s.setExternalReferringDomainEvents(s);
@@ -373,10 +410,10 @@ describe('External referring domains', () => {
 
     });
 
-    it('should set correct event if the referring domain is youtube', () => {
+    it('should set event50 if the referring domain includes youtube.com', () => {
         const s = {
             ...doPluginsGlobal.s,
-            _referringDomain: 'youtube.com',
+            _referringDomain: 'youtube.com/',
         };
 
         s.setExternalReferringDomainEvents(s);
@@ -384,10 +421,10 @@ describe('External referring domains', () => {
 
     });
 
-    it('should set correct event if the referring domain is twitter (twitter.com)', () => {
+    it('should set event51 if the referring domain includes twitter.com', () => {
         const s = {
             ...doPluginsGlobal.s,
-            _referringDomain: 'twitter.com',
+            _referringDomain: 'twitter.com/',
         };
 
         s.setExternalReferringDomainEvents(s);
@@ -395,20 +432,20 @@ describe('External referring domains', () => {
 
     });
 
-    it('should set correct event if the referring domain is twitter (android-app://com.twitter.android)', () => {
+    it('should set event51 if the referring domain includes android-app://com.twitter.android', () => {
         const s = {
             ...doPluginsGlobal.s,
-            _referringDomain: 'android-app://com.twitter.android',
+            _referringDomain: 'android-app://com.twitter.android/',
         };
 
         s.setExternalReferringDomainEvents(s);
         expect(s.events).toMatch('event51');
 
     });
-    it('should set correct event if the referring domain is twitter (t.co)', () => {
+    it('should set event51 if the referring domain includes t.co', () => {
         const s = {
             ...doPluginsGlobal.s,
-            _referringDomain: 't.co',
+            _referringDomain: 't.co/',
         };
 
         s.setExternalReferringDomainEvents(s);
@@ -416,10 +453,10 @@ describe('External referring domains', () => {
 
     });
 
-    it('should set correct event if the referring domain is facebook', () => {
+    it('should set event52 if the referring domain includes facebook.com', () => {
         const s = {
             ...doPluginsGlobal.s,
-            _referringDomain: 'facebook.com',
+            _referringDomain: 'facebook.com/',
         };
 
         s.setExternalReferringDomainEvents(s);

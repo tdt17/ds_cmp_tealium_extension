@@ -138,7 +138,12 @@ const articleViewType = {
 s.setExternalReferringDomainEvents = function (s) {
     const domainsToEventMapping = [
         {
-            domains: ['google.com', 'googlequicksearch/'],
+            domains: ['www.google.com', 'www.google.de'],
+            event: 'event49',
+            matchExact: 'true',
+        },
+        {
+            domains: ['googlequicksearch/'],
             event: 'event49',
         },
         {
@@ -164,8 +169,15 @@ s.setExternalReferringDomainEvents = function (s) {
     ];
 
     domainsToEventMapping.forEach(domainEventMap => {
-        const { domains, event } = domainEventMap;
-        const domainMatches = domains.some(domain => s._referringDomain.includes(domain));
+        const { domains, event, matchExact } = domainEventMap;
+        const domainMatches = domains.some(domain => {
+            if (matchExact) {
+                return s._referringDomain === domain;
+            } else {
+                return s._referringDomain.includes(domain)
+            }
+            
+        });
         if (domainMatches) s.events = s.apl(s.events, event, ',', 1);
     });
 
@@ -193,7 +205,7 @@ const bildPageName = {
             && window.utag.data.adobe_doc_type === 'article';
     },
 
-    isHome: function (s) {
+    isHome: function () {
         return !!window.utag.data['page_id']
             && (window.utag.data['page_id'] == '17410084'
                 || window.utag.data['page_id'] == '16237890');

@@ -174,7 +174,7 @@ s.setExternalReferringDomainEvents = function (s) {
             if (matchExact) {
                 return s._referringDomain === domain;
             } else {
-                return s._referringDomain.includes(domain)
+                return s._referringDomain.includes(domain);
             }
             
         });

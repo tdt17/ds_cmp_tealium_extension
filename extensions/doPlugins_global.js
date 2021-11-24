@@ -67,23 +67,22 @@ const articleViewType = {
         });
     },
 
+    /**
+     * Same domain check including subdomains.
+     */
     isFromInternal: function () {
-        return window.document.referrer.indexOf(window.document.domain) !== -1;
-    },
+        const referrerURLObject = new URL(window.document.referrer);
+        const referrerDomain = referrerURLObject.hostname;
+        const referrerDomainSegments = referrerDomain.split('.');
+        const documentDomainSegments = window.document.domain.split('.');
 
-    isFromSubdomain: function () {
-        const urlObject = new URL(window.document.referrer);
-        const referrerDomain = urlObject.hostname;
-        const referrerDomainSegments = referrerDomain.replace('www.', '').split('.');
-        const documentDomainSegments = window.document.domain.replace('www.', '').split('.');
-
-        return (referrerDomainSegments.length !== documentDomainSegments.length
-            && referrerDomainSegments[referrerDomainSegments.length-2] === documentDomainSegments[documentDomainSegments.length-2]);
+        // compare next to last segments (eg. www.bild.de, m.bild.de --> bild)
+        return referrerDomainSegments[referrerDomainSegments.length-2] === documentDomainSegments[documentDomainSegments.length-2];
     },
 
     isFromHome: function () {
         const urlObject = new URL(window.document.referrer);
-        return (urlObject.pathname === '/' && !this.isFromSubdomain());
+        return urlObject.pathname === '/';
     },
 
     getTrackingValue: function() {

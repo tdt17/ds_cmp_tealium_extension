@@ -312,23 +312,13 @@ describe('articleViewType()', () => {
             const result = doPluginsGlobal.articleViewType.isFromInternal();
             expect(result).toBe(false);
         });
-    });
 
-    describe('isFromSubdomain()', function () {
-        it('should return TRUE if referrer is from a sub-domain', function () {
-            const anyDomain = 'any-domain.com';
-            window.document.referrer = `https://any-sub-domain.${anyDomain}/any-path`;
+        it('should return TRUE if referrer is from sub domain', function () {
+            const anyDomain = 'any-domain.de';
+            window.document.referrer = `https://any-sub-domain.${anyDomain}`;
             window.document.domain = anyDomain;
-            const result = doPluginsGlobal.articleViewType.isFromSubdomain();
+            const result = doPluginsGlobal.articleViewType.isFromInternal();
             expect(result).toBe(true);
-        });
-
-        it('should return FALSE if referrer is NOT from a sub-domain', function () {
-            const anyDomain = 'any-domain.com';
-            window.document.referrer = `https://any-sub-domain.${anyDomain}/any-path`;
-            window.document.domain = 'any-other-domain.com';
-            const result = doPluginsGlobal.articleViewType.isFromSubdomain();
-            expect(result).toBe(false);
         });
     });
 
@@ -344,14 +334,6 @@ describe('articleViewType()', () => {
         it('should return FALSE if referrer is NOT from a homepage', function () {
             const anyDomain = 'any-domain.de';
             window.document.referrer = `https://${anyDomain}/any-path`;
-            window.document.domain = anyDomain;
-            const result = doPluginsGlobal.articleViewType.isFromHome();
-            expect(result).toBe(false);
-        });
-
-        it('should return FALSE if referrer is from homepage of a different domain', function () {
-            const anyDomain = 'any-domain.de';
-            window.document.referrer = `https://any-sub-domain.${anyDomain}`;
             window.document.domain = anyDomain;
             const result = doPluginsGlobal.articleViewType.isFromHome();
             expect(result).toBe(false);

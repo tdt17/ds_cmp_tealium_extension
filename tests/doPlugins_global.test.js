@@ -45,7 +45,7 @@ describe('Adobe Plugins', () => {
     });
 });
 
-describe('Bild pagename functionalities', () => {
+describe('bildPageName', () => {
 
     beforeEach(() => {
         // Create a fresh window mock for each test.
@@ -193,8 +193,24 @@ describe('Bild pagename functionalities', () => {
         });
     });
 
-    describe('Empty s and window object - no data available', () => {
-        it('should not set any data if pageName, page_id, adobe_doc_type, page_cms_path are not defined', () => {
+    describe('setPageName', () => {
+        let isHome;
+        let isAdWall;
+        let isLive;
+        let isLiveSport;
+
+        beforeEach(() => {
+            isHome = jest.spyOn(doPluginsGlobal.bildPageName, 'isHome').mockReturnValue(false);
+            isAdWall = jest.spyOn(doPluginsGlobal.bildPageName, 'isAdWall').mockReturnValue(false);
+            isLive = jest.spyOn(doPluginsGlobal.bildPageName, 'isLive').mockReturnValue(false);
+            isLiveSport = jest.spyOn(doPluginsGlobal.bildPageName, 'isLiveSport').mockReturnValue(false);
+        });
+
+        afterEach(() => {
+            jest.restoreAllMocks();
+        });
+
+        it('should not set any data if isAdWall, isHome, isLive, isLiveSport are all false', () => {
             const s = {
                 ...doPluginsGlobal.s,
             };
@@ -207,81 +223,43 @@ describe('Bild pagename functionalities', () => {
             expect(s.eVar3).toBeUndefined();
             expect(s.prop3).toBeUndefined();
         });
-    });
 
-    describe('Ad Wall', () => {
-        it('should set relevant data if pageName consists 42925516', () => {
+        it('should set relevant data if isAdWall is true', () => {
             const s = {
                 ...doPluginsGlobal.s,
-                pageName: '42925516',
                 eVar1: 'eVar1_test',
-            };
+            } ;
 
+            isAdWall.mockReturnValue(true);
             doPluginsGlobal.bildPageName.setPageName(s);
 
             expect(window.utag.data.adobe_doc_type).toBe('ad wall');
-            expect(s.pageName).toBe('ad wall : eVar1_test');
+            expect(s.pageName).toBe('ad wall : ' + s.eVar1);
             expect(s.eVar3).toBe('ad wall');
             expect(s.prop3).toBe('ad wall');
 
         });
 
-        it('should set relevant data if pageName consists 54578900', () => {
+        it('should set relevant data if isHome is true', () => {
             const s = {
                 ...doPluginsGlobal.s,
-                pageName: '54578900',
-                eVar1: 'eVar1_test',
             };
-
-            doPluginsGlobal.bildPageName.setPageName(s);
-
-            expect(window.utag.data.adobe_doc_type).toBe('ad wall');
-            expect(s.pageName).toBe('ad wall : eVar1_test');
-            expect(s.eVar3).toBe('ad wall');
-            expect(s.prop3).toBe('ad wall');
-
-        });
-    });
-
-    describe('Home', () => {
-        it('should set relevant data if page_id consists 17410084', () => {
-            const s = {
-                ...doPluginsGlobal.s,
-            }
-            window.utag.data.page_id = '17410084';
-
-            doPluginsGlobal.bildPageName.setPageName(s);
-
-            expect(window.utag.data.page_mapped_doctype_for_pagename).toBe('home');
-            expect(s.eVar3).toBe('home');
-            expect(s.prop3).toBe('home');
-            expect(s.pageName).toBe('home : ' + window.utag.data.page_id);
-        });
-
-        it('should set relevant data if page_id consists 16237890', () => {
-            const s = {
-                ...doPluginsGlobal.s,
-            }
-            window.utag.data.page_id = '16237890';
-
-            doPluginsGlobal.bildPageName.setPageName(s);
-
-            expect(window.utag.data.page_mapped_doctype_for_pagename).toBe('home');
-            expect(s.eVar3).toBe('home');
-            expect(s.prop3).toBe('home');
-            expect(s.pageName).toBe('home : ' + window.utag.data.page_id);
-        });
-    });
-
-    describe('Live', () => {
-        it('should set relevant data if adobe_doc_type is article and page_cms_path contains im-live-ticker', () => {
-            const s = {
-                ...doPluginsGlobal.s,
-            }
-            window.utag.data.adobe_doc_type = 'article';
-            window.utag.data.page_cms_path = 'test/im-live-ticker';
             window.utag.data.page_id = '12345678';
+            isHome.mockReturnValue(true);
+            doPluginsGlobal.bildPageName.setPageName(s);
 
+            expect(window.utag.data.page_mapped_doctype_for_pagename).toBe('home');
+            expect(s.eVar3).toBe('home');
+            expect(s.prop3).toBe('home');
+            expect(s.pageName).toBe('home : ' + window.utag.data.page_id);
+        });
+
+        it('should set relevant data if isLive is true', () => {
+            const s = {
+                ...doPluginsGlobal.s,
+            };
+            window.utag.data.page_id = '12345678';
+            isLive.mockReturnValue(true);
             doPluginsGlobal.bildPageName.setPageName(s);
 
             expect(window.utag.data.adobe_doc_type).toBe('live');
@@ -289,33 +267,13 @@ describe('Bild pagename functionalities', () => {
             expect(s.prop3).toBe('live');
             expect(s.pageName).toBe('live : ' + window.utag.data.page_id);
         });
-    });
 
-    describe('Live sport', () => {
-        it('should set relevant data if adobe_doc_type is article and page_cms_path contains im-liveticker', () => {
+        it('should set relevant data if isLiveSport is true', () => {
             const s = {
                 ...doPluginsGlobal.s,
-            }
-            window.utag.data.adobe_doc_type = 'article';
-            window.utag.data.page_cms_path = 'test-im-liveticker';
+            };
             window.utag.data.page_id = '12345678';
-
-            doPluginsGlobal.bildPageName.setPageName(s);
-
-            expect(window.utag.data.adobe_doc_type).toBe('live-sport');
-            expect(s.eVar3).toBe('live-sport');
-            expect(s.prop3).toBe('live-sport');
-            expect(s.pageName).toBe('live-sport : ' + window.utag.data.page_id);
-        });
-
-        it('should set relevant data if adobe_doc_type is article and page_cms_path contains /liveticker/', () => {
-            const s = {
-                ...doPluginsGlobal.s,
-            }
-            window.utag.data.adobe_doc_type = 'article';
-            window.utag.data.page_cms_path = '/liveticker/test';
-            window.utag.data.page_id = '12345678';
-
+            isLiveSport.mockReturnValue(true);
             doPluginsGlobal.bildPageName.setPageName(s);
 
             expect(window.utag.data.adobe_doc_type).toBe('live-sport');
@@ -324,7 +282,6 @@ describe('Bild pagename functionalities', () => {
             expect(s.pageName).toBe('live-sport : ' + window.utag.data.page_id);
         });
     });
-
 });
 
 describe('External referring domains', () => {

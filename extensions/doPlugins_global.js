@@ -178,7 +178,7 @@ s.setExternalReferringDomainEvents = function (s) {
             }
             
         });
-        if (domainMatches) s.events = s.apl(s.events, event, ',', 1);
+        s.events = domainMatches ? s.events = s.apl(s.events, event, ',', 1) : s.events;
     });
 
 };

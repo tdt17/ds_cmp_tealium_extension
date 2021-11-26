@@ -50,10 +50,10 @@ describe('External referring domains', () => {
         const s = {
             ...doPluginsGlobal.s,
             _referringDomain: 'google.com',
-        }
+        };
 
         s.setExternalReferringDomainEvents(s);
-        expect(s.events).toMatch('event49')
+        expect(s.events).toMatch('event49');
 
     });
 
@@ -61,10 +61,10 @@ describe('External referring domains', () => {
         const s = {
             ...doPluginsGlobal.s,
             _referringDomain: 'googlequicksearch/',
-        }
+        };
 
         s.setExternalReferringDomainEvents(s);
-        expect(s.events).toMatch('event49')
+        expect(s.events).toMatch('event49');
 
     });
 
@@ -72,10 +72,10 @@ describe('External referring domains', () => {
         const s = {
             ...doPluginsGlobal.s,
             _referringDomain: 'news.google',
-        }
+        };
 
         s.setExternalReferringDomainEvents(s);
-        expect(s.events).toMatch('event48')
+        expect(s.events).toMatch('event48');
 
     });
 
@@ -83,10 +83,10 @@ describe('External referring domains', () => {
         const s = {
             ...doPluginsGlobal.s,
             _referringDomain: 'instagram.com',
-        }
+        };
 
         s.setExternalReferringDomainEvents(s);
-        expect(s.events).toMatch('event53')
+        expect(s.events).toMatch('event53');
 
     });
 
@@ -94,10 +94,10 @@ describe('External referring domains', () => {
         const s = {
             ...doPluginsGlobal.s,
             _referringDomain: 'youtube.com',
-        }
+        };
 
         s.setExternalReferringDomainEvents(s);
-        expect(s.events).toMatch('event50')
+        expect(s.events).toMatch('event50');
 
     });
 
@@ -105,10 +105,10 @@ describe('External referring domains', () => {
         const s = {
             ...doPluginsGlobal.s,
             _referringDomain: 'twitter.com',
-        }
+        };
 
         s.setExternalReferringDomainEvents(s);
-        expect(s.events).toMatch('event51')
+        expect(s.events).toMatch('event51');
 
     });
 
@@ -116,20 +116,20 @@ describe('External referring domains', () => {
         const s = {
             ...doPluginsGlobal.s,
             _referringDomain: 'android-app://com.twitter.android',
-        }
+        };
 
         s.setExternalReferringDomainEvents(s);
-        expect(s.events).toMatch('event51')
+        expect(s.events).toMatch('event51');
 
     });
     it('should set correct event if the referring domain is twitter (t.co)', () => {
         const s = {
             ...doPluginsGlobal.s,
             _referringDomain: 't.co',
-        }
+        };
 
         s.setExternalReferringDomainEvents(s);
-        expect(s.events).toMatch('event51')
+        expect(s.events).toMatch('event51');
 
     });
 
@@ -137,10 +137,10 @@ describe('External referring domains', () => {
         const s = {
             ...doPluginsGlobal.s,
             _referringDomain: 'facebook.com',
-        }
+        };
 
         s.setExternalReferringDomainEvents(s);
-        expect(s.events).toMatch('event52')
+        expect(s.events).toMatch('event52');
 
     });
 });
@@ -175,6 +175,81 @@ describe('s.doPlugins()', () => {
         expect(s.eVar185).toBe(window.utag.data.myCW);
     });
 
+});
+
+describe('campaign', () => {
+    beforeEach(() => {
+        // Create a fresh window mock for each test.
+        const windowMock = createWindowMock();
+        jest.spyOn(global, 'window', 'get')
+            .mockImplementation(() => (windowMock));
+    });
+
+    afterEach(() => {
+        jest.restoreAllMocks();
+    });
+    describe('getAdobeCampaign()', () => {
+
+        it('should return cid as adobe_campaign if it is present', () => {
+            window.utag.data = {
+                'qp.cid': 'cid.test',
+                'qp.wtrid': 'wtrid.test',
+                'qp.wtmc': 'wtmc.test',
+                'qp.wt_mc': 'wt_mc.test',
+            };
+
+            const adobe_campaign = doPluginsGlobal.campaign.getAdobeCampaign();
+            expect(adobe_campaign).toBe('cid=' + window.utag.data['qp.cid']);
+
+        });
+        it('should return wtrid as adobe_campaign if it is present and cid is not defined', () => {
+            window.utag.data = {
+                'qp.wtrid': 'wtrid.test',
+                'qp.wtmc': 'wtmc.test',
+                'qp.wt_mc': 'wt_mc.test',
+            };
+
+            const adobe_campaign = doPluginsGlobal.campaign.getAdobeCampaign();
+            expect(adobe_campaign).toBe('wtrid=' + window.utag.data['qp.wtrid']);
+
+        }); it('should return wtmc as adobe_campaign if it is present and cid and wtrid are not defined', () => {
+            window.utag.data = {
+                'qp.wtmc': 'wtmc.test',
+                'qp.wt_mc': 'wt_mc.test',
+            };
+
+            const adobe_campaign = doPluginsGlobal.campaign.getAdobeCampaign();
+            expect(adobe_campaign).toBe('wtmc=' + window.utag.data['qp.wtmc']);
+
+        }); it('should return wt_mc as adobe_campaign if it is present and cid, wtrid and wtmc are not defined', () => {
+            window.utag.data = {
+                'qp.wt_mc': 'wt_mc.test',
+            };
+
+            const adobe_campaign = doPluginsGlobal.campaign.getAdobeCampaign();
+            expect(adobe_campaign).toBe('wt_mc=' + window.utag.data['qp.wt_mc']);
+
+        });
+    });
+
+    describe('setCampaignVariables', () => {
+
+        it('should get adobe campaign and set correct data if s.campaign is not present', () => {
+            const s = {
+                ...doPluginsGlobal.s,
+                getValOnce: jest.fn().mockReturnValue('cid=cid.test'),
+            };
+
+            jest.spyOn(doPluginsGlobal.campaign, 'getAdobeCampaign').mockReturnValue('cid=cid.test');
+
+            doPluginsGlobal.campaign.setCampaignVariables(s);
+
+            expect(window.utag.data.adobe_campaign).toBe('cid=cid.test');
+            expect(s.campaign).toBe('cid=cid.test');
+            expect(s.eVar88).toBe(window.utag.data.adobe_campaign);
+        });
+
+    });
 });
 
 describe('init()', () => {

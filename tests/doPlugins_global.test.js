@@ -165,11 +165,9 @@ describe('s.doPlugins()', () => {
             version: 'test',
         };
         window.utag.data.myCW = 'test_cw';
-        
+
         s.doPluginsGlobal(s);
 
-        expect(s.campaign).toBeDefined();
-        expect(s.eVar88).toBeDefined();
         expect(s.eVar63).toBe(s.version);
         expect(s.eVar184.length).toBeGreaterThanOrEqual(1);
         expect(s.eVar181.length).toBeGreaterThanOrEqual(1);
@@ -287,6 +285,8 @@ describe('init()', () => {
         expect(doPluginsGlobal.s.eVar78).toBeDefined();
         expect(doPluginsGlobal.s.eVar79).toBeDefined();
         expect(doPluginsGlobal.s.referrer).toBe(window.document.referrer);
+        expect(doPluginsGlobal.s.campaign).toBeDefined();
+        expect(doPluginsGlobal.s.eVar88).toBeDefined();
     });
 
     it('should set eVar94 to the iPhone screen size', () => {

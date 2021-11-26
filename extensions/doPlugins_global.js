@@ -86,28 +86,32 @@ function init(){
     }
 }
 
+const campaign = {
+    getAdobeCampaign: function () {
+        if (typeof window.utag.data['qp.cid'] !== 'undefined') {
+            return ('cid=' + window.utag.data['qp.cid']);
+        } else if (typeof window.utag.data['qp.wtrid'] !== 'undefined') {
+            return ('wtrid=' + window.utag.data['qp.wtrid']);
+        } else if (typeof window.utag.data['qp.wtmc'] !== 'undefined') {
+            return ('wtmc=' + window.utag.data['qp.wtmc']);
+        } else if (typeof window.utag.data['qp.wt_mc'] !== 'undefined') {
+            return ('wt_mc=' + window.utag.data['qp.wt_mc']);
+        }
+    },
+
+    setCampaignVariables: function (s) {
+        window.utag.data.adobe_campaign = this.getAdobeCampaign();
+        //To be updated to a single assignment option after it is unified in tealium
+        const adobe_campaign = s.campaign || window.utag.data['adobe_campaign'] || '';
+        s.campaign = s.getValOnce(adobe_campaign, 's_ev0', 0, 'm');
+        s.eVar88 = window.utag.data['adobe_campaign'] || window.utag.data['campaign_value'] || '';
+    },
+};
+
+
 s.doPluginsGlobal = function(s) {
-    
-    //Campaign
-    //Update/remove after confirmation
-    if (typeof window.utag.data['qp.cid'] !== 'undefined') {
-        (window.utag.data['adobe_campaign'] = 'cid=' + window.utag.data['qp.cid']);
 
-    } else if (typeof window.utag.data['qp.wtrid'] !== 'undefined'){
-        (window.utag.data['adobe_campaign'] = 'wtrid=' + window.utag.data['qp.wtrid']);
-
-    } else if (typeof window.utag.data['qp.wtmc'] !== 'undefined'){
-        (window.utag.data['adobe_campaign'] = 'wtmc=' + window.utag.data['qp.wtmc']);
-
-    } else if (typeof window.utag.data['qp.wt_mc'] !== 'undefined') {
-        (window.utag.data['adobe_campaign'] = 'wt_mc' + window.utag.data['qp.wt_mc']);
-
-    }
-
-    //Update after it is changed in tealium
-    const adobe_campaign = s.campaign || window.utag.data['adobe_campaign'] || '';
-    s.campaign = s.getValOnce(adobe_campaign, 's_ev0', 0, 'm');
-    s.eVar88 = window.utag.data['adobe_campaign'] || window.utag.data['campaign_value'] || '';
+    campaign.setCampaignVariables(s);
 
     //Config 
     s.eVar63 = s.version;
@@ -124,7 +128,8 @@ if (typeof exports === 'object') {
     // Expose reference to members for unit testing.
     module.exports = {
         s,
-        init
+        init,
+        campaign,
     };
 } else {
     init();

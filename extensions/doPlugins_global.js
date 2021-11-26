@@ -138,7 +138,12 @@ const articleViewType = {
 s.setExternalReferringDomainEvents = function (s) {
     const domainsToEventMapping = [
         {
-            domains: ['google.com', 'googlequicksearch/'],
+            domains: ['www.google.com', 'www.google.de'],
+            event: 'event49',
+            matchExact: 'true',
+        },
+        {
+            domains: ['googlequicksearch/'],
             event: 'event49',
         },
         {
@@ -164,9 +169,16 @@ s.setExternalReferringDomainEvents = function (s) {
     ];
 
     domainsToEventMapping.forEach(domainEventMap => {
-        const { domains, event } = domainEventMap;
-        const domainMatches = domains.some(domain => s._referringDomain.includes(domain));
-        if (domainMatches) s.events = s.apl(s.events, event, ',', 1);
+        const { domains, event, matchExact } = domainEventMap;
+        const domainMatches = domains.some(domain => {
+            if (matchExact) {
+                return s._referringDomain === domain;
+            } else {
+                return s._referringDomain.includes(domain);
+            }
+            
+        });
+        s.events = domainMatches ? s.events = s.apl(s.events, event, ',', 1) : s.events;
     });
 
 };
@@ -186,6 +198,60 @@ function init() {
     articleViewType.setViewType();
 }
 
+
+const bildPageName = {
+    isDocTypeArticle: function () {
+        return !!window.utag.data.adobe_doc_type
+            && window.utag.data.adobe_doc_type === 'article';
+    },
+
+    isHome: function () {
+        return !!window.utag.data['page_id']
+            && (window.utag.data['page_id'] == '17410084'
+                || window.utag.data['page_id'] == '16237890');
+    },
+
+    isAdWall: function (s) {
+        return !!s.pageName && (s.pageName.indexOf('42925516') !== -1
+            || s.pageName.indexOf('54578900') !== -1);
+    },
+
+    isLive: function () {
+        return !!this.isDocTypeArticle() && !!window.utag.data.page_cms_path
+            && window.utag.data.page_cms_path.indexOf('im-live-ticker') !== -1;
+    },
+
+    isLiveSport: function () {
+        return !!this.isDocTypeArticle() && !!window.utag.data.page_cms_path
+            && (window.utag.data.page_cms_path.indexOf('im-liveticker') !== -1
+                || window.utag.data.page_cms_path.indexOf('/liveticker/') !== -1);
+    },
+
+    setPageName: function (s) {
+        if(this.isAdWall(s)) {
+            window.utag.data.adobe_doc_type = 'ad wall';
+            s.pageName = 'ad wall : ' + s.eVar1;
+            s.eVar3 = 'ad wall';
+            s.prop3 = 'ad wall';
+        } else if (this.isHome()) {
+            window.utag.data.page_mapped_doctype_for_pagename = 'home';
+            s.eVar3 = 'home';
+            s.prop3 = 'home';
+            s.pageName = 'home : ' + window.utag.data['page_id'];
+        } else if (this.isLive()) {
+            window.utag.data.adobe_doc_type = 'live';
+            s.eVar3 = 'live';
+            s.prop3 = 'live';
+            s.pageName = 'live : ' + window.utag.data['page_id'];
+        } else if (this.isLiveSport()) {
+            window.utag.data.adobe_doc_type = 'live-sport';
+            s.eVar3 = 'live-sport';
+            s.prop3 = 'live-sport';
+            s.pageName = 'live-sport : ' + window.utag.data['page_id'];
+        }
+    },
+};
+
 s.doPluginsGlobal = function() {
 };
 
@@ -195,7 +261,8 @@ if (typeof exports === 'object') {
     module.exports = {
         s,
         init,
-        articleViewType
+        bildPageName,
+        articleViewType,
     };
 } else {
     init();

@@ -415,6 +415,12 @@ describe('articleViewType()', () => {
             expect(isFromSearchMock).toHaveBeenCalledWith(anyReferrerFromHash);
         });
 
+        it('should use the document referrer if the location hash is NOT available', () => {
+            window.document.referrer = 'any-document-referrer';
+            doPluginsGlobal.articleViewType.getViewTypeByReferrer();
+            expect(isFromSearchMock).toHaveBeenCalledWith(window.document.referrer);
+        });
+
         it('should return the right event name if referrer is of type: Other External', () => {
             const result = doPluginsGlobal.articleViewType.getViewTypeByReferrer();
             expect(result).toBe('event27');

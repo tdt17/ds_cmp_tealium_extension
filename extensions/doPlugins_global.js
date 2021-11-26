@@ -183,6 +183,16 @@ s.setExternalReferringDomainEvents = function (s) {
 
 };
 
+function setKameleoonTracking(s) {
+    if (s.linkName === 'Kameleoon Tracking') {
+        if (window.Kameleoon) {
+            window.Kameleoon.API.Tracking.processOmniture(s);
+        }
+        window.kameleoonOmnitureCallSent = true;
+    }
+}
+
+
 function init() {
     s.currencyCode = 'EUR';
     s.execdoplugins = 0;
@@ -194,7 +204,7 @@ function init() {
     if (window.navigator.userAgent.indexOf('iPhone') > -1) {
         s.eVar94 = window.screen.width + 'x' + window.screen.height;
     }
-
+    
     articleViewType.setViewType();
 }
 
@@ -263,6 +273,7 @@ if (typeof exports === 'object') {
         init,
         bildPageName,
         articleViewType,
+        setKameleoonTracking,
     };
 } else {
     init();

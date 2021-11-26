@@ -2,14 +2,16 @@
   "name": "ds_tealium_extensions",
   "version": "1.0.0",
   "scripts": {
+    "prepare": "husky install",
     "test": "jest",
     "lint": "eslint extensions"
   },
   "dependencies": {
-    "eslint-plugin-jest": "^25.2.4",
     "jest": "^27.0.6"
   },
   "devDependencies": {
-    "eslint": "^8.2.0"
+    "eslint": "^8.2.0",
+    "eslint-plugin-jest": "^25.3.0",
+    "husky": "^7.0.4"
   }
 }

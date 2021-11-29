@@ -301,7 +301,6 @@ s.doPluginsGlobal = function(s) {
     s.eVar185 = window.utag.data.myCW || '';
 
     articleViewType.setViewType();
-    s.setExternalReferringDomainEvents(s);
 
 };
 

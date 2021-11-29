@@ -244,6 +244,7 @@ describe('campaign', () => {
             doPluginsGlobal.campaign.setCampaignVariables(s);
 
             expect(window.utag.data.adobe_campaign).toBe('cid=cid.test');
+            expect(s.getValOnce).toHaveBeenCalledWith('cid=cid.test', 's_ev0', 0, 'm');
             expect(s.campaign).toBe('cid=cid.test');
             expect(s.eVar88).toBe(window.utag.data.adobe_campaign);
         });
@@ -271,6 +272,7 @@ describe('init()', () => {
     it('should set global configuration properties of the Adobe s-object', () => {
         doPluginsGlobal.s.visitor = { version: 'test' };
         window.document.referrer = 'any_referrer';
+        const setCampaignVariables = jest.spyOn(doPluginsGlobal.campaign, 'setCampaignVariables');
         doPluginsGlobal.init();
 
         expect(doPluginsGlobal.s.currencyCode).toBe('EUR');
@@ -285,8 +287,7 @@ describe('init()', () => {
         expect(doPluginsGlobal.s.eVar78).toBeDefined();
         expect(doPluginsGlobal.s.eVar79).toBeDefined();
         expect(doPluginsGlobal.s.referrer).toBe(window.document.referrer);
-        expect(doPluginsGlobal.s.campaign).toBeDefined();
-        expect(doPluginsGlobal.s.eVar88).toBeDefined();
+        expect(setCampaignVariables).toHaveBeenCalledWith(doPluginsGlobal.s);
     });
 
     it('should set eVar94 to the iPhone screen size', () => {

@@ -175,11 +175,14 @@ const campaign = {
     getAdobeCampaign: function () {
         if (typeof window.utag.data['qp.cid'] !== 'undefined') {
             return ('cid=' + window.utag.data['qp.cid']);
-        } else if (typeof window.utag.data['qp.wtrid'] !== 'undefined') {
+        }
+        if (typeof window.utag.data['qp.wtrid'] !== 'undefined') {
             return ('wtrid=' + window.utag.data['qp.wtrid']);
-        } else if (typeof window.utag.data['qp.wtmc'] !== 'undefined') {
+        }
+        if (typeof window.utag.data['qp.wtmc'] !== 'undefined') {
             return ('wtmc=' + window.utag.data['qp.wtmc']);
-        } else if (typeof window.utag.data['qp.wt_mc'] !== 'undefined') {
+        }
+        if (typeof window.utag.data['qp.wt_mc'] !== 'undefined') {
             return ('wt_mc=' + window.utag.data['qp.wt_mc']);
         }
     },

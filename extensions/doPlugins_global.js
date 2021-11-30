@@ -183,6 +183,15 @@ s.setExternalReferringDomainEvents = function (s) {
 
 };
 
+function setKameleoonTracking(s) {
+    if (s.linkName === 'Kameleoon Tracking') {
+        if (window.Kameleoon) {
+            window.Kameleoon.API.Tracking.processOmniture(s);
+        }
+        window.kameleoonOmnitureCallSent = true;
+    }
+}
+
 const bildPageName = {
     isDocTypeArticle: function () {
         return !!window.utag.data.adobe_doc_type
@@ -288,6 +297,8 @@ function init() {
     if (window.navigator.userAgent.indexOf('iPhone') > -1) {
         s.eVar94 = window.screen.width + 'x' + window.screen.height;
     }
+
+    articleViewType.setViewType();
 }
 
 s.doPluginsGlobal = function(s) {
@@ -313,6 +324,7 @@ if (typeof exports === 'object') {
         campaign,
         bildPageName,
         articleViewType,
+        setKameleoonTracking,
     };
 } else {
     init();

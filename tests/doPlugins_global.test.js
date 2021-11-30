@@ -293,7 +293,7 @@ describe('External referring domains', () => {
             _referringDomain: 'www.google.com',
         };
 
-        s.setExternalReferringDomainEvents(s);
+        doPluginsGlobal.setExternalReferringDomainEvents(s);
         expect(s.events).toMatch('event49');
 
     });
@@ -304,7 +304,7 @@ describe('External referring domains', () => {
             _referringDomain: 'www.google.de',
         };
 
-        s.setExternalReferringDomainEvents(s);
+        doPluginsGlobal.setExternalReferringDomainEvents(s);
         expect(s.events).toMatch('event49');
 
     });
@@ -315,7 +315,7 @@ describe('External referring domains', () => {
             _referringDomain: 'www.google.com/',
         };
 
-        s.setExternalReferringDomainEvents(s);
+        doPluginsGlobal.setExternalReferringDomainEvents(s);
 
         const events = s.events || '';
         expect(events).not.toMatch('event49');
@@ -328,7 +328,7 @@ describe('External referring domains', () => {
             _referringDomain: 'www.google.de/',
         };
 
-        s.setExternalReferringDomainEvents(s);
+        doPluginsGlobal.setExternalReferringDomainEvents(s);
 
         const events = s.events || '';
         expect(events).not.toMatch('event49');
@@ -341,7 +341,7 @@ describe('External referring domains', () => {
             _referringDomain: 'googlequicksearch/test',
         };
 
-        s.setExternalReferringDomainEvents(s);
+        doPluginsGlobal.setExternalReferringDomainEvents(s);
         expect(s.events).toMatch('event49');
 
     });
@@ -352,7 +352,7 @@ describe('External referring domains', () => {
             _referringDomain: 'news.google/',
         };
 
-        s.setExternalReferringDomainEvents(s);
+        doPluginsGlobal.setExternalReferringDomainEvents(s);
         expect(s.events).toMatch('event48');
 
     });
@@ -363,7 +363,7 @@ describe('External referring domains', () => {
             _referringDomain: 'instagram.com/',
         };
 
-        s.setExternalReferringDomainEvents(s);
+        doPluginsGlobal.setExternalReferringDomainEvents(s);
         expect(s.events).toMatch('event53');
 
     });
@@ -374,7 +374,7 @@ describe('External referring domains', () => {
             _referringDomain: 'youtube.com/',
         };
 
-        s.setExternalReferringDomainEvents(s);
+        doPluginsGlobal.setExternalReferringDomainEvents(s);
         expect(s.events).toMatch('event50');
 
     });
@@ -385,7 +385,7 @@ describe('External referring domains', () => {
             _referringDomain: 'twitter.com/',
         };
 
-        s.setExternalReferringDomainEvents(s);
+        doPluginsGlobal.setExternalReferringDomainEvents(s);
         expect(s.events).toMatch('event51');
 
     });
@@ -396,7 +396,7 @@ describe('External referring domains', () => {
             _referringDomain: 'android-app://com.twitter.android/',
         };
 
-        s.setExternalReferringDomainEvents(s);
+        doPluginsGlobal.setExternalReferringDomainEvents(s);
         expect(s.events).toMatch('event51');
 
     });
@@ -406,7 +406,7 @@ describe('External referring domains', () => {
             _referringDomain: 't.co/',
         };
 
-        s.setExternalReferringDomainEvents(s);
+        doPluginsGlobal.setExternalReferringDomainEvents(s);
         expect(s.events).toMatch('event51');
 
     });
@@ -417,7 +417,7 @@ describe('External referring domains', () => {
             _referringDomain: 'facebook.com/',
         };
 
-        s.setExternalReferringDomainEvents(s);
+        doPluginsGlobal.setExternalReferringDomainEvents(s);
         expect(s.events).toMatch('event52');
 
     });
@@ -609,7 +609,7 @@ describe('init()', () => {
         expect(doPluginsGlobal.s.eVar78).toBeDefined();
         expect(doPluginsGlobal.s.eVar79).toBeDefined();
         expect(doPluginsGlobal.s.referrer).toBe(window.document.referrer);
-        expect(setCampaignVariables).toHaveBeenCalledWith(doPluginsGlobal.s);
+        expect(setCampaignVariables).toHaveBeenCalledWith(doPluginsGlobal.s); 
     });
 
     it('should set eVar94 to the iPhone screen size', () => {

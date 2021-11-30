@@ -135,7 +135,7 @@ const articleViewType = {
     }
 };
 
-s.setExternalReferringDomainEvents = function (s) {
+function setExternalReferringDomainEvents (s) {
     const domainsToEventMapping = [
         {
             domains: ['www.google.com', 'www.google.de'],
@@ -172,16 +172,15 @@ s.setExternalReferringDomainEvents = function (s) {
         const { domains, event, matchExact } = domainEventMap;
         const domainMatches = domains.some(domain => {
             if (matchExact) {
-                return s._referringDomain === domain;
+                return s._referringDomain && s._referringDomain === domain;
             } else {
-                return s._referringDomain.includes(domain);
+                return s._referringDomain && s._referringDomain.includes(domain);
             }
             
         });
         s.events = domainMatches ? s.events = s.apl(s.events, event, ',', 1) : s.events;
     });
-
-};
+}
 
 const bildPageName = {
     isDocTypeArticle: function () {
@@ -297,6 +296,7 @@ function init() {
 
     campaign.setCampaignVariables(s);
     setPageSourceForCheckout(s);
+    setExternalReferringDomainEvents(s);
 
     //height & width for iPhones
     if (window.navigator.userAgent.indexOf('iPhone') > -1) {
@@ -328,6 +328,7 @@ if (typeof exports === 'object') {
         bildPageName,
         articleViewType,
         setPageSourceForCheckout,
+        setExternalReferringDomainEvents,
     };
 } else {
     init();

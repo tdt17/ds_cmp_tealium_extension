@@ -437,7 +437,6 @@ describe('setKameleoonTracking', () => {
         };
         jest.spyOn(global, 'window', 'get').mockImplementation(() => (windowMock));
     });
-
     afterEach(() => {
         jest.restoreAllMocks();
     });
@@ -466,7 +465,37 @@ describe('setKameleoonTracking', () => {
     });
 });
 
-describe('init()', () => {
+describe('s.doPlugins()', () => {
+    beforeEach(() => {
+        // Create a fresh window mock for each test.
+        const windowMock = createWindowMock();
+        jest.spyOn(global, 'window', 'get')
+            .mockImplementation(() => (windowMock));
+            
+    });
+
+    afterEach(() => {
+        jest.restoreAllMocks();
+    });
+    
+    it('should set the configurations inside the s.doPlugins function', () => {
+        const s = {
+            ...doPluginsGlobal.s,
+            version: 'test',
+        };
+        window.utag.data.myCW = 'test_cw';
+
+        s.doPluginsGlobal(s);
+
+        expect(s.eVar63).toBe(s.version);
+        expect(s.eVar184.length).toBeGreaterThanOrEqual(1);
+        expect(s.eVar181.length).toBeGreaterThanOrEqual(1);
+        expect(s.eVar185).toBe(window.utag.data.myCW);
+    });
+
+});
+
+describe('campaign', () => {
     beforeEach(() => {
         // Create a fresh window mock for each test.
         const windowMock = createWindowMock();
@@ -476,10 +505,93 @@ describe('init()', () => {
 
     afterEach(() => {
         jest.restoreAllMocks();
+    });
+    describe('getAdobeCampaign()', () => {
+
+        it('should return cid as adobe_campaign if it is present', () => {
+            window.utag.data = {
+                'qp.cid': 'cid.test',
+                'qp.wtrid': 'wtrid.test',
+                'qp.wtmc': 'wtmc.test',
+                'qp.wt_mc': 'wt_mc.test',
+            };
+
+            const adobe_campaign = doPluginsGlobal.campaign.getAdobeCampaign();
+            expect(adobe_campaign).toBe('cid=' + window.utag.data['qp.cid']);
+
+        });
+        it('should return wtrid as adobe_campaign if it is present and cid is not defined', () => {
+            window.utag.data = {
+                'qp.wtrid': 'wtrid.test',
+                'qp.wtmc': 'wtmc.test',
+                'qp.wt_mc': 'wt_mc.test',
+            };
+
+            const adobe_campaign = doPluginsGlobal.campaign.getAdobeCampaign();
+            expect(adobe_campaign).toBe('wtrid=' + window.utag.data['qp.wtrid']);
+
+        }); it('should return wtmc as adobe_campaign if it is present and cid and wtrid are not defined', () => {
+            window.utag.data = {
+                'qp.wtmc': 'wtmc.test',
+                'qp.wt_mc': 'wt_mc.test',
+            };
+
+            const adobe_campaign = doPluginsGlobal.campaign.getAdobeCampaign();
+            expect(adobe_campaign).toBe('wtmc=' + window.utag.data['qp.wtmc']);
+
+        }); it('should return wt_mc as adobe_campaign if it is present and cid, wtrid and wtmc are not defined', () => {
+            window.utag.data = {
+                'qp.wt_mc': 'wt_mc.test',
+            };
+
+            const adobe_campaign = doPluginsGlobal.campaign.getAdobeCampaign();
+            expect(adobe_campaign).toBe('wt_mc=' + window.utag.data['qp.wt_mc']);
+
+        });
+    });
+
+    describe('setCampaignVariables', () => {
+
+        it('should get adobe campaign and set correct data if s.campaign is not present', () => {
+            const s = {
+                ...doPluginsGlobal.s,
+                getValOnce: jest.fn().mockReturnValue('cid=cid.test'),
+            };
+
+            jest.spyOn(doPluginsGlobal.campaign, 'getAdobeCampaign').mockReturnValue('cid=cid.test');
+
+            doPluginsGlobal.campaign.setCampaignVariables(s);
+
+            expect(window.utag.data.adobe_campaign).toBe('cid=cid.test');
+            expect(s.getValOnce).toHaveBeenCalledWith('cid=cid.test', 's_ev0', 0, 'm');
+            expect(s.campaign).toBe('cid=cid.test');
+            expect(s.eVar88).toBe(window.utag.data.adobe_campaign);
+        });
+
+    });
+});
+
+describe('init()', () => {
+    beforeEach(() => {
+        // Create a fresh window mock for each test.
+        const windowMock = createWindowMock();
+        jest.spyOn(global, 'window', 'get')
+            .mockImplementation(() => (windowMock));
+            
+        doPluginsGlobal.s.Util = {
+            getQueryParam: jest.fn()
+        };
+    });
+
+    afterEach(() => {
+        jest.restoreAllMocks();
         delete doPluginsGlobal.s.eVar94;
     });
 
     it('should set global configuration properties of the Adobe s-object', () => {
+        doPluginsGlobal.s.visitor = { version: 'test' };
+        window.document.referrer = 'any_referrer';
+        const setCampaignVariables = jest.spyOn(doPluginsGlobal.campaign, 'setCampaignVariables');
         doPluginsGlobal.init();
 
         expect(doPluginsGlobal.s.currencyCode).toBe('EUR');
@@ -487,6 +599,14 @@ describe('init()', () => {
         expect(doPluginsGlobal.s.expectSupplementalData).toBe(false);
         expect(doPluginsGlobal.s.myChannels).toBe(0);
         expect(doPluginsGlobal.s.usePlugins).toBe(true);
+        expect(doPluginsGlobal.s.trackExternalLinks).toBe(true);
+        expect(doPluginsGlobal.s.eVar64).toBe(doPluginsGlobal.s.visitor.version);
+        expect(doPluginsGlobal.s.expectSupplementalData).toBe(false);
+        expect(doPluginsGlobal.s.getICID).toBeDefined();
+        expect(doPluginsGlobal.s.eVar78).toBeDefined();
+        expect(doPluginsGlobal.s.eVar79).toBeDefined();
+        expect(doPluginsGlobal.s.referrer).toBe(window.document.referrer);
+        expect(setCampaignVariables).toHaveBeenCalledWith(doPluginsGlobal.s);
     });
 
     it('should set eVar94 to the iPhone screen size', () => {

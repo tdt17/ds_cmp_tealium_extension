@@ -261,6 +261,19 @@ const campaign = {
     },
 };
 
+function setPageSourceForCheckout (s) {
+    //Page Source Aufsplittung und in Checkout schieben inklusive Page Age
+    if (s._articleViewType) {
+        s.eVar44 = s._articleViewType;
+        //eVar44 in den checkout schieben
+        window.utag.loader.SC('utag_main', { 'articleview': s._articleViewType + ';exp-session' });
+        window.utag.data['cp.utag_main_articleview'] = s._articleViewType;
+        //eVar14 Page Age in den checkout schieben
+        window.utag.loader.SC('utag_main', { 'pa': window.utag.data.page_datePublication_age + ';exp-session' });
+        window.utag.data['cp.utag_main_pa'] = window.utag.data.page_datePublication_age;
+    }
+}
+
 function init() {
     s.currencyCode = 'EUR';
     s.execdoplugins = 0;
@@ -283,6 +296,7 @@ function init() {
     s.referrer = window.document.referrer || '';
 
     campaign.setCampaignVariables(s);
+    setPageSourceForCheckout(s);
 
     //height & width for iPhones
     if (window.navigator.userAgent.indexOf('iPhone') > -1) {
@@ -313,6 +327,7 @@ if (typeof exports === 'object') {
         campaign,
         bildPageName,
         articleViewType,
+        setPageSourceForCheckout,
     };
 } else {
     init();

@@ -156,7 +156,12 @@ const articleViewType = {
 s.setExternalReferringDomainEvents = function (s) {
     const domainsToEventMapping = [
         {
-            domains: ['google.com', 'googlequicksearch/'],
+            domains: ['www.google.com', 'www.google.de'],
+            event: 'event49',
+            matchExact: 'true',
+        },
+        {
+            domains: ['googlequicksearch/'],
             event: 'event49',
         },
         {
@@ -182,11 +187,105 @@ s.setExternalReferringDomainEvents = function (s) {
     ];
 
     domainsToEventMapping.forEach(domainEventMap => {
-        const {domains, event} = domainEventMap;
-        const domainMatches = domains.some(domain => s._referringDomain.includes(domain));
-        if (domainMatches) s.events = s.apl(s.events, event, ',', 1);
+        const { domains, event, matchExact } = domainEventMap;
+        const domainMatches = domains.some(domain => {
+            if (matchExact) {
+                return s._referringDomain === domain;
+            } else {
+                return s._referringDomain.includes(domain);
+            }
+
+        });
+        s.events = domainMatches ? s.events = s.apl(s.events, event, ',', 1) : s.events;
     });
 
+};
+
+function setKameleoonTracking(s) {
+    if (s.linkName === 'Kameleoon Tracking') {
+        if (window.Kameleoon) {
+            window.Kameleoon.API.Tracking.processOmniture(s);
+        }
+        window.kameleoonOmnitureCallSent = true;
+    }
+}
+
+const bildPageName = {
+    isDocTypeArticle: function () {
+        return !!window.utag.data.adobe_doc_type
+            && window.utag.data.adobe_doc_type === 'article';
+    },
+
+    isHome: function () {
+        return !!window.utag.data['page_id']
+            && (window.utag.data['page_id'] == '17410084'
+                || window.utag.data['page_id'] == '16237890');
+    },
+
+    isAdWall: function (s) {
+        return !!s.pageName && (s.pageName.indexOf('42925516') !== -1
+            || s.pageName.indexOf('54578900') !== -1);
+    },
+
+    isLive: function () {
+        return !!this.isDocTypeArticle() && !!window.utag.data.page_cms_path
+            && window.utag.data.page_cms_path.indexOf('im-live-ticker') !== -1;
+    },
+
+    isLiveSport: function () {
+        return !!this.isDocTypeArticle() && !!window.utag.data.page_cms_path
+            && (window.utag.data.page_cms_path.indexOf('im-liveticker') !== -1
+                || window.utag.data.page_cms_path.indexOf('/liveticker/') !== -1);
+    },
+
+    setPageName: function (s) {
+        if (this.isAdWall(s)) {
+            window.utag.data.adobe_doc_type = 'ad wall';
+            s.pageName = 'ad wall : ' + s.eVar1;
+            s.eVar3 = 'ad wall';
+            s.prop3 = 'ad wall';
+        } else if (this.isHome()) {
+            window.utag.data.page_mapped_doctype_for_pagename = 'home';
+            s.eVar3 = 'home';
+            s.prop3 = 'home';
+            s.pageName = 'home : ' + window.utag.data['page_id'];
+        } else if (this.isLive()) {
+            window.utag.data.adobe_doc_type = 'live';
+            s.eVar3 = 'live';
+            s.prop3 = 'live';
+            s.pageName = 'live : ' + window.utag.data['page_id'];
+        } else if (this.isLiveSport()) {
+            window.utag.data.adobe_doc_type = 'live-sport';
+            s.eVar3 = 'live-sport';
+            s.prop3 = 'live-sport';
+            s.pageName = 'live-sport : ' + window.utag.data['page_id'];
+        }
+    },
+};
+
+const campaign = {
+    getAdobeCampaign: function () {
+        if (typeof window.utag.data['qp.cid'] !== 'undefined') {
+            return ('cid=' + window.utag.data['qp.cid']);
+        }
+        if (typeof window.utag.data['qp.wtrid'] !== 'undefined') {
+            return ('wtrid=' + window.utag.data['qp.wtrid']);
+        }
+        if (typeof window.utag.data['qp.wtmc'] !== 'undefined') {
+            return ('wtmc=' + window.utag.data['qp.wtmc']);
+        }
+        if (typeof window.utag.data['qp.wt_mc'] !== 'undefined') {
+            return ('wt_mc=' + window.utag.data['qp.wt_mc']);
+        }
+    },
+
+    setCampaignVariables: function (s) {
+        window.utag.data.adobe_campaign = this.getAdobeCampaign();
+        //To be updated to a single assignment option after it is unified in tealium
+        const adobe_campaign = s.campaign || window.utag.data['adobe_campaign'] || '';
+        s.campaign = s.getValOnce(adobe_campaign, 's_ev0', 0, 'm');
+        s.eVar88 = window.utag.data['adobe_campaign'] || window.utag.data['campaign_value'] || '';
+    },
 };
 
 function init() {
@@ -194,7 +293,23 @@ function init() {
     s.execdoplugins = 0;
     s.expectSupplementalData = false;
     s.myChannels = 0;
-    s.usePlugins = true;
+    s.usePlugins=true;
+
+    s.trackExternalLinks = true;
+    s.eVar64 = (typeof s.visitor !== undefined) ? s.visitor.version : undefined;
+
+    //no sdid for A4T
+    s.expectSupplementalData = false; // Force to false;
+
+    //internal Campaign
+    s.getICID = s.Util.getQueryParam('icid') || '';
+    s.eVar78 = s.getICID || '';
+    s.eVar79 = s.getICID || '';
+
+    //Referrer for link events
+    s.referrer = window.document.referrer || '';
+
+    campaign.setCampaignVariables(s);
 
     //height & width for iPhones
     if (window.navigator.userAgent.indexOf('iPhone') > -1) {
@@ -204,7 +319,15 @@ function init() {
     articleViewType.setViewType();
 }
 
-s.doPluginsGlobal = function () {
+s.doPluginsGlobal = function(s) {
+
+    //Config
+    s.eVar63 = s.version;
+
+    //Time & Timeparting
+    s.eVar184 = new Date().getHours().toString();
+    s.eVar181 = new Date().getMinutes().toString();
+    s.eVar185 = window.utag.data.myCW || '';
 };
 
 // Evaluate runtime environment
@@ -213,7 +336,10 @@ if (typeof exports === 'object') {
     module.exports = {
         s,
         init,
-        articleViewType
+        campaign,
+        bildPageName,
+        articleViewType,
+        setKameleoonTracking,
     };
 } else {
     init();

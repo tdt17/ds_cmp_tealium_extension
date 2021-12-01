@@ -48,12 +48,251 @@ describe('Adobe Plugins', () => {
     });
 });
 
+describe('bildPageName', () => {
+
+    beforeEach(() => {
+        // Create a fresh window mock for each test.
+        const windowMock = createWindowMock();
+        jest.spyOn(global, 'window', 'get')
+            .mockImplementation(() => (windowMock));
+    });
+
+    afterEach(() => {
+        jest.restoreAllMocks();
+    });
+
+    describe('isDocTypeArticle', () => {
+        it('should be false if adobe_doc_type is not article', () => {
+            window.utag.data.adobe_doc_type = 'home';
+
+            const returnValue = doPluginsGlobal.bildPageName.isDocTypeArticle();
+            expect(returnValue).toBe(false);
+        });
+
+        it('should be true if adobe_doc_type is article', () => {
+            window.utag.data.adobe_doc_type = 'article';
+
+            const returnValue = doPluginsGlobal.bildPageName.isDocTypeArticle();
+            expect(returnValue).toBe(true);
+        });
+
+    });
+
+    describe('isHome', () => {
+        it('should be false if page_id is incorrect', () => {
+            window.utag.data.page_id = 12345678;
+
+            const returnValue = doPluginsGlobal.bildPageName.isHome();
+            expect(returnValue).toBe(false);
+        });
+
+        it('should be true if page_id is 17410084', () => {
+            window.utag.data.page_id = 17410084;
+
+            const returnValue = doPluginsGlobal.bildPageName.isHome();
+            expect(returnValue).toBe(true);
+        });
+
+        it('should be true if page_id is 16237890', () => {
+            window.utag.data.page_id = 16237890;
+
+            const returnValue = doPluginsGlobal.bildPageName.isHome();
+            expect(returnValue).toBe(true);
+        });
+
+    });
+
+    describe('isAdWall', () => {
+        it('should be false if pageName is incorrect', () => {
+            const s = {
+                ...doPluginsGlobal.s,
+                pageName: 'test-12345678',
+            };
+
+            const returnValue = doPluginsGlobal.bildPageName.isAdWall(s);
+            expect(returnValue).toBe(false);
+        });
+
+        it('should be true if pageName contains 42925516', () => {
+            const s = {
+                ...doPluginsGlobal.s,
+                pageName: 'test-42925516',
+            };
+
+            const returnValue = doPluginsGlobal.bildPageName.isAdWall(s);
+            expect(returnValue).toBe(true);
+        });
+
+        it('should be true if pageName contains 54578900', () => {
+            const s = {
+                ...doPluginsGlobal.s,
+                pageName: 'test-54578900',
+            };
+
+            const returnValue = doPluginsGlobal.bildPageName.isAdWall(s);
+            expect(returnValue).toBe(true);
+        });
+
+    });
+
+    describe('isLive', () => {
+        it('should be false if adobe_doc_type is not article', () => {
+            window.utag.data.page_cms_path = 'test/im-live-ticker';
+            window.utag.data.adobe_doc_type = 'home';
+
+            const returnValue = doPluginsGlobal.bildPageName.isLive();
+            expect(returnValue).toBe(false);
+        });
+
+        it('should be false if page_cms_path is not correct', () => {
+            window.utag.data.page_cms_path = 'test/imliveticker';
+            window.utag.data.adobe_doc_type = 'article';
+
+            const returnValue = doPluginsGlobal.bildPageName.isLive();
+            expect(returnValue).toBe(false);
+        });
+
+        it('should be true if adobe_doc_type is article and page_cms_path contains im-live-ticker', () => {
+            window.utag.data.page_cms_path = 'test/im-live-ticker';
+            window.utag.data.adobe_doc_type = 'article';
+
+            const returnValue = doPluginsGlobal.bildPageName.isLive();
+            expect(returnValue).toBe(true);
+        });
+    });
+
+    describe('isLiveSport', () => {
+        it('should be false if adobe_doc_type is not article', () => {
+            window.utag.data.page_cms_path = 'test/im-liveticker';
+            window.utag.data.adobe_doc_type = 'home';
+
+            const returnValue = doPluginsGlobal.bildPageName.isLiveSport();
+            expect(returnValue).toBe(false);
+        });
+
+        it('should be false if page_cms_path is not correct', () => {
+            window.utag.data.page_cms_path = 'test/imliveticker';
+            window.utag.data.adobe_doc_type = 'article';
+
+            const returnValue = doPluginsGlobal.bildPageName.isLiveSport();
+            expect(returnValue).toBe(false);
+        });
+
+
+        it('should be true if adobe_doc_type is article and page_cms_path contains im-liveticker', () => {
+            window.utag.data.page_cms_path = 'test/im-liveticker';
+            window.utag.data.adobe_doc_type = 'article';
+
+            const returnValue = doPluginsGlobal.bildPageName.isLiveSport();
+            expect(returnValue).toBe(true);
+        });
+
+        it('should be true if adobe_doc_type is article and page_cms_path contains /liveticker/', () => {
+            window.utag.data.page_cms_path = 'test/liveticker/';
+            window.utag.data.adobe_doc_type = 'article';
+
+            const returnValue = doPluginsGlobal.bildPageName.isLiveSport();
+            expect(returnValue).toBe(true);
+        });
+    });
+
+    describe('setPageName', () => {
+        let isHome;
+        let isAdWall;
+        let isLive;
+        let isLiveSport;
+
+        beforeEach(() => {
+            isHome = jest.spyOn(doPluginsGlobal.bildPageName, 'isHome').mockReturnValue(false);
+            isAdWall = jest.spyOn(doPluginsGlobal.bildPageName, 'isAdWall').mockReturnValue(false);
+            isLive = jest.spyOn(doPluginsGlobal.bildPageName, 'isLive').mockReturnValue(false);
+            isLiveSport = jest.spyOn(doPluginsGlobal.bildPageName, 'isLiveSport').mockReturnValue(false);
+        });
+
+        afterEach(() => {
+            jest.restoreAllMocks();
+        });
+
+        it('should not set any data if isAdWall, isHome, isLive, isLiveSport are all false', () => {
+            const s = {
+                ...doPluginsGlobal.s,
+            };
+
+            doPluginsGlobal.bildPageName.setPageName(s);
+
+            expect(window.utag.data.adobe_doc_type).toBeUndefined();
+            expect(window.utag.data.page_mapped_doctype_for_pagename).toBeUndefined();
+            expect(s.pageName).toBeUndefined();
+            expect(s.eVar3).toBeUndefined();
+            expect(s.prop3).toBeUndefined();
+        });
+
+        it('should set relevant data if isAdWall is true', () => {
+            const s = {
+                ...doPluginsGlobal.s,
+                eVar1: 'eVar1_test',
+            } ;
+
+            isAdWall.mockReturnValue(true);
+            doPluginsGlobal.bildPageName.setPageName(s);
+
+            expect(window.utag.data.adobe_doc_type).toBe('ad wall');
+            expect(s.pageName).toBe('ad wall : ' + s.eVar1);
+            expect(s.eVar3).toBe('ad wall');
+            expect(s.prop3).toBe('ad wall');
+
+        });
+
+        it('should set relevant data if isHome is true', () => {
+            const s = {
+                ...doPluginsGlobal.s,
+            };
+            window.utag.data.page_id = '12345678';
+            isHome.mockReturnValue(true);
+            doPluginsGlobal.bildPageName.setPageName(s);
+
+            expect(window.utag.data.page_mapped_doctype_for_pagename).toBe('home');
+            expect(s.eVar3).toBe('home');
+            expect(s.prop3).toBe('home');
+            expect(s.pageName).toBe('home : ' + window.utag.data.page_id);
+        });
+
+        it('should set relevant data if isLive is true', () => {
+            const s = {
+                ...doPluginsGlobal.s,
+            };
+            window.utag.data.page_id = '12345678';
+            isLive.mockReturnValue(true);
+            doPluginsGlobal.bildPageName.setPageName(s);
+
+            expect(window.utag.data.adobe_doc_type).toBe('live');
+            expect(s.eVar3).toBe('live');
+            expect(s.prop3).toBe('live');
+            expect(s.pageName).toBe('live : ' + window.utag.data.page_id);
+        });
+
+        it('should set relevant data if isLiveSport is true', () => {
+            const s = {
+                ...doPluginsGlobal.s,
+            };
+            window.utag.data.page_id = '12345678';
+            isLiveSport.mockReturnValue(true);
+            doPluginsGlobal.bildPageName.setPageName(s);
+
+            expect(window.utag.data.adobe_doc_type).toBe('live-sport');
+            expect(s.eVar3).toBe('live-sport');
+            expect(s.prop3).toBe('live-sport');
+            expect(s.pageName).toBe('live-sport : ' + window.utag.data.page_id);
+        });
+    });
+});
+
 describe('External referring domains', () => {
 
-    it('should set correct event if the referring domain is google (google.com)', () => {
+    it('should set event49 if the referring domain is www.google.com', () => {
         const s = {
             ...doPluginsGlobal.s,
-            _referringDomain: 'google.com',
+            _referringDomain: 'www.google.com',
         };
 
         s.setExternalReferringDomainEvents(s);
@@ -61,10 +300,10 @@ describe('External referring domains', () => {
 
     });
 
-    it('should set correct event if the referring domain is google (googlequicksearch)', () => {
+    it('should set event49 if the referring domain is www.google.de', () => {
         const s = {
             ...doPluginsGlobal.s,
-            _referringDomain: 'googlequicksearch/',
+            _referringDomain: 'www.google.de',
         };
 
         s.setExternalReferringDomainEvents(s);
@@ -72,10 +311,47 @@ describe('External referring domains', () => {
 
     });
 
-    it('should set correct event if the referring domain is google news', () => {
+    it('should not set event49 if the referring domain is not www.google.com', () => {
         const s = {
             ...doPluginsGlobal.s,
-            _referringDomain: 'news.google',
+            _referringDomain: 'www.google.com/',
+        };
+
+        s.setExternalReferringDomainEvents(s);
+
+        const events = s.events || '';
+        expect(events).not.toMatch('event49');
+
+    });
+
+    it('should not set event49 if the referring domain is not www.google.de', () => {
+        const s = {
+            ...doPluginsGlobal.s,
+            _referringDomain: 'www.google.de/',
+        };
+
+        s.setExternalReferringDomainEvents(s);
+
+        const events = s.events || '';
+        expect(events).not.toMatch('event49');
+
+    });
+
+    it('should set event49 if the referring domain includes googlequicksearch/', () => {
+        const s = {
+            ...doPluginsGlobal.s,
+            _referringDomain: 'googlequicksearch/test',
+        };
+
+        s.setExternalReferringDomainEvents(s);
+        expect(s.events).toMatch('event49');
+
+    });
+
+    it('should set event48 if the referring domain includes news.google', () => {
+        const s = {
+            ...doPluginsGlobal.s,
+            _referringDomain: 'news.google/',
         };
 
         s.setExternalReferringDomainEvents(s);
@@ -83,10 +359,10 @@ describe('External referring domains', () => {
 
     });
 
-    it('should set correct event if the referring domain is instagram', () => {
+    it('should set event53 if the referring domain includes instagram.com', () => {
         const s = {
             ...doPluginsGlobal.s,
-            _referringDomain: 'instagram.com',
+            _referringDomain: 'instagram.com/',
         };
 
         s.setExternalReferringDomainEvents(s);
@@ -94,10 +370,10 @@ describe('External referring domains', () => {
 
     });
 
-    it('should set correct event if the referring domain is youtube', () => {
+    it('should set event50 if the referring domain includes youtube.com', () => {
         const s = {
             ...doPluginsGlobal.s,
-            _referringDomain: 'youtube.com',
+            _referringDomain: 'youtube.com/',
         };
 
         s.setExternalReferringDomainEvents(s);
@@ -105,10 +381,10 @@ describe('External referring domains', () => {
 
     });
 
-    it('should set correct event if the referring domain is twitter (twitter.com)', () => {
+    it('should set event51 if the referring domain includes twitter.com', () => {
         const s = {
             ...doPluginsGlobal.s,
-            _referringDomain: 'twitter.com',
+            _referringDomain: 'twitter.com/',
         };
 
         s.setExternalReferringDomainEvents(s);
@@ -116,20 +392,20 @@ describe('External referring domains', () => {
 
     });
 
-    it('should set correct event if the referring domain is twitter (android-app://com.twitter.android)', () => {
+    it('should set event51 if the referring domain includes android-app://com.twitter.android', () => {
         const s = {
             ...doPluginsGlobal.s,
-            _referringDomain: 'android-app://com.twitter.android',
+            _referringDomain: 'android-app://com.twitter.android/',
         };
 
         s.setExternalReferringDomainEvents(s);
         expect(s.events).toMatch('event51');
 
     });
-    it('should set correct event if the referring domain is twitter (t.co)', () => {
+    it('should set event51 if the referring domain includes t.co', () => {
         const s = {
             ...doPluginsGlobal.s,
-            _referringDomain: 't.co',
+            _referringDomain: 't.co/',
         };
 
         s.setExternalReferringDomainEvents(s);
@@ -137,14 +413,163 @@ describe('External referring domains', () => {
 
     });
 
-    it('should set correct event if the referring domain is facebook', () => {
+    it('should set event52 if the referring domain includes facebook.com', () => {
         const s = {
             ...doPluginsGlobal.s,
-            _referringDomain: 'facebook.com',
+            _referringDomain: 'facebook.com/',
         };
 
         s.setExternalReferringDomainEvents(s);
         expect(s.events).toMatch('event52');
+
+    });
+});
+
+describe('setKameleoonTracking', () => {
+    let processOmnitureMock;
+    beforeEach(() => {
+        // Create a fresh window mock for each test.
+        const windowMock = createWindowMock();
+        processOmnitureMock = jest.fn();
+        windowMock.Kameleoon = {
+            API: {
+                Tracking: {
+                    processOmniture: processOmnitureMock,
+                },
+            },
+        };
+        jest.spyOn(global, 'window', 'get').mockImplementation(() => (windowMock));
+    });
+    afterEach(() => {
+        jest.restoreAllMocks();
+    });
+
+    it('should call kameleoon process omniture if s.linkName is Kameleoon Tracking and window.Kameleoon exists', () => {
+        const s = {
+            ...doPluginsGlobal.s,
+            linkName: 'Kameleoon Tracking',
+        };
+
+        doPluginsGlobal.setKameleoonTracking(s);
+
+        expect(processOmnitureMock).toHaveBeenCalled();
+        expect(window.kameleoonOmnitureCallSent).toBe(true);
+    });
+
+    it('should not set kameleoon tracking if s.linkName is not Kameleoon Tracking', () => {
+        const s = {
+            ...doPluginsGlobal.s,
+        };
+
+        doPluginsGlobal.setKameleoonTracking(s);
+
+        expect(processOmnitureMock).not.toHaveBeenCalled();
+        expect(window.kameleoonOmnitureCallSent).toBeUndefined();
+    });
+});
+
+describe('s.doPlugins()', () => {
+    beforeEach(() => {
+        // Create a fresh window mock for each test.
+        const windowMock = createWindowMock();
+        jest.spyOn(global, 'window', 'get')
+            .mockImplementation(() => (windowMock));
+
+    });
+
+    afterEach(() => {
+        jest.restoreAllMocks();
+    });
+
+    it('should set the configurations inside the s.doPlugins function', () => {
+        const s = {
+            ...doPluginsGlobal.s,
+            version: 'test',
+        };
+        window.utag.data.myCW = 'test_cw';
+
+        s.doPluginsGlobal(s);
+
+        expect(s.eVar63).toBe(s.version);
+        expect(s.eVar184.length).toBeGreaterThanOrEqual(1);
+        expect(s.eVar181.length).toBeGreaterThanOrEqual(1);
+        expect(s.eVar185).toBe(window.utag.data.myCW);
+    });
+
+});
+
+describe('campaign', () => {
+    beforeEach(() => {
+        // Create a fresh window mock for each test.
+        const windowMock = createWindowMock();
+        jest.spyOn(global, 'window', 'get')
+            .mockImplementation(() => (windowMock));
+    });
+
+    afterEach(() => {
+        jest.restoreAllMocks();
+    });
+    describe('getAdobeCampaign()', () => {
+
+        it('should return cid as adobe_campaign if it is present', () => {
+            window.utag.data = {
+                'qp.cid': 'cid.test',
+                'qp.wtrid': 'wtrid.test',
+                'qp.wtmc': 'wtmc.test',
+                'qp.wt_mc': 'wt_mc.test',
+            };
+
+            const adobe_campaign = doPluginsGlobal.campaign.getAdobeCampaign();
+            expect(adobe_campaign).toBe('cid=' + window.utag.data['qp.cid']);
+
+        });
+        it('should return wtrid as adobe_campaign if it is present and cid is not defined', () => {
+            window.utag.data = {
+                'qp.wtrid': 'wtrid.test',
+                'qp.wtmc': 'wtmc.test',
+                'qp.wt_mc': 'wt_mc.test',
+            };
+
+            const adobe_campaign = doPluginsGlobal.campaign.getAdobeCampaign();
+            expect(adobe_campaign).toBe('wtrid=' + window.utag.data['qp.wtrid']);
+
+        }); it('should return wtmc as adobe_campaign if it is present and cid and wtrid are not defined', () => {
+            window.utag.data = {
+                'qp.wtmc': 'wtmc.test',
+                'qp.wt_mc': 'wt_mc.test',
+            };
+
+            const adobe_campaign = doPluginsGlobal.campaign.getAdobeCampaign();
+            expect(adobe_campaign).toBe('wtmc=' + window.utag.data['qp.wtmc']);
+
+        }); it('should return wt_mc as adobe_campaign if it is present and cid, wtrid and wtmc are not defined', () => {
+            window.utag.data = {
+                'qp.wt_mc': 'wt_mc.test',
+            };
+
+            const adobe_campaign = doPluginsGlobal.campaign.getAdobeCampaign();
+            expect(adobe_campaign).toBe('wt_mc=' + window.utag.data['qp.wt_mc']);
+
+        });
+    });
+
+    describe('setCampaignVariables', () => {
+
+        it('should get adobe campaign and set correct data if s.campaign is not present', () => {
+            const s = {
+                ...doPluginsGlobal.s,
+                getValOnce: jest.fn().mockReturnValue('cid=cid.test'),
+            };
+
+            jest.spyOn(doPluginsGlobal.campaign, 'getAdobeCampaign').mockReturnValue('cid=cid.test');
+
+            doPluginsGlobal.campaign.setCampaignVariables(s);
+
+            expect(window.utag.data.adobe_campaign).toBe('cid=cid.test');
+            expect(s.getValOnce).toHaveBeenCalledWith('cid=cid.test', 's_ev0', 0, 'm');
+            expect(s.campaign).toBe('cid=cid.test');
+            expect(s.eVar88).toBe(window.utag.data.adobe_campaign);
+        });
 
     });
 });
@@ -155,6 +580,10 @@ describe('init()', () => {
         const windowMock = createWindowMock();
         jest.spyOn(global, 'window', 'get')
             .mockImplementation(() => (windowMock));
+
+        doPluginsGlobal.s.Util = {
+            getQueryParam: jest.fn()
+        };
     });
 
     afterEach(() => {
@@ -163,6 +592,9 @@ describe('init()', () => {
     });
 
     it('should set global configuration properties of the Adobe s-object', () => {
+        doPluginsGlobal.s.visitor = { version: 'test' };
+        window.document.referrer = 'any_referrer';
+        const setCampaignVariables = jest.spyOn(doPluginsGlobal.campaign, 'setCampaignVariables');
         doPluginsGlobal.init();
 
         expect(doPluginsGlobal.s.currencyCode).toBe('EUR');
@@ -170,6 +602,14 @@ describe('init()', () => {
         expect(doPluginsGlobal.s.expectSupplementalData).toBe(false);
         expect(doPluginsGlobal.s.myChannels).toBe(0);
         expect(doPluginsGlobal.s.usePlugins).toBe(true);
+        expect(doPluginsGlobal.s.trackExternalLinks).toBe(true);
+        expect(doPluginsGlobal.s.eVar64).toBe(doPluginsGlobal.s.visitor.version);
+        expect(doPluginsGlobal.s.expectSupplementalData).toBe(false);
+        expect(doPluginsGlobal.s.getICID).toBeDefined();
+        expect(doPluginsGlobal.s.eVar78).toBeDefined();
+        expect(doPluginsGlobal.s.eVar79).toBeDefined();
+        expect(doPluginsGlobal.s.referrer).toBe(window.document.referrer);
+        expect(setCampaignVariables).toHaveBeenCalledWith(doPluginsGlobal.s);
     });
 
     it('should set eVar94 to the iPhone screen size', () => {

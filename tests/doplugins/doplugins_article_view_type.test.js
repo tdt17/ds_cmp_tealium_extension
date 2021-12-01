@@ -57,7 +57,7 @@ describe('articleViewType()', () => {
 
         it('should be false when page is NOT of type article', () => {
             const result = doPluginsGlobal.articleViewType.isArticlePage();
-            expect(result).toBeFalsy();
+            expect(result).toBe(false);
         });
 
         it('should be true when page is of type article', () => {
@@ -67,11 +67,26 @@ describe('articleViewType()', () => {
                 ARTICLE_TYPES.forEach(articleType => {
                     window.utag.data[propertyName] = articleType;
                     const result = doPluginsGlobal.articleViewType.isArticlePage();
-                    expect(result).toBeTruthy();
+                    expect(result).toBe(true);
                 });
                 delete window.utag.data[propertyName];
             });
 
+        });
+    });
+
+    describe('getDomainFromURLString(URLString)', () => {
+        it('should return domain from URL string',  () => {
+            const domain = 'www.bild.de';
+            const urlString = `https://${domain}/any-path`;
+            const result = doPluginsGlobal.articleViewType.getDomainFromURLString(urlString);
+            expect(result).toBe(domain);
+        });
+
+        it('should return an empty string if passed in string is not a valid URL',  () => {
+            const anyString = 'invalid-url-string';
+            const result = doPluginsGlobal.articleViewType.getDomainFromURLString(anyString);
+            expect(result).toBe('');
         });
     });
 
@@ -107,6 +122,34 @@ describe('articleViewType()', () => {
         it('should return FALSE if referrer is NOT a search engine', function () {
             const referrer = 'https://any-domain/any-path';
             const result = doPluginsGlobal.articleViewType.isFromSocial(referrer);
+            expect(result).toBe(false);
+        });
+    });
+
+    describe('isFromBild()', () => {
+        it('should return TRUE if referrer is www.bild.de', () => {
+            const referrer = 'https://www.bild.de';
+            const result = doPluginsGlobal.articleViewType.isFromBild(referrer);
+            expect(result).toBe(true);
+        });
+
+        it('should return FALSE if referrer is NOT www.bild.de', () => {
+            const referrer = 'https://www.any-domain.de';
+            const result = doPluginsGlobal.articleViewType.isFromBild(referrer);
+            expect(result).toBe(false);
+        });
+    });
+
+    describe('isFromBildMobile()', () => {
+        it('should return TRUE if referrer is m.bild.de', () => {
+            const referrer = 'https://m.bild.de';
+            const result = doPluginsGlobal.articleViewType.isFromBildMobile(referrer);
+            expect(result).toBe(true);
+        });
+
+        it('should return FALSE if referrer is NOT m.bild.de', () => {
+            const referrer = 'https://www.any-domain.de';
+            const result = doPluginsGlobal.articleViewType.isFromBildMobile(referrer);
             expect(result).toBe(false);
         });
     });

@@ -297,7 +297,7 @@ function init() {
     s.usePlugins=true;
 
     s.trackExternalLinks = true;
-    s.eVar64 = (typeof s.visitor !== undefined) ? s.visitor.version : undefined;
+    s.eVar64 = s.visitor && s.visitor.version ? s.visitor.version : undefined;
 
     //no sdid for A4T
     s.expectSupplementalData = false; // Force to false;

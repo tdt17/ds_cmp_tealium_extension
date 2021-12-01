@@ -288,6 +288,7 @@ const campaign = {
     },
 };
 
+
 function init() {
     s.currencyCode = 'EUR';
     s.execdoplugins = 0;
@@ -309,18 +310,16 @@ function init() {
     //Referrer for link events
     s.referrer = window.document.referrer || '';
 
-    campaign.setCampaignVariables(s);
-
     //height & width for iPhones
     if (window.navigator.userAgent.indexOf('iPhone') > -1) {
         s.eVar94 = window.screen.width + 'x' + window.screen.height;
     }
 
+    campaign.setCampaignVariables(s);
     articleViewType.setViewType();
 }
 
 s.doPluginsGlobal = function(s) {
-
     //Config
     s.eVar63 = s.version;
 

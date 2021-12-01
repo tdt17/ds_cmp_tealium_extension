@@ -1,26 +1,6 @@
 const doPluginsGlobal = require('../extensions/doPlugins_global');
+const {createWindowMock} = require('./mocks/browserMocks');
 
-function createWindowMock() {
-    return {
-        document: {
-            referrer: '',
-            domain: ''
-        },
-        navigator: {
-            userAgent: ''
-        },
-        screen: {
-            width: '',
-            height: ''
-        },
-        utag: {
-            data: {}
-        },
-        location: {
-            hash: ''
-        }
-    };
-}
 
 describe('Adobe Plugins', () => {
     it('should check if the getPercentagePageViewed function is defined in s object', () => {
@@ -231,7 +211,7 @@ describe('bildPageName', () => {
             const s = {
                 ...doPluginsGlobal.s,
                 eVar1: 'eVar1_test',
-            } ;
+            };
 
             isAdWall.mockReturnValue(true);
             doPluginsGlobal.bildPageName.setPageName(s);
@@ -533,7 +513,8 @@ describe('campaign', () => {
             const adobe_campaign = doPluginsGlobal.campaign.getAdobeCampaign();
             expect(adobe_campaign).toBe('wtrid=' + window.utag.data['qp.wtrid']);
 
-        }); it('should return wtmc as adobe_campaign if it is present and cid and wtrid are not defined', () => {
+        });
+        it('should return wtmc as adobe_campaign if it is present and cid and wtrid are not defined', () => {
             window.utag.data = {
                 'qp.wtmc': 'wtmc.test',
                 'qp.wt_mc': 'wt_mc.test',
@@ -542,7 +523,8 @@ describe('campaign', () => {
             const adobe_campaign = doPluginsGlobal.campaign.getAdobeCampaign();
             expect(adobe_campaign).toBe('wtmc=' + window.utag.data['qp.wtmc']);
 
-        }); it('should return wt_mc as adobe_campaign if it is present and cid, wtrid and wtmc are not defined', () => {
+        });
+        it('should return wt_mc as adobe_campaign if it is present and cid, wtrid and wtmc are not defined', () => {
             window.utag.data = {
                 'qp.wt_mc': 'wt_mc.test',
             };
@@ -592,7 +574,7 @@ describe('init()', () => {
     });
 
     it('should set global configuration properties of the Adobe s-object', () => {
-        doPluginsGlobal.s.visitor = { version: 'test' };
+        doPluginsGlobal.s.visitor = {version: 'test'};
         window.document.referrer = 'any_referrer';
         const setCampaignVariables = jest.spyOn(doPluginsGlobal.campaign, 'setCampaignVariables');
         doPluginsGlobal.init();

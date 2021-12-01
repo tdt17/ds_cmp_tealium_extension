@@ -303,24 +303,22 @@ describe('articleViewType()', () => {
         it('should return TRUE if referrer is from the same domain', function () {
             const anyDomain = 'any-domain.com';
             const referrer = `https://${anyDomain}/any-path`;
-            window.document.domain = anyDomain;
-            const result = doPluginsGlobal.articleViewType.isFromInternal(referrer);
+            const result = doPluginsGlobal.articleViewType.isFromInternal(referrer, anyDomain);
             expect(result).toBe(true);
         });
 
         it('should return FALSE if referrer is NOT from the same domain', function () {
             const anyDomain = 'any-domain.com';
+            const anyOtherDomain = 'any-other-domain.com';
             const referrer = `https://${anyDomain}/any-path`;
-            window.document.domain = 'any-other-domain.com';
-            const result = doPluginsGlobal.articleViewType.isFromInternal(referrer);
+            const result = doPluginsGlobal.articleViewType.isFromInternal(referrer, anyOtherDomain);
             expect(result).toBe(false);
         });
 
         it('should return TRUE if referrer is from sub domain', function () {
             const anyDomain = 'any-domain.de';
             const referrer = `https://any-sub-domain.${anyDomain}`;
-            window.document.domain = anyDomain;
-            const result = doPluginsGlobal.articleViewType.isFromInternal(referrer);
+            const result = doPluginsGlobal.articleViewType.isFromInternal(referrer, anyDomain);
             expect(result).toBe(true);
         });
     });

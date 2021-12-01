@@ -70,11 +70,11 @@ const articleViewType = {
     /**
      * Same domain check including subdomains.
      */
-    isFromInternal: function (referrer) {
+    isFromInternal: function (referrer, domain) {
         const referrerURLObject = new URL(referrer);
         const referrerDomain = referrerURLObject.hostname;
         const referrerDomainSegments = referrerDomain.split('.');
-        const documentDomainSegments = window.document.domain.split('.');
+        const documentDomainSegments = domain.split('.');
 
         // compare next to last segments (eg. www.bild.de, m.bild.de --> bild)
         return referrerDomainSegments[referrerDomainSegments.length - 2] === documentDomainSegments[documentDomainSegments.length - 2];
@@ -106,7 +106,7 @@ const articleViewType = {
 
     getReferrerFromLocationHash: function () {
         let referrerFromHash;
-        if (window.location.hash.indexOf('wt_ref') != -1) {
+        if (window.location.hash.indexOf('wt_ref') !== -1) {
             referrerFromHash = window.location.hash.replace('###wt_ref=', '');
         }
         return this.isValidURL(referrerFromHash) ? referrerFromHash : '';
@@ -114,14 +114,15 @@ const articleViewType = {
 
     getViewTypeByReferrer: function () {
         const referrer = this.getReferrerFromLocationHash() || window.document.referrer;
+        const domain = window.document.domain;
         let articleViewType = 'event27'; //Other External
         if (this.isFromSearch(referrer)) {
             articleViewType = 'event24'; //Search
         } else if (this.isFromSocial(referrer)) {
             articleViewType = 'event25'; //Social
-        } else if (this.isFromInternal(referrer) && this.isFromTaboola(referrer)) {
+        } else if (this.isFromInternal(referrer, domain) && this.isFromTaboola(referrer)) {
             articleViewType = 'event102'; //Taboola
-        } else if (this.isFromInternal(referrer) && this.isFromHome(referrer)) {
+        } else if (this.isFromInternal(referrer, domain) && this.isFromHome(referrer)) {
             articleViewType = 'event22'; //Home
         } else if (this.isFromInternal(referrer)) {
             articleViewType = 'event23'; //Other Internal

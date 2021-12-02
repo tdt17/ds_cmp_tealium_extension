@@ -15,6 +15,29 @@ function localStorageMock() {
     };
 }
 
+function createWindowMock() {
+    return {
+        document: {
+            referrer: '',
+            domain: ''
+        },
+        navigator: {
+            userAgent: ''
+        },
+        screen: {
+            width: '',
+            height: ''
+        },
+        utag: {
+            data: {}
+        },
+        location: {
+            hash: ''
+        }
+    };
+}
+
 module.exports = {
-    localStorageMock: localStorageMock()
+    localStorageMock: localStorageMock(),
+    createWindowMock: createWindowMock
 };

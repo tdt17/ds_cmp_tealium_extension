@@ -178,14 +178,14 @@ describe('articleViewType()', () => {
         });
     });
 
-    describe('isBildDomainWithHomepage()', () => {
-        it('it should return FALSE if domain is one of the special Bild sub-domains which should NOT be considered as homepages', () => {
+    describe('isBildDomainWithoutHomepage()', () => {
+        it('it should return TRUE if domain is one of the special Bild sub-domains which should NOT be considered as homepages', () => {
             const specialDomain = 'sport.bild.de';
-            const result = doPluginsGlobal.articleViewType.isBildDomainWithHomepage(specialDomain);
-            expect(result).toBe(false);
+            const result = doPluginsGlobal.articleViewType.isBildDomainWithoutHomepage(specialDomain);
+            expect(result).toBe(true);
         });
 
-        it('it should return TRUE for all Bild domains which can be considered as home pages', () => {
+        it('it should return FALSE for all Bild domains which can be considered as home pages', () => {
             const homepageDomains = [
                 'www.bild.de',
                 'm.bild.de',
@@ -194,8 +194,8 @@ describe('articleViewType()', () => {
             ];
 
             homepageDomains.forEach( domain => {
-                const result = doPluginsGlobal.articleViewType.isBildDomainWithHomepage(domain);
-                expect(result).toBe(true);
+                const result = doPluginsGlobal.articleViewType.isBildDomainWithoutHomepage(domain);
+                expect(result).toBe(false);
             });
 
         });

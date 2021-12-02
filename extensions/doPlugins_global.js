@@ -101,14 +101,14 @@ const articleViewType = {
      * Bild has special subdomains which need be excluded from isFromHome() checks.
      * eg. sport.bild.de
      */
-    isBildDomainWithHomepage: function (domain) {
+    isBildDomainWithoutHomepage: function (domain) {
         const domainSegments = domain.split('.');
         // check second to last domain segment
         const isBildDomain = domainSegments[domainSegments.length - 2] === 'bild';
         if (isBildDomain) {
             // check third to last domain segment
             // allowed domains: m.bild.de, www.bild.de, sportbild.bild.de, m.sportbild.bild.de
-            return ['www', 'm', 'sportbild'].indexOf(domainSegments[domainSegments.length - 3]) !== -1;
+            return ['www', 'm', 'sportbild'].indexOf(domainSegments[domainSegments.length - 3]) === -1;
         } else {
             return false;
         }

@@ -76,14 +76,14 @@ describe('articleViewType()', () => {
     });
 
     describe('getDomainFromURLString(URLString)', () => {
-        it('should return domain from URL string',  () => {
+        it('should return domain from URL string', () => {
             const domain = 'www.bild.de';
             const urlString = `https://${domain}/any-path`;
             const result = doPluginsGlobal.articleViewType.getDomainFromURLString(urlString);
             expect(result).toBe(domain);
         });
 
-        it('should return an empty string if passed in string is not a valid URL',  () => {
+        it('should return an empty string if passed in string is not a valid URL', () => {
             const anyString = 'invalid-url-string';
             const result = doPluginsGlobal.articleViewType.getDomainFromURLString(anyString);
             expect(result).toBe('');
@@ -175,6 +175,29 @@ describe('articleViewType()', () => {
             const referrer = `https://any-sub-domain.${anyDomain}`;
             const result = doPluginsGlobal.articleViewType.isFromInternal(referrer, anyDomain);
             expect(result).toBe(true);
+        });
+    });
+
+    describe('isBildDomainWithHomepage()', () => {
+        it('it should return FALSE if domain is one of the special Bild sub-domains which should NOT be considered as homepages', () => {
+            const specialDomain = 'sport.bild.de';
+            const result = doPluginsGlobal.articleViewType.isBildDomainWithHomepage(specialDomain);
+            expect(result).toBe(false);
+        });
+
+        it('it should return TRUE for all Bild domains which can be considered as home pages', () => {
+            const homepageDomains = [
+                'www.bild.de',
+                'm.bild.de',
+                'sportbild.bild.de',
+                'm.sportbild.bild.de'
+            ];
+
+            homepageDomains.forEach( domain => {
+                const result = doPluginsGlobal.articleViewType.isBildDomainWithHomepage(domain);
+                expect(result).toBe(true);
+            });
+
         });
     });
 

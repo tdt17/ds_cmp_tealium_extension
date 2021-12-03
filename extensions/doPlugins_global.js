@@ -94,9 +94,15 @@ const articleViewType = {
         const referrerDomainSegments = referrerDomain.split('.');
         const documentDomainSegments = domain.split('.');
 
+        // Exception for Sportbild: 'sportbild.bild.de' should not be treated as an internal (sub) domain of Bild
+        if(referrerDomain.indexOf('sportbild') !== -1) {
+            return domain.indexOf('sportbild') !== -1;
+        }
+
         // compare next to last segments (eg. www.bild.de, m.bild.de --> bild)
         return referrerDomainSegments[referrerDomainSegments.length - 2] === documentDomainSegments[documentDomainSegments.length - 2];
     },
+
     /**
      * Bild has special subdomains which need be excluded from isFromHome() checks.
      * eg. sport.bild.de

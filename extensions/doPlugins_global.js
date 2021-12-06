@@ -351,7 +351,7 @@ function init() {
     s.expectSupplementalData = false; // Force to false;
 
     //internal Campaign
-    s.getICID = s.Util.getQueryParam('icid') || '';
+    // s.getICID = s.Util.getQueryParam('icid') || '';
     s.eVar78 = s.getICID || '';
     s.eVar79 = s.getICID || '';
 

@@ -104,17 +104,15 @@ const articleViewType = {
     },
 
     /**
-     * Bild has special subdomains which need be excluded from isFromHome() checks.
-     * eg. sport.bild.de
+     * Only certain subdomains are considered as homepages: eg. www.bild.de, m.bild.de, sportbild.bild.de
+     * Other special subdomains should not be considered: eg. sport.bild.de, online.welt.de
      */
-    isBildDomainWithoutHomepage: function (domain) {
+    isHomepageSubdomain: function (domain) {
+        const subdomainsWithHomepages = ['www', 'm', 'sportbild'];
         const domainSegments = domain.split('.');
-        // check second to last domain segment
-        const isBildDomain = domainSegments[domainSegments.length - 2] === 'bild';
-        if (isBildDomain) {
-            // check third to last domain segment
-            // allowed domains: m.bild.de, www.bild.de, sportbild.bild.de, m.sportbild.bild.de
-            return ['www', 'm', 'sportbild'].indexOf(domainSegments[domainSegments.length - 3]) === -1;
+        if (domainSegments.length > 2) {
+            // check third to last domain segment (sub domain)
+            return subdomainsWithHomepages.indexOf(domainSegments[domainSegments.length - 3]) !== -1;
         } else {
             return false;
         }
@@ -123,7 +121,7 @@ const articleViewType = {
     isFromHome: function (referrer) {
         try {
             const urlObject = new URL(referrer);
-            return urlObject.pathname === '/' && !this.isBildDomainWithoutHomepage(urlObject.hostname);
+            return urlObject.pathname === '/' && this.isHomepageSubdomain(urlObject.hostname);
         } catch (err) {
             return false;
         }
@@ -195,6 +193,8 @@ const articleViewType = {
     setViewType: function () {
         if (this.isArticlePage()) {
             const articleViewType = window.document.referrer ? this.getViewTypeByReferrer() : this.getViewTypeByTrackingProperty();
+            // Expose view type to the s-object because it is needed by other functionalities.
+            s._articleViewType = articleViewType;
             s.events = s.events || '';
             s.apl(s.events, articleViewType, ',', 1);
         }

@@ -51,6 +51,15 @@ const articleViewType = {
         return ARTICLE_TYPES.indexOf(pageType) !== -1;
     },
 
+    getDomainFromURLString: function (urlString) {
+        try {
+            const urlObject = new URL(urlString);
+            return urlObject.hostname;
+        } catch (err) {
+            return '';
+        }
+    },
+
     isFromSearch: function (referrer) {
         const searchEngines = ['google.', 'bing.com', 'ecosia.org', 'duckduckgo.com', 'amp-welt-de.cdn.ampproject.org', 'qwant.com', 'suche.t-online.de', '.yandex.', 'yahoo.com', 'googleapis.com', 'nortonsafe.search.ask.com', 'wikipedia.org', 'googleadservices.com', 'search.myway.com', 'lycos.de'];
 
@@ -67,22 +76,55 @@ const articleViewType = {
         });
     },
 
+    isFromBild: function (referrer) {
+        const referrerDomain = this.getDomainFromURLString(referrer);
+        return referrerDomain === 'www.bild.de';
+    },
+
+    isFromBildMobile: function (referrer) {
+        const referrerDomain = this.getDomainFromURLString(referrer);
+        return referrerDomain === 'm.bild.de';
+    },
+
     /**
      * Same domain check including subdomains.
      */
     isFromInternal: function (referrer, domain) {
-        const referrerURLObject = new URL(referrer);
-        const referrerDomain = referrerURLObject.hostname;
+        const referrerDomain = this.getDomainFromURLString(referrer);
         const referrerDomainSegments = referrerDomain.split('.');
         const documentDomainSegments = domain.split('.');
+
+        // Exception for Sportbild: 'sportbild.bild.de' should not be treated as an internal (sub) domain of Bild
+        if(referrerDomain.indexOf('sportbild') !== -1) {
+            return domain.indexOf('sportbild') !== -1;
+        }
 
         // compare next to last segments (eg. www.bild.de, m.bild.de --> bild)
         return referrerDomainSegments[referrerDomainSegments.length - 2] === documentDomainSegments[documentDomainSegments.length - 2];
     },
 
+    /**
+     * Only certain subdomains are considered as homepages: eg. www.bild.de, m.bild.de, sportbild.bild.de
+     * Other special subdomains should not be considered: eg. sport.bild.de, online.welt.de
+     */
+    isHomepageSubdomain: function (domain) {
+        const subdomainsWithHomepages = ['www', 'm', 'sportbild'];
+        const domainSegments = domain.split('.');
+        if (domainSegments.length > 2) {
+            // check third to last domain segment (sub domain)
+            return subdomainsWithHomepages.indexOf(domainSegments[domainSegments.length - 3]) !== -1;
+        } else {
+            return false;
+        }
+    },
+
     isFromHome: function (referrer) {
-        const urlObject = new URL(referrer);
-        return urlObject.pathname === '/';
+        try {
+            const urlObject = new URL(referrer);
+            return urlObject.pathname === '/' && this.isHomepageSubdomain(urlObject.hostname);
+        } catch (err) {
+            return false;
+        }
     },
 
     getTrackingValue: function () {
@@ -126,6 +168,10 @@ const articleViewType = {
             articleViewType = 'event22'; //Home
         } else if (this.isFromInternal(referrer)) {
             articleViewType = 'event23'; //Other Internal
+        } else if (this.isFromBild(referrer)) {
+            articleViewType = 'event76'; // Bild
+        } else if (this.isFromBildMobile(referrer)) {
+            articleViewType = 'event77'; // Bild mobile
         }
         return articleViewType;
     },
@@ -147,6 +193,8 @@ const articleViewType = {
     setViewType: function () {
         if (this.isArticlePage()) {
             const articleViewType = window.document.referrer ? this.getViewTypeByReferrer() : this.getViewTypeByTrackingProperty();
+            // Expose view type to the s-object because it is needed by other functionalities.
+            s._articleViewType = articleViewType;
             s.events = s.events || '';
             s.apl(s.events, articleViewType, ',', 1);
         }
@@ -187,7 +235,7 @@ s.setExternalReferringDomainEvents = function (s) {
     ];
 
     domainsToEventMapping.forEach(domainEventMap => {
-        const { domains, event, matchExact } = domainEventMap;
+        const {domains, event, matchExact} = domainEventMap;
         const domainMatches = domains.some(domain => {
             if (matchExact) {
                 return s._referringDomain === domain;
@@ -294,7 +342,7 @@ function init() {
     s.execdoplugins = 0;
     s.expectSupplementalData = false;
     s.myChannels = 0;
-    s.usePlugins=true;
+    s.usePlugins = true;
 
     s.trackExternalLinks = true;
     s.eVar64 = s.visitor && s.visitor.version ? s.visitor.version : undefined;
@@ -319,7 +367,7 @@ function init() {
     articleViewType.setViewType();
 }
 
-s.doPluginsGlobal = function(s) {
+s.doPluginsGlobal = function (s) {
     //Config
     s.eVar63 = s.version;
 

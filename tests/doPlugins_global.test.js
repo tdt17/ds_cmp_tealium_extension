@@ -747,7 +747,7 @@ describe('articleViewType()', () => {
 
     describe('isFromHome', () => {
         it('should return TRUE if referrer is from homepage of same domain', function () {
-            const anyDomain = 'any-domain.de';
+            const anyDomain = 'www.any-domain.de';
             const referrer = `https://${anyDomain}`;
             window.document.domain = anyDomain;
             const result = doPluginsGlobal.articleViewType.isFromHome(referrer);
@@ -755,7 +755,7 @@ describe('articleViewType()', () => {
         });
 
         it('should return FALSE if referrer is NOT from a homepage', function () {
-            const anyDomain = 'any-domain.de';
+            const anyDomain = 'www.any-domain.de';
             const referrer = `https://${anyDomain}/any-path`;
             window.document.domain = anyDomain;
             const result = doPluginsGlobal.articleViewType.isFromHome(referrer);

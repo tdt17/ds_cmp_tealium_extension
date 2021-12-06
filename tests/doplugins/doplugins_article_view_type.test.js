@@ -57,7 +57,7 @@ describe('articleViewType()', () => {
 
         it('should be false when page is NOT of type article', () => {
             const result = doPluginsGlobal.articleViewType.isArticlePage();
-            expect(result).toBeFalsy();
+            expect(result).toBe(false);
         });
 
         it('should be true when page is of type article', () => {
@@ -67,11 +67,26 @@ describe('articleViewType()', () => {
                 ARTICLE_TYPES.forEach(articleType => {
                     window.utag.data[propertyName] = articleType;
                     const result = doPluginsGlobal.articleViewType.isArticlePage();
-                    expect(result).toBeTruthy();
+                    expect(result).toBe(true);
                 });
                 delete window.utag.data[propertyName];
             });
 
+        });
+    });
+
+    describe('getDomainFromURLString(URLString)', () => {
+        it('should return domain from URL string', () => {
+            const domain = 'www.bild.de';
+            const urlString = `https://${domain}/any-path`;
+            const result = doPluginsGlobal.articleViewType.getDomainFromURLString(urlString);
+            expect(result).toBe(domain);
+        });
+
+        it('should return an empty string if passed in string is not a valid URL', () => {
+            const anyString = 'invalid-url-string';
+            const result = doPluginsGlobal.articleViewType.getDomainFromURLString(anyString);
+            expect(result).toBe('');
         });
     });
 
@@ -111,6 +126,34 @@ describe('articleViewType()', () => {
         });
     });
 
+    describe('isFromBild()', () => {
+        it('should return TRUE if referrer is www.bild.de', () => {
+            const referrer = 'https://www.bild.de';
+            const result = doPluginsGlobal.articleViewType.isFromBild(referrer);
+            expect(result).toBe(true);
+        });
+
+        it('should return FALSE if referrer is NOT www.bild.de', () => {
+            const referrer = 'https://www.any-domain.de';
+            const result = doPluginsGlobal.articleViewType.isFromBild(referrer);
+            expect(result).toBe(false);
+        });
+    });
+
+    describe('isFromBildMobile()', () => {
+        it('should return TRUE if referrer is m.bild.de', () => {
+            const referrer = 'https://m.bild.de';
+            const result = doPluginsGlobal.articleViewType.isFromBildMobile(referrer);
+            expect(result).toBe(true);
+        });
+
+        it('should return FALSE if referrer is NOT m.bild.de', () => {
+            const referrer = 'https://www.any-domain.de';
+            const result = doPluginsGlobal.articleViewType.isFromBildMobile(referrer);
+            expect(result).toBe(false);
+        });
+    });
+
     describe('isFromInternal()', function () {
         it('should return TRUE if referrer is from the same domain', function () {
             const anyDomain = 'any-domain.com';
@@ -135,17 +178,48 @@ describe('articleViewType()', () => {
         });
     });
 
+    describe('isHomepageSubdomain()', () => {
+        it('it should return TRUE for sub domains which can be considered as home pages', () => {
+            const homepageSubDomains = [
+                'www.anydomain.de',
+                'm.anydomain.de',
+                'sportbild.anydomain.de',
+                'm.sportbild.anydomain.de'
+            ];
+
+            homepageSubDomains.forEach(domain => {
+                const result = doPluginsGlobal.articleViewType.isHomepageSubdomain(domain);
+                expect(result).toBe(true);
+            });
+        });
+
+        it('it should return false for sub domains which should NOT be considered as home pages', () => {
+            const homepageSubDomains = [
+                'anydomain.de',
+                'anysubdomain.anydomain.de',
+                'sport.bild.de',
+                'online.welt.de'
+            ];
+
+            homepageSubDomains.forEach(domain => {
+                const result = doPluginsGlobal.articleViewType.isHomepageSubdomain(domain);
+                expect(result).toBe(false);
+            });
+        });
+
+    });
+
     describe('isFromHome', () => {
-        it('should return TRUE if referrer is from homepage of same domain', function () {
-            const anyDomain = 'any-domain.de';
+        it('should return TRUE if referrer is from homepage (no location.pathname)', function () {
+            const anyDomain = 'www.any-domain.de';
             const referrer = `https://${anyDomain}`;
             window.document.domain = anyDomain;
             const result = doPluginsGlobal.articleViewType.isFromHome(referrer);
             expect(result).toBe(true);
         });
 
-        it('should return FALSE if referrer is NOT from a homepage', function () {
-            const anyDomain = 'any-domain.de';
+        it('should return FALSE if referrer is from a sub page (with location.pathname)', function () {
+            const anyDomain = 'www.any-domain.de';
             const referrer = `https://${anyDomain}/any-path`;
             window.document.domain = anyDomain;
             const result = doPluginsGlobal.articleViewType.isFromHome(referrer);
@@ -395,6 +469,14 @@ describe('articleViewType()', () => {
             expect(aplMock).toHaveBeenCalledWith('', anyViewType, ',', 1);
         });
 
+        it('should expose the article-view-type to the s-object (s._articleViewType)', function () {
+            const anyViewType = 'any-view-type';
+            isArticlePageMock.mockReturnValue(true);
+            getViewTypeByTrackingPropertyMock.mockReturnValue(anyViewType);
+            doPluginsGlobal.articleViewType.setViewType();
+            expect(doPluginsGlobal.s._articleViewType).toBe(anyViewType);
+        });
+
         it('should NOT set the article-view-type on NON article pages', function () {
             isArticlePageMock.mockReturnValue(false);
             doPluginsGlobal.articleViewType.setViewType();
@@ -416,4 +498,5 @@ describe('articleViewType()', () => {
         });
     });
 
-});
+})
+;

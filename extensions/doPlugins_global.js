@@ -51,42 +51,83 @@ const articleViewType = {
         return ARTICLE_TYPES.indexOf(pageType) !== -1;
     },
 
-    isFromSearch: function () {
+    getDomainFromURLString: function (urlString) {
+        try {
+            const urlObject = new URL(urlString);
+            return urlObject.hostname;
+        } catch (err) {
+            return '';
+        }
+    },
+
+    isFromSearch: function (referrer) {
         const searchEngines = ['google.', 'bing.com', 'ecosia.org', 'duckduckgo.com', 'amp-welt-de.cdn.ampproject.org', 'qwant.com', 'suche.t-online.de', '.yandex.', 'yahoo.com', 'googleapis.com', 'nortonsafe.search.ask.com', 'wikipedia.org', 'googleadservices.com', 'search.myway.com', 'lycos.de'];
 
-        return searchEngines.some( item => {
-            return window.document.referrer.indexOf(item) !== -1;
+        return searchEngines.some(item => {
+            return referrer.indexOf(item) !== -1;
         });
     },
 
-    isFromSocial: function () {
+    isFromSocial: function (referrer) {
         const socialDomains = ['facebook.com', 'xing.com', 'instagram.com', 'youtube.com', 't.co', 'linkedin.com', 'away.vk.com', 'www.pinterest.de', 'linkedin.android', 'ok.ru', 'mobile.ok.ru', 'www.yammer.com', 'twitter.com', 'www.netvibes.com', 'pinterest.com', 'wordpress.com', 'blogspot.com', 'lnkd.in', 'xing.android', 'vk.com', 'com.twitter.android', 'm.ok.ru', 'welt.de/instagram', 'linkin.bio'];
 
-        return socialDomains.some( item => {
-            return window.document.referrer.indexOf(item) !== -1;
+        return socialDomains.some(item => {
+            return referrer.indexOf(item) !== -1;
         });
     },
 
-    isFromInternal: function () {
-        return window.document.referrer.indexOf(window.document.domain) !== -1;
+    isFromBild: function (referrer) {
+        const referrerDomain = this.getDomainFromURLString(referrer);
+        return referrerDomain === 'www.bild.de';
     },
 
-    isFromSubdomain: function () {
-        const urlObject = new URL(window.document.referrer);
-        const referrerDomain = urlObject.hostname;
-        const referrerDomainSegments = referrerDomain.replace('www.', '').split('.');
-        const documentDomainSegments = window.document.domain.replace('www.', '').split('.');
-
-        return (referrerDomainSegments.length !== documentDomainSegments.length
-            && referrerDomainSegments[referrerDomainSegments.length-2] === documentDomainSegments[documentDomainSegments.length-2]);
+    isFromBildMobile: function (referrer) {
+        const referrerDomain = this.getDomainFromURLString(referrer);
+        return referrerDomain === 'm.bild.de';
     },
 
-    isFromHome: function () {
-        const urlObject = new URL(window.document.referrer);
-        return (urlObject.pathname === '/' && !this.isFromSubdomain());
+    /**
+     * Same domain check including subdomains.
+     */
+    isFromInternal: function (referrer, domain) {
+        const referrerDomain = this.getDomainFromURLString(referrer);
+        const referrerDomainSegments = referrerDomain.split('.');
+        const documentDomainSegments = domain.split('.');
+
+        // Exception for Sportbild: 'sportbild.bild.de' should not be treated as an internal (sub) domain of Bild
+        if(referrerDomain.indexOf('sportbild') !== -1) {
+            return domain.indexOf('sportbild') !== -1;
+        }
+
+        // compare next to last segments (eg. www.bild.de, m.bild.de --> bild)
+        return referrerDomainSegments[referrerDomainSegments.length - 2] === documentDomainSegments[documentDomainSegments.length - 2];
     },
 
-    getTrackingValue: function() {
+    /**
+     * Only certain subdomains are considered as homepages: eg. www.bild.de, m.bild.de, sportbild.bild.de
+     * Other special subdomains should not be considered: eg. sport.bild.de, online.welt.de
+     */
+    isHomepageSubdomain: function (domain) {
+        const subdomainsWithHomepages = ['www', 'm', 'sportbild'];
+        const domainSegments = domain.split('.');
+        if (domainSegments.length > 2) {
+            // check third to last domain segment (sub domain)
+            return subdomainsWithHomepages.indexOf(domainSegments[domainSegments.length - 3]) !== -1;
+        } else {
+            return false;
+        }
+    },
+
+    isFromHome: function (referrer) {
+        try {
+            const urlObject = new URL(referrer);
+            return urlObject.pathname === '/' && this.isHomepageSubdomain(urlObject.hostname);
+        } catch (err) {
+            return false;
+        }
+    },
+
+    getTrackingValue: function () {
         return s.Util.getQueryParam('cid') || s.Util.getQueryParam('wtrid') || s.Util.getQueryParam('wtmc') || '';
     },
 
@@ -96,18 +137,41 @@ const articleViewType = {
         return trackingValue.indexOf('kooperation.reco.taboola.') !== -1;
     },
 
+    isValidURL: function (urlString) {
+        try {
+            new URL(urlString);
+        } catch (err) {
+            return false;
+        }
+        return true;
+    },
+
+    getReferrerFromLocationHash: function () {
+        let referrerFromHash;
+        if (window.location.hash.indexOf('wt_ref') !== -1) {
+            referrerFromHash = window.location.hash.replace('###wt_ref=', '');
+        }
+        return this.isValidURL(referrerFromHash) ? referrerFromHash : '';
+    },
+
     getViewTypeByReferrer: function () {
+        const referrer = this.getReferrerFromLocationHash() || window.document.referrer;
+        const domain = window.document.domain;
         let articleViewType = 'event27'; //Other External
-        if (this.isFromSearch()) {
+        if (this.isFromSearch(referrer)) {
             articleViewType = 'event24'; //Search
-        } else if (this.isFromSocial()) {
+        } else if (this.isFromSocial(referrer)) {
             articleViewType = 'event25'; //Social
-        } else if (this.isFromInternal() && this.isFromHome() && this.isFromTaboola()) {
+        } else if (this.isFromInternal(referrer, domain) && this.isFromTaboola(referrer)) {
             articleViewType = 'event102'; //Taboola
-        } else if (this.isFromInternal() && this.isFromHome()) {
+        } else if (this.isFromInternal(referrer, domain) && this.isFromHome(referrer)) {
             articleViewType = 'event22'; //Home
-        } else if (this.isFromInternal()) {
+        } else if (this.isFromInternal(referrer)) {
             articleViewType = 'event23'; //Other Internal
+        } else if (this.isFromBild(referrer)) {
+            articleViewType = 'event76'; // Bild
+        } else if (this.isFromBildMobile(referrer)) {
+            articleViewType = 'event77'; // Bild mobile
         }
         return articleViewType;
     },
@@ -129,6 +193,8 @@ const articleViewType = {
     setViewType: function () {
         if (this.isArticlePage()) {
             const articleViewType = window.document.referrer ? this.getViewTypeByReferrer() : this.getViewTypeByTrackingProperty();
+            // Expose view type to the s-object because it is needed by other functionalities.
+            s._articleViewType = articleViewType;
             s.events = s.events || '';
             s.apl(s.events, articleViewType, ',', 1);
         }
@@ -169,17 +235,26 @@ function setExternalReferringDomainEvents (s) {
     ];
 
     domainsToEventMapping.forEach(domainEventMap => {
-        const { domains, event, matchExact } = domainEventMap;
+        const {domains, event, matchExact} = domainEventMap;
         const domainMatches = domains.some(domain => {
             if (matchExact) {
                 return s._referringDomain && s._referringDomain === domain;
             } else {
                 return s._referringDomain && s._referringDomain.includes(domain);
             }
-            
+
         });
         s.events = domainMatches ? s.events = s.apl(s.events, event, ',', 1) : s.events;
     });
+}
+
+function setKameleoonTracking(s) {
+    if (s.linkName === 'Kameleoon Tracking') {
+        if (window.Kameleoon) {
+            window.Kameleoon.API.Tracking.processOmniture(s);
+        }
+        window.kameleoonOmnitureCallSent = true;
+    }
 }
 
 const bildPageName = {
@@ -278,10 +353,10 @@ function init() {
     s.execdoplugins = 0;
     s.expectSupplementalData = false;
     s.myChannels = 0;
-    s.usePlugins=true;
+    s.usePlugins = true;
 
     s.trackExternalLinks = true;
-    s.eVar64 = (typeof s.visitor !== undefined) ? s.visitor.version : undefined;
+    s.eVar64 = s.visitor && s.visitor.version ? s.visitor.version : undefined;
 
     //no sdid for A4T
     s.expectSupplementalData = false; // Force to false;
@@ -302,20 +377,19 @@ function init() {
     if (window.navigator.userAgent.indexOf('iPhone') > -1) {
         s.eVar94 = window.screen.width + 'x' + window.screen.height;
     }
+
+    campaign.setCampaignVariables(s);
+    articleViewType.setViewType();
 }
 
-s.doPluginsGlobal = function(s) {
-    
-    //Config 
+s.doPluginsGlobal = function (s) {
+    //Config
     s.eVar63 = s.version;
-    
+
     //Time & Timeparting
     s.eVar184 = new Date().getHours().toString();
     s.eVar181 = new Date().getMinutes().toString();
     s.eVar185 = window.utag.data.myCW || '';
-
-    articleViewType.setViewType();
-
 };
 
 // Evaluate runtime environment
@@ -329,6 +403,7 @@ if (typeof exports === 'object') {
         articleViewType,
         setPageSourceForCheckout,
         setExternalReferringDomainEvents,
+        setKameleoonTracking,
     };
 } else {
     init();

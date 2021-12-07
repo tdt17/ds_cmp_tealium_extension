@@ -4,6 +4,7 @@ const {createWindowMock} = require('../mocks/browserMocks');
 describe('init()', () => {
     let setCampaignVariablesMock;
     let setViewTypeMock;
+    let setICIDTrackingVariables;
 
     beforeEach(() => {
         // Create a fresh window mock for each test.
@@ -17,6 +18,8 @@ describe('init()', () => {
 
         setCampaignVariablesMock = jest.spyOn(doPluginsGlobal.campaign, 'setCampaignVariables').mockImplementation();
         setViewTypeMock = jest.spyOn(doPluginsGlobal.articleViewType, 'setViewType').mockImplementation();
+        setICIDTrackingVariables = jest.spyOn(doPluginsGlobal.ICIDTracking, 'setVariables').mockImplementation();
+
     });
 
     afterEach(() => {
@@ -38,9 +41,6 @@ describe('init()', () => {
         expect(doPluginsGlobal.s.trackExternalLinks).toBe(true);
         expect(doPluginsGlobal.s.eVar64).toBe(doPluginsGlobal.s.visitor.version);
         expect(doPluginsGlobal.s.expectSupplementalData).toBe(false);
-        expect(doPluginsGlobal.s.getICID).toBeDefined();
-        expect(doPluginsGlobal.s.eVar78).toBeDefined();
-        expect(doPluginsGlobal.s.eVar79).toBeDefined();
         expect(doPluginsGlobal.s.referrer).toBe(window.document.referrer);
         expect(setCampaignVariables).toHaveBeenCalledWith(doPluginsGlobal.s);
     });
@@ -69,5 +69,11 @@ describe('init()', () => {
     it('should call articleViewType.setViewType()', () => {
         doPluginsGlobal.init();
         expect(setViewTypeMock).toHaveBeenCalled();
+    });
+
+    it('should call articleViewType.setViewType()', () => {
+        doPluginsGlobal.init();
+        const sObject = doPluginsGlobal.s;
+        expect(setICIDTrackingVariables).toHaveBeenCalledWith(sObject);
     });
 });

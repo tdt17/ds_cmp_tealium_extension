@@ -33,8 +33,9 @@ function createWindowMock() {
             loader: {},
         },
         location: {
-            hash: ''
-        },
+            hash: '',
+            search: ''
+        }
     };
 }
 

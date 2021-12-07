@@ -348,6 +348,21 @@ function setPageSourceForCheckout (s) {
     }
 }
 
+//internal Campaign
+const ICIDTracking = {
+    setVariables: function(s) {
+        let icid = '';
+        try {
+            const queryParams = new URLSearchParams(window.location.search);
+            icid = queryParams.get('icid') ? queryParams.get('icid') : '';
+        } catch (error) {
+            // nothing to do here
+        }
+
+        s.eVar78 = s.eVar79 = icid;
+    }
+};
+
 function init() {
     s.currencyCode = 'EUR';
     s.execdoplugins = 0;
@@ -361,11 +376,6 @@ function init() {
     //no sdid for A4T
     s.expectSupplementalData = false; // Force to false;
 
-    //internal Campaign
-    s.getICID = s.Util.getQueryParam('icid') || '';
-    s.eVar78 = s.getICID || '';
-    s.eVar79 = s.getICID || '';
-
     //Referrer for link events
     s.referrer = window.document.referrer || '';
 
@@ -378,6 +388,7 @@ function init() {
         s.eVar94 = window.screen.width + 'x' + window.screen.height;
     }
 
+    ICIDTracking.setVariables(s);
     campaign.setCampaignVariables(s);
     articleViewType.setViewType();
 }
@@ -404,6 +415,7 @@ if (typeof exports === 'object') {
         setPageSourceForCheckout,
         setExternalReferringDomainEvents,
         setKameleoonTracking,
+        ICIDTracking
     };
 } else {
     init();

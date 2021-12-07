@@ -29,7 +29,8 @@ function createWindowMock() {
             height: ''
         },
         utag: {
-            data: {}
+            data: {},
+            loader: {},
         },
         location: {
             hash: '',

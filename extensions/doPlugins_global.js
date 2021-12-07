@@ -201,7 +201,7 @@ const articleViewType = {
     }
 };
 
-s.setExternalReferringDomainEvents = function (s) {
+function setExternalReferringDomainEvents (s) {
     const domainsToEventMapping = [
         {
             domains: ['www.google.com', 'www.google.de'],
@@ -238,16 +238,15 @@ s.setExternalReferringDomainEvents = function (s) {
         const {domains, event, matchExact} = domainEventMap;
         const domainMatches = domains.some(domain => {
             if (matchExact) {
-                return s._referringDomain === domain;
+                return s._referringDomain && s._referringDomain === domain;
             } else {
-                return s._referringDomain.includes(domain);
+                return s._referringDomain && s._referringDomain.includes(domain);
             }
 
         });
         s.events = domainMatches ? s.events = s.apl(s.events, event, ',', 1) : s.events;
     });
-
-};
+}
 
 function setKameleoonTracking(s) {
     if (s.linkName === 'Kameleoon Tracking') {
@@ -336,6 +335,19 @@ const campaign = {
     },
 };
 
+function setPageSourceForCheckout (s) {
+    //Page Source Aufsplittung und in Checkout schieben inklusive Page Age
+    if (s._articleViewType) {
+        s.eVar44 = s._articleViewType;
+        //eVar44 in den checkout schieben
+        window.utag.loader.SC('utag_main', { 'articleview': s._articleViewType + ';exp-session' });
+        window.utag.data['cp.utag_main_articleview'] = s._articleViewType;
+        //eVar14 Page Age in den checkout schieben
+        window.utag.loader.SC('utag_main', { 'pa': window.utag.data.page_datePublication_age + ';exp-session' });
+        window.utag.data['cp.utag_main_pa'] = window.utag.data.page_datePublication_age;
+    }
+}
+
 //internal Campaign
 const ICIDTracking = {
     setVariables: function(s) {
@@ -367,6 +379,10 @@ function init() {
     //Referrer for link events
     s.referrer = window.document.referrer || '';
 
+    campaign.setCampaignVariables(s);
+    setPageSourceForCheckout(s);
+    setExternalReferringDomainEvents(s);
+
     //height & width for iPhones
     if (window.navigator.userAgent.indexOf('iPhone') > -1) {
         s.eVar94 = window.screen.width + 'x' + window.screen.height;
@@ -396,6 +412,8 @@ if (typeof exports === 'object') {
         campaign,
         bildPageName,
         articleViewType,
+        setPageSourceForCheckout,
+        setExternalReferringDomainEvents,
         setKameleoonTracking,
         ICIDTracking
     };

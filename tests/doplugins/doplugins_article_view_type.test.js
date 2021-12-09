@@ -75,35 +75,19 @@ describe('articleViewType()', () => {
         });
     });
 
-    describe('getDomainFromURLString(URLString)', () => {
-        it('should return domain from URL string', () => {
-            const domain = 'www.bild.de';
-            const urlString = `https://${domain}/any-path`;
-            const result = doPluginsGlobal.articleViewType.getDomainFromURLString(urlString);
-            expect(result).toBe(domain);
-        });
-
-        it('should return an empty string if passed in string is not a valid URL', () => {
-            const anyString = 'invalid-url-string';
-            const result = doPluginsGlobal.articleViewType.getDomainFromURLString(anyString);
-            expect(result).toBe('');
-        });
-    });
-
     describe('isFromSearch()', () => {
         it('should return TRUE if referrer is a search engine', function () {
-            const searchEngines = ['google.', 'bing.com', 'ecosia.org', 'duckduckgo.com', 'amp-welt-de.cdn.ampproject.org', 'qwant.com', 'suche.t-online.de', '.yandex.', 'yahoo.com', 'googleapis.com', 'nortonsafe.search.ask.com', 'wikipedia.org', 'googleadservices.com', 'search.myway.com', 'lycos.de'];
+            const searchDomains = ['google.', 'bing.com', 'ecosia.org', 'duckduckgo.com', 'amp-welt-de.cdn.ampproject.org', 'qwant.com', 'suche.t-online.de', '.yandex.', 'yahoo.com', 'googleapis.com', 'nortonsafe.search.ask.com', 'wikipedia.org', 'googleadservices.com', 'search.myway.com', 'lycos.de'];
 
-            searchEngines.forEach((item) => {
-                const referrer = `https://${item}/any-path`;
-                const result = doPluginsGlobal.articleViewType.isFromSearch(referrer);
+            searchDomains.forEach((domain) => {
+                const result = doPluginsGlobal.articleViewType.isFromSearch(domain);
                 expect(result).toBe(true);
             });
         });
 
         it('should return FALSE if referrer is NOT a search engine', function () {
-            const referrer = 'https://any-domain/any-path';
-            const result = doPluginsGlobal.articleViewType.isFromSearch(referrer);
+            const referringDomain = 'any-domain.com';
+            const result = doPluginsGlobal.articleViewType.isFromSearch(referringDomain);
             expect(result).toBe(false);
         });
     });
@@ -128,52 +112,50 @@ describe('articleViewType()', () => {
 
     describe('isFromBild()', () => {
         it('should return TRUE if referrer is www.bild.de', () => {
-            const referrer = 'https://www.bild.de';
-            const result = doPluginsGlobal.articleViewType.isFromBild(referrer);
+            const referringDomain = 'www.bild.de';
+            const result = doPluginsGlobal.articleViewType.isFromBild(referringDomain);
             expect(result).toBe(true);
         });
 
         it('should return FALSE if referrer is NOT www.bild.de', () => {
-            const referrer = 'https://www.any-domain.de';
-            const result = doPluginsGlobal.articleViewType.isFromBild(referrer);
+            const referringDomain = 'www.any-domain.de';
+            const result = doPluginsGlobal.articleViewType.isFromBild(referringDomain);
             expect(result).toBe(false);
         });
     });
 
     describe('isFromBildMobile()', () => {
         it('should return TRUE if referrer is m.bild.de', () => {
-            const referrer = 'https://m.bild.de';
-            const result = doPluginsGlobal.articleViewType.isFromBildMobile(referrer);
+            const referringDomain = 'm.bild.de';
+            const result = doPluginsGlobal.articleViewType.isFromBildMobile(referringDomain);
             expect(result).toBe(true);
         });
 
         it('should return FALSE if referrer is NOT m.bild.de', () => {
-            const referrer = 'https://www.any-domain.de';
-            const result = doPluginsGlobal.articleViewType.isFromBildMobile(referrer);
+            const referringDomain = 'any-domain.de';
+            const result = doPluginsGlobal.articleViewType.isFromBildMobile(referringDomain);
             expect(result).toBe(false);
         });
     });
 
     describe('isFromInternal()', function () {
-        it('should return TRUE if referrer is from the same domain', function () {
+        it('should return TRUE if referring domain is from the same domain', function () {
             const anyDomain = 'any-domain.com';
-            const referrer = `https://${anyDomain}/any-path`;
-            const result = doPluginsGlobal.articleViewType.isFromInternal(referrer, anyDomain);
+            const result = doPluginsGlobal.articleViewType.isFromInternal(anyDomain, anyDomain);
             expect(result).toBe(true);
         });
 
-        it('should return FALSE if referrer is NOT from the same domain', function () {
+        it('should return FALSE if referring domain is NOT from the same domain', function () {
             const anyDomain = 'any-domain.com';
             const anyOtherDomain = 'any-other-domain.com';
-            const referrer = `https://${anyDomain}/any-path`;
-            const result = doPluginsGlobal.articleViewType.isFromInternal(referrer, anyOtherDomain);
+            const result = doPluginsGlobal.articleViewType.isFromInternal(anyDomain, anyOtherDomain);
             expect(result).toBe(false);
         });
 
-        it('should return TRUE if referrer is from sub domain', function () {
+        it('should return TRUE if referring domain is from sub domain', function () {
             const anyDomain = 'any-domain.de';
-            const referrer = `https://any-sub-domain.${anyDomain}`;
-            const result = doPluginsGlobal.articleViewType.isFromInternal(referrer, anyDomain);
+            const referringDomain = `any-sub-domain.${anyDomain}`;
+            const result = doPluginsGlobal.articleViewType.isFromInternal(referringDomain, anyDomain);
             expect(result).toBe(true);
         });
     });
@@ -278,6 +260,7 @@ describe('articleViewType()', () => {
         let isFromHomeMock;
         let isFromTaboolaMock;
         let getReferrerFromLocationHashMock;
+        let getDomainFromURLStringMock;
 
         beforeEach(() => {
             isFromSearchMock = jest.spyOn(doPluginsGlobal.articleViewType, 'isFromSearch').mockReturnValue(false);
@@ -286,6 +269,7 @@ describe('articleViewType()', () => {
             isFromHomeMock = jest.spyOn(doPluginsGlobal.articleViewType, 'isFromHome').mockReturnValue(false);
             isFromTaboolaMock = jest.spyOn(doPluginsGlobal.articleViewType, 'isFromTaboola').mockReturnValue(false);
             getReferrerFromLocationHashMock = jest.spyOn(doPluginsGlobal.articleViewType, 'getReferrerFromLocationHash').mockReturnValue('');
+            getDomainFromURLStringMock = jest.spyOn(doPluginsGlobal.utils, 'getDomainFromURLString').mockReturnValue('');
         });
 
         afterEach(() => {
@@ -296,13 +280,13 @@ describe('articleViewType()', () => {
             const anyReferrerFromHash = 'any-referrer-from-hash';
             getReferrerFromLocationHashMock.mockReturnValue(anyReferrerFromHash);
             doPluginsGlobal.articleViewType.getViewTypeByReferrer();
-            expect(isFromSearchMock).toHaveBeenCalledWith(anyReferrerFromHash);
+            expect(getDomainFromURLStringMock).toHaveBeenCalledWith(anyReferrerFromHash);
         });
 
         it('should use the document referrer if the location hash is NOT available', () => {
             window.document.referrer = 'any-document-referrer';
             doPluginsGlobal.articleViewType.getViewTypeByReferrer();
-            expect(isFromSearchMock).toHaveBeenCalledWith(window.document.referrer);
+            expect(getDomainFromURLStringMock).toHaveBeenCalledWith(window.document.referrer);
         });
 
         it('should return the right event name if referrer is of type: Other External', () => {

@@ -27,6 +27,18 @@ s.split = new Function("l","d",""
 /* eslint-enable */
 // END: Pre-defined Adobe Plugins
 
+
+const utils = {
+    getDomainFromURLString: function (urlString) {
+        try {
+            const urlObject = new URL(urlString);
+            return urlObject.hostname;
+        } catch (err) {
+            return '';
+        }
+    }
+};
+
 /**
  * Module sets the referring context of an article page view as an certain event to the events variable.
  */
@@ -51,20 +63,11 @@ const articleViewType = {
         return ARTICLE_TYPES.indexOf(pageType) !== -1;
     },
 
-    getDomainFromURLString: function (urlString) {
-        try {
-            const urlObject = new URL(urlString);
-            return urlObject.hostname;
-        } catch (err) {
-            return '';
-        }
-    },
-
-    isFromSearch: function (referrer) {
+    isFromSearch: function (referringDomain) {
         const searchEngines = ['google.', 'bing.com', 'ecosia.org', 'duckduckgo.com', 'amp-welt-de.cdn.ampproject.org', 'qwant.com', 'suche.t-online.de', '.yandex.', 'yahoo.com', 'googleapis.com', 'nortonsafe.search.ask.com', 'wikipedia.org', 'googleadservices.com', 'search.myway.com', 'lycos.de'];
 
         return searchEngines.some(item => {
-            return referrer.indexOf(item) !== -1;
+            return referringDomain.indexOf(item) !== -1;
         });
     },
 
@@ -76,31 +79,28 @@ const articleViewType = {
         });
     },
 
-    isFromBild: function (referrer) {
-        const referrerDomain = this.getDomainFromURLString(referrer);
-        return referrerDomain === 'www.bild.de';
+    isFromBild: function (referringDomain) {
+        return referringDomain === 'www.bild.de';
     },
 
-    isFromBildMobile: function (referrer) {
-        const referrerDomain = this.getDomainFromURLString(referrer);
-        return referrerDomain === 'm.bild.de';
+    isFromBildMobile: function (referringDomain) {
+        return referringDomain === 'm.bild.de';
     },
 
     /**
      * Same domain check including subdomains.
      */
-    isFromInternal: function (referrer, domain) {
-        const referrerDomain = this.getDomainFromURLString(referrer);
-        const referrerDomainSegments = referrerDomain.split('.');
+    isFromInternal: function (referringDomain, domain) {
+        const referringDomainSegments = referringDomain.split('.');
         const documentDomainSegments = domain.split('.');
 
         // Exception for Sportbild: 'sportbild.bild.de' should not be treated as an internal (sub) domain of Bild
-        if(referrerDomain.indexOf('sportbild') !== -1) {
+        if (referringDomain.indexOf('sportbild') !== -1) {
             return domain.indexOf('sportbild') !== -1;
         }
 
         // compare next to last segments (eg. www.bild.de, m.bild.de --> bild)
-        return referrerDomainSegments[referrerDomainSegments.length - 2] === documentDomainSegments[documentDomainSegments.length - 2];
+        return referringDomainSegments[referringDomainSegments.length - 2] === documentDomainSegments[documentDomainSegments.length - 2];
     },
 
     /**
@@ -163,21 +163,22 @@ const articleViewType = {
 
     getViewTypeByReferrer: function () {
         const referrer = this.getReferrerFromLocationHash() || window.document.referrer;
+        const referringDomain = utils.getDomainFromURLString(referrer);
         const domain = window.document.domain;
         let articleViewType = 'event27'; //Other External
-        if (this.isFromSearch(referrer)) {
+        if (this.isFromSearch(referringDomain)) {
             articleViewType = 'event24'; //Search
         } else if (this.isFromSocial(referrer)) {
             articleViewType = 'event25'; //Social
-        } else if (this.isFromInternal(referrer, domain) && this.isFromTaboola(referrer)) {
+        } else if (this.isFromInternal(referringDomain, domain) && this.isFromTaboola()) {
             articleViewType = 'event102'; //Taboola
-        } else if (this.isFromInternal(referrer, domain) && this.isFromHome(referrer)) {
+        } else if (this.isFromInternal(referringDomain, domain) && this.isFromHome(referrer)) {
             articleViewType = 'event22'; //Home
-        } else if (this.isFromInternal(referrer)) {
+        } else if (this.isFromInternal(referringDomain)) {
             articleViewType = 'event23'; //Other Internal
-        } else if (this.isFromBild(referrer)) {
+        } else if (this.isFromBild(referringDomain)) {
             articleViewType = 'event76'; // Bild
-        } else if (this.isFromBildMobile(referrer)) {
+        } else if (this.isFromBildMobile(referringDomain)) {
             articleViewType = 'event77'; // Bild mobile
         }
         return articleViewType;
@@ -208,7 +209,7 @@ const articleViewType = {
     }
 };
 
-function setExternalReferringDomainEvents (s) {
+function setExternalReferringDomainEvents(s) {
     const domainsToEventMapping = [
         {
             domains: ['www.google.com', 'www.google.de'],
@@ -342,22 +343,22 @@ const campaign = {
     },
 };
 
-function setPageSourceForCheckout (s) {
+function setPageSourceForCheckout(s) {
     //Page Source Aufsplittung und in Checkout schieben inklusive Page Age
     if (s._articleViewType) {
         s.eVar44 = s._articleViewType;
         //eVar44 in den checkout schieben
-        window.utag.loader.SC('utag_main', { 'articleview': s._articleViewType + ';exp-session' });
+        window.utag.loader.SC('utag_main', {'articleview': s._articleViewType + ';exp-session'});
         window.utag.data['cp.utag_main_articleview'] = s._articleViewType;
         //eVar14 Page Age in den checkout schieben
-        window.utag.loader.SC('utag_main', { 'pa': window.utag.data.page_datePublication_age + ';exp-session' });
+        window.utag.loader.SC('utag_main', {'pa': window.utag.data.page_datePublication_age + ';exp-session'});
         window.utag.data['cp.utag_main_pa'] = window.utag.data.page_datePublication_age;
     }
 }
 
 //internal Campaign
 const ICIDTracking = {
-    setVariables: function(s) {
+    setVariables: function (s) {
         let icid = '';
         try {
             const queryParams = new URLSearchParams(window.location.search);
@@ -385,16 +386,15 @@ function init() {
 
     //Referrer for link events
     s.referrer = window.document.referrer || '';
-
-    campaign.setCampaignVariables(s);
-    setPageSourceForCheckout(s);
-    setExternalReferringDomainEvents(s);
+    s._referringDomain = utils.getDomainFromURLString(window.document.referrer);
 
     //height & width for iPhones
     if (window.navigator.userAgent.indexOf('iPhone') > -1) {
         s.eVar94 = window.screen.width + 'x' + window.screen.height;
     }
 
+    setPageSourceForCheckout(s);
+    setExternalReferringDomainEvents(s);
     ICIDTracking.setVariables(s);
     campaign.setCampaignVariables(s);
     articleViewType.setViewType();
@@ -415,6 +415,7 @@ if (typeof exports === 'object') {
     // Expose reference to members for unit testing.
     module.exports = {
         s,
+        utils,
         init,
         campaign,
         bildPageName,

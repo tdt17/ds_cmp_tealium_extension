@@ -389,11 +389,11 @@ function init() {
         s.eVar94 = window.screen.width + 'x' + window.screen.height;
     }
 
-    setPageSourceForCheckout(s);
-    setExternalReferringDomainEvents(s);
     ICIDTracking.setVariables(s);
     campaign.setCampaignVariables(s);
     articleViewType.setViewType();
+    setPageSourceForCheckout(s);
+    setExternalReferringDomainEvents(s);
 }
 
 s.doPluginsGlobal = function (s) {

@@ -79,28 +79,28 @@ const articleViewType = {
         });
     },
 
-    isFromBild: function (referrerDomain) {
-        return referrerDomain === 'www.bild.de';
+    isFromBild: function (referringDomain) {
+        return referringDomain === 'www.bild.de';
     },
 
-    isFromBildMobile: function (referrerDomain) {
-        return referrerDomain === 'm.bild.de';
+    isFromBildMobile: function (referringDomain) {
+        return referringDomain === 'm.bild.de';
     },
 
     /**
      * Same domain check including subdomains.
      */
-    isFromInternal: function (referrerDomain, domain) {
-        const referrerDomainSegments = referrerDomain.split('.');
+    isFromInternal: function (referringDomain, domain) {
+        const referringDomainSegments = referringDomain.split('.');
         const documentDomainSegments = domain.split('.');
 
         // Exception for Sportbild: 'sportbild.bild.de' should not be treated as an internal (sub) domain of Bild
-        if (referrerDomain.indexOf('sportbild') !== -1) {
+        if (referringDomain.indexOf('sportbild') !== -1) {
             return domain.indexOf('sportbild') !== -1;
         }
 
         // compare next to last segments (eg. www.bild.de, m.bild.de --> bild)
-        return referrerDomainSegments[referrerDomainSegments.length - 2] === documentDomainSegments[documentDomainSegments.length - 2];
+        return referringDomainSegments[referringDomainSegments.length - 2] === documentDomainSegments[documentDomainSegments.length - 2];
     },
 
     /**

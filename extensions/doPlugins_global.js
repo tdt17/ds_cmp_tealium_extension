@@ -128,7 +128,14 @@ const articleViewType = {
     },
 
     getTrackingValue: function () {
-        return s.Util.getQueryParam('cid') || s.Util.getQueryParam('wtrid') || s.Util.getQueryParam('wtmc') || '';
+        let trackingValue;
+        try {
+            const queryParams = new URLSearchParams(window.location.search);
+            trackingValue = queryParams.get('cid') || queryParams.get('wtrid') || queryParams.get('wtmc') || '';
+        } catch (error) {
+            trackingValue = '';
+        }
+        return trackingValue;
     },
 
     isFromTaboola: function () {

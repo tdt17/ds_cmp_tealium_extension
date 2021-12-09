@@ -364,19 +364,9 @@ describe('articleViewType()', () => {
     });
 
     describe('getTrackingValue', () => {
-        beforeEach(() => {
-            doPluginsGlobal.s.Util = {
-                getQueryParam: jest.fn()
-            };
-        });
-
-        afterEach(() => {
-            jest.restoreAllMocks();
-        });
-
         it('should return the value of the URL query param: cid', () => {
             const cidValue = 'any-cid-value';
-            doPluginsGlobal.s.Util.getQueryParam.mockReturnValueOnce(cidValue);
+            window.location.search = `?cid=${cidValue}`;
             const result = doPluginsGlobal.articleViewType.getTrackingValue();
 
             expect(result).toBe(cidValue);
@@ -384,8 +374,7 @@ describe('articleViewType()', () => {
 
         it('should return the value of the URL query param: wtrid', () => {
             const wtridValue = 'any-wtrid-value';
-            doPluginsGlobal.s.Util.getQueryParam.mockReturnValueOnce('');
-            doPluginsGlobal.s.Util.getQueryParam.mockReturnValueOnce(wtridValue);
+            window.location.search = `?cid=${wtridValue}`;
             const result = doPluginsGlobal.articleViewType.getTrackingValue();
 
             expect(result).toBe(wtridValue);
@@ -393,12 +382,16 @@ describe('articleViewType()', () => {
 
         it('should return the value of the URL query param: wtmc', () => {
             const wtmcValue = 'any-wtmc-value';
-            doPluginsGlobal.s.Util.getQueryParam.mockReturnValueOnce('');
-            doPluginsGlobal.s.Util.getQueryParam.mockReturnValueOnce('');
-            doPluginsGlobal.s.Util.getQueryParam.mockReturnValueOnce(wtmcValue);
+            window.location.search = `?cid=${wtmcValue}`;
             const result = doPluginsGlobal.articleViewType.getTrackingValue();
 
             expect(result).toBe(wtmcValue);
+        });
+
+        it('should return an empty string if there are no tracking values available', () => {
+            const result = doPluginsGlobal.articleViewType.getTrackingValue();
+
+            expect(result).toBe('');
         });
     });
 
@@ -498,5 +491,4 @@ describe('articleViewType()', () => {
         });
     });
 
-})
-;
+});

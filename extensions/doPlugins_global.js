@@ -386,7 +386,6 @@ function init() {
         s.eVar94 = window.screen.width + 'x' + window.screen.height;
     }
 
-    campaign.setCampaignVariables(s);
     setPageSourceForCheckout(s);
     setExternalReferringDomainEvents(s);
     ICIDTracking.setVariables(s);

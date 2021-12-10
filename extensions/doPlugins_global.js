@@ -201,9 +201,8 @@ const articleViewType = {
             const articleViewType = window.document.referrer ? this.getViewTypeByReferrer() : this.getViewTypeByTrackingProperty();
             // Expose view type to the s-object because it is needed by other functionalities.
             s._articleViewType = articleViewType;
-            s.events = articleViewType;
-            // s.events = s.events || '';
-            // s.apl(s.events, articleViewType, ',', 1);
+            s.events = s.events || '';
+            s.apl(s.events, articleViewType);
         }
     }
 };
@@ -405,8 +404,6 @@ s.doPluginsGlobal = function (s) {
     s.eVar184 = new Date().getHours().toString();
     s.eVar181 = new Date().getMinutes().toString();
     s.eVar185 = window.utag.data.myCW || '';
-    articleViewType.setViewType();
-
 };
 
 // Evaluate runtime environment

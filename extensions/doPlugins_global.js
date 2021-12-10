@@ -1,4 +1,5 @@
 /* eslint-disable */
+const s = window.s || {};
 
 // START: Pre-defined Adobe Plugins
 /* istanbul ignore next */

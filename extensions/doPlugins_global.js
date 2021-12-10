@@ -397,7 +397,7 @@ function init() {
 
     ICIDTracking.setVariables(s);
     campaign.setCampaignVariables(s);
-    // articleViewType.setViewType();
+    articleViewType.setViewType();
     setPageSourceForCheckout(s);
     setExternalReferringDomainEvents(s);
 }

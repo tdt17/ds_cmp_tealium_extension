@@ -12,14 +12,8 @@ s.handlePPVevents = function(){if("undefined"!==typeof s_c_il){for(var c=0,g=s_c
 /* Adobe Consulting Plugin: p_fo (pageFirstOnly) v3.0 (Requires AppMeasurement) */
 s.p_fo = function(c){if("-v"===c)return{plugin:"p_fo",version:"3.0"};a:{if("undefined"!==typeof window.s_c_il){var a=0;for(var b;a<window.s_c_il.length;a++)if(b=window.s_c_il[a],b._c&&"s_c"===b._c){a=b;break a}}a=void 0}"undefined"!==typeof a&&(a.contextData.p_fo="3.0");window.__fo||(window.__fo={});if(window.__fo[c])return!1;window.__fo[c]={};return!0};
 /* istanbul ignore next */
-/*
-* Plugin Utility: apl v1.1
-*/
-s.apl=new Function("L","v","d","u",""
-    +"var s=this,m=0;if(!L)L='';if(u){var i,n,a=s.split(L,d);for(i=0;i<a."
-    +"length;i++){n=a[i];m=m||(u==1?(n==v):(n.toLowerCase()==v.toLowerCas"
-    +"e()));}}if(!m)L=L?L+d+v:v;return L");
-
+/* Adobe Consulting Plugin: apl (appendToList) v4.0 */
+s.apl = function (lv,va,d1,d2,cc){var b=lv,d=va,e=d1,c=d2,g=cc;if("-v"===b)return{plugin:"apl",version:"4.0"};var h=function(){if("undefined"!==typeof window.s_c_il)for(var k=0,b;k<window.s_c_il.length;k++)if(b=window.s_c_il[k],b._c&&"s_c"===b._c)return b}();"undefined"!==typeof h&&(h.contextData.apl="4.0");window.inList=window.inList||function(b,d,c,e){if("string"!==typeof d)return!1;if("string"===typeof b)b=b.split(c||",");else if("object"!==typeof b)return!1;c=0;for(a=b.length;c<a;c++)if(1==e&&d===b[c]||d.toLowerCase()===b[c].toLowerCase())return!0;return!1};if(!b||"string"===typeof b){if("string"!==typeof d||""===d)return b;e=e||",";c=c||e;1==c&&(c=e,g||(g=1));2==c&&1!=g&&(c=e);d=d.split(",");h=d.length;for(var f=0;f<h;f++)window.inList(b,d[f],e,g)||(b=b?b+c+d[f]:d[f])}return b};
 /* istanbul ignore next */
 /* Adobe Consulting Plugin: getValOnce v2.01 */
 s.getValOnce = function (e, t, i, n) { if (e && (t = t || "s_gvo", i = i || 0, n = "m" === n ? 6e4 : 864e5, e !== this.c_r(t))) { var r = new Date; return r.setTime(r.getTime() + i * n), this.c_w(t, e, 0 === i ? 0 : r), e } return "" };

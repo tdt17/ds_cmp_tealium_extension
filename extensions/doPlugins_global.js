@@ -207,8 +207,9 @@ const articleViewType = {
             const articleViewType = window.document.referrer ? this.getViewTypeByReferrer() : this.getViewTypeByTrackingProperty();
             // Expose view type to the s-object because it is needed by other functionalities.
             s._articleViewType = articleViewType;
-            s.events = s.events || '';
-            s.apl(s.events, articleViewType, ',', 1);
+            s.events = articleViewType;
+            // s.events = s.events || '';
+            // s.apl(s.events, articleViewType, ',', 1);
         }
     }
 };

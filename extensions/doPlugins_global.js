@@ -202,7 +202,7 @@ const articleViewType = {
             // Expose view type to the s-object because it is needed by other functionalities.
             s._articleViewType = articleViewType;
             s.events = s.events || '';
-            s.apl(s.events, articleViewType);
+            s.events = s.apl(s.events, articleViewType);
         }
     }
 };

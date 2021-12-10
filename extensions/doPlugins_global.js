@@ -250,7 +250,7 @@ function setExternalReferringDomainEvents(s) {
             }
 
         });
-        s.events = domainMatches ? s.events = s.apl(s.events, event, ',', 1) : s.events;
+        s.events = domainMatches ? s.apl(s.events, event) : s.events;
     });
 }
 

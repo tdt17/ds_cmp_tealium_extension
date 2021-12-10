@@ -443,7 +443,7 @@ describe('articleViewType()', () => {
             isArticlePageMock.mockReturnValue(true);
             getViewTypeByTrackingPropertyMock.mockReturnValue(anyViewType);
             doPluginsGlobal.articleViewType.setViewType();
-            expect(aplMock).toHaveBeenCalledWith('', anyViewType, ',', 1);
+            expect(aplMock).toHaveBeenCalledWith('', anyViewType);
         });
 
         it('should expose the article-view-type to the s-object (s._articleViewType)', function () {

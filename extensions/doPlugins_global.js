@@ -1,5 +1,4 @@
 /* eslint-disable */
-var s = s || {};
 
 // START: Pre-defined Adobe Plugins
 /* istanbul ignore next */

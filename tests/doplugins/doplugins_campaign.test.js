@@ -1,4 +1,4 @@
-const doPluginsGlobal = require('../../extensions/doPlugins_global');
+const s = require('../../extensions/doPlugins_global');
 const {createWindowMock} = require('../mocks/browserMocks');
 
 describe('campaign', () => {
@@ -23,7 +23,7 @@ describe('campaign', () => {
                 'qp.wt_mc': 'wt_mc.test',
             };
 
-            const adobe_campaign = doPluginsGlobal.campaign.getAdobeCampaign();
+            const adobe_campaign = s._campaignObj.getAdobeCampaign();
             expect(adobe_campaign).toBe('cid=' + window.utag.data['qp.cid']);
 
         });
@@ -34,7 +34,7 @@ describe('campaign', () => {
                 'qp.wt_mc': 'wt_mc.test',
             };
 
-            const adobe_campaign = doPluginsGlobal.campaign.getAdobeCampaign();
+            const adobe_campaign = s._campaignObj.getAdobeCampaign();
             expect(adobe_campaign).toBe('wtrid=' + window.utag.data['qp.wtrid']);
 
         });
@@ -44,7 +44,7 @@ describe('campaign', () => {
                 'qp.wt_mc': 'wt_mc.test',
             };
 
-            const adobe_campaign = doPluginsGlobal.campaign.getAdobeCampaign();
+            const adobe_campaign = s._campaignObj.getAdobeCampaign();
             expect(adobe_campaign).toBe('wtmc=' + window.utag.data['qp.wtmc']);
 
         });
@@ -53,28 +53,36 @@ describe('campaign', () => {
                 'qp.wt_mc': 'wt_mc.test',
             };
 
-            const adobe_campaign = doPluginsGlobal.campaign.getAdobeCampaign();
+            const adobe_campaign = s._campaignObj.getAdobeCampaign();
             expect(adobe_campaign).toBe('wt_mc=' + window.utag.data['qp.wt_mc']);
 
         });
     });
 
     describe('setCampaignVariables', () => {
+        let getValOnceMock;
+        beforeEach(() => {
+            getValOnceMock = jest.spyOn(s, 'getValOnce').mockImplementation();
+        });
+
+        afterEach(() => {
+            jest.restoreAllMocks();
+        });
 
         it('should get adobe campaign and set correct data if s.campaign is not present', () => {
-            const s = {
-                ...doPluginsGlobal.s,
-                getValOnce: jest.fn().mockReturnValue('cid=cid.test'),
+            const sObject = {
+                ...s
             };
 
-            jest.spyOn(doPluginsGlobal.campaign, 'getAdobeCampaign').mockReturnValue('cid=cid.test');
+            jest.spyOn(s._campaignObj, 'getAdobeCampaign').mockReturnValue('cid=cid.test');
+            getValOnceMock.mockReturnValue('cid=cid.test');
 
-            doPluginsGlobal.campaign.setCampaignVariables(s);
+            s._campaignObj.setCampaignVariables(sObject);
 
             expect(window.utag.data.adobe_campaign).toBe('cid=cid.test');
             expect(s.getValOnce).toHaveBeenCalledWith('cid=cid.test', 's_ev0', 0, 'm');
-            expect(s.campaign).toBe('cid=cid.test');
-            expect(s.eVar88).toBe(window.utag.data.adobe_campaign);
+            expect(sObject.campaign).toBe('cid=cid.test');
+            expect(sObject.eVar88).toBe(window.utag.data.adobe_campaign);
         });
 
     });

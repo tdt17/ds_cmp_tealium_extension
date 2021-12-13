@@ -1,4 +1,4 @@
-const doPluginsGlobal = require('../../extensions/doPlugins_global');
+const s = require('../../extensions/doPlugins_global');
 const {createWindowMock} = require('../mocks/browserMocks');
 
 describe('setKameleoonTracking', () => {
@@ -21,23 +21,23 @@ describe('setKameleoonTracking', () => {
     });
 
     it('should call kameleoon process omniture if s.linkName is Kameleoon Tracking and window.Kameleoon exists', () => {
-        const s = {
-            ...doPluginsGlobal.s,
+        const sObject = {
+            ...s,
             linkName: 'Kameleoon Tracking',
         };
 
-        doPluginsGlobal.setKameleoonTracking(s);
+        s._setKameleoonTracking(sObject);
 
         expect(processOmnitureMock).toHaveBeenCalled();
         expect(window.kameleoonOmnitureCallSent).toBe(true);
     });
 
     it('should not set kameleoon tracking if s.linkName is not Kameleoon Tracking', () => {
-        const s = {
-            ...doPluginsGlobal.s,
+        const sObject = {
+            s,
         };
 
-        doPluginsGlobal.setKameleoonTracking(s);
+        s._setKameleoonTracking(sObject);
 
         expect(processOmnitureMock).not.toHaveBeenCalled();
         expect(window.kameleoonOmnitureCallSent).toBeUndefined();

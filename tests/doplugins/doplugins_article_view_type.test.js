@@ -1,4 +1,4 @@
-const doPluginsGlobal = require('../../extensions/doPlugins_global');
+const s = require('../../extensions/doPlugins_global');
 const {createWindowMock} = require('../mocks/browserMocks');
 
 describe('articleViewType()', () => {
@@ -20,7 +20,7 @@ describe('articleViewType()', () => {
             window.utag.data = {
                 page_type: pageType
             };
-            const result = doPluginsGlobal.articleViewType.getPageType();
+            const result = s._articleViewTypeObj.getPageType();
 
             expect(result).toBe(pageType);
         });
@@ -29,7 +29,7 @@ describe('articleViewType()', () => {
             window.utag.data = {
                 page_document_type: pageType
             };
-            const result = doPluginsGlobal.articleViewType.getPageType();
+            const result = s._articleViewTypeObj.getPageType();
 
             expect(result).toBe(pageType);
         });
@@ -38,7 +38,7 @@ describe('articleViewType()', () => {
             window.utag.data = {
                 page_mapped_doctype_for_pagename: pageType
             };
-            const result = doPluginsGlobal.articleViewType.getPageType();
+            const result = s._articleViewTypeObj.getPageType();
 
             expect(result).toBe(pageType);
         });
@@ -56,7 +56,7 @@ describe('articleViewType()', () => {
         ];
 
         it('should be false when page is NOT of type article', () => {
-            const result = doPluginsGlobal.articleViewType.isArticlePage();
+            const result = s._articleViewTypeObj.isArticlePage();
             expect(result).toBe(false);
         });
 
@@ -66,7 +66,7 @@ describe('articleViewType()', () => {
             PROPERTY_NAMES.forEach(propertyName => {
                 ARTICLE_TYPES.forEach(articleType => {
                     window.utag.data[propertyName] = articleType;
-                    const result = doPluginsGlobal.articleViewType.isArticlePage();
+                    const result = s._articleViewTypeObj.isArticlePage();
                     expect(result).toBe(true);
                 });
                 delete window.utag.data[propertyName];
@@ -80,14 +80,14 @@ describe('articleViewType()', () => {
             const searchDomains = ['google.', 'bing.com', 'ecosia.org', 'duckduckgo.com', 'amp-welt-de.cdn.ampproject.org', 'qwant.com', 'suche.t-online.de', '.yandex.', 'yahoo.com', 'googleapis.com', 'nortonsafe.search.ask.com', 'wikipedia.org', 'googleadservices.com', 'search.myway.com', 'lycos.de'];
 
             searchDomains.forEach((domain) => {
-                const result = doPluginsGlobal.articleViewType.isFromSearch(domain);
+                const result = s._articleViewTypeObj.isFromSearch(domain);
                 expect(result).toBe(true);
             });
         });
 
         it('should return FALSE if referrer is NOT a search engine', function () {
             const referringDomain = 'any-domain.com';
-            const result = doPluginsGlobal.articleViewType.isFromSearch(referringDomain);
+            const result = s._articleViewTypeObj.isFromSearch(referringDomain);
             expect(result).toBe(false);
         });
     });
@@ -98,14 +98,14 @@ describe('articleViewType()', () => {
 
             socialDomains.forEach((item) => {
                 const referrer = `https://${item}/any-path`;
-                const result = doPluginsGlobal.articleViewType.isFromSocial(referrer);
+                const result = s._articleViewTypeObj.isFromSocial(referrer);
                 expect(result).toBe(true);
             });
         });
 
         it('should return FALSE if referrer is NOT a search engine', function () {
             const referrer = 'https://any-domain/any-path';
-            const result = doPluginsGlobal.articleViewType.isFromSocial(referrer);
+            const result = s._articleViewTypeObj.isFromSocial(referrer);
             expect(result).toBe(false);
         });
     });
@@ -113,13 +113,13 @@ describe('articleViewType()', () => {
     describe('isFromBild()', () => {
         it('should return TRUE if referrer is www.bild.de', () => {
             const referringDomain = 'www.bild.de';
-            const result = doPluginsGlobal.articleViewType.isFromBild(referringDomain);
+            const result = s._articleViewTypeObj.isFromBild(referringDomain);
             expect(result).toBe(true);
         });
 
         it('should return FALSE if referrer is NOT www.bild.de', () => {
             const referringDomain = 'www.any-domain.de';
-            const result = doPluginsGlobal.articleViewType.isFromBild(referringDomain);
+            const result = s._articleViewTypeObj.isFromBild(referringDomain);
             expect(result).toBe(false);
         });
     });
@@ -127,13 +127,13 @@ describe('articleViewType()', () => {
     describe('isFromBildMobile()', () => {
         it('should return TRUE if referrer is m.bild.de', () => {
             const referringDomain = 'm.bild.de';
-            const result = doPluginsGlobal.articleViewType.isFromBildMobile(referringDomain);
+            const result = s._articleViewTypeObj.isFromBildMobile(referringDomain);
             expect(result).toBe(true);
         });
 
         it('should return FALSE if referrer is NOT m.bild.de', () => {
             const referringDomain = 'any-domain.de';
-            const result = doPluginsGlobal.articleViewType.isFromBildMobile(referringDomain);
+            const result = s._articleViewTypeObj.isFromBildMobile(referringDomain);
             expect(result).toBe(false);
         });
     });
@@ -141,21 +141,21 @@ describe('articleViewType()', () => {
     describe('isFromInternal()', function () {
         it('should return TRUE if referring domain is from the same domain', function () {
             const anyDomain = 'any-domain.com';
-            const result = doPluginsGlobal.articleViewType.isFromInternal(anyDomain, anyDomain);
+            const result = s._articleViewTypeObj.isFromInternal(anyDomain, anyDomain);
             expect(result).toBe(true);
         });
 
         it('should return FALSE if referring domain is NOT from the same domain', function () {
             const anyDomain = 'any-domain.com';
             const anyOtherDomain = 'any-other-domain.com';
-            const result = doPluginsGlobal.articleViewType.isFromInternal(anyDomain, anyOtherDomain);
+            const result = s._articleViewTypeObj.isFromInternal(anyDomain, anyOtherDomain);
             expect(result).toBe(false);
         });
 
         it('should return TRUE if referring domain is from sub domain', function () {
             const anyDomain = 'any-domain.de';
             const referringDomain = `any-sub-domain.${anyDomain}`;
-            const result = doPluginsGlobal.articleViewType.isFromInternal(referringDomain, anyDomain);
+            const result = s._articleViewTypeObj.isFromInternal(referringDomain, anyDomain);
             expect(result).toBe(true);
         });
     });
@@ -170,7 +170,7 @@ describe('articleViewType()', () => {
             ];
 
             homepageSubDomains.forEach(domain => {
-                const result = doPluginsGlobal.articleViewType.isHomepageSubdomain(domain);
+                const result = s._articleViewTypeObj.isHomepageSubdomain(domain);
                 expect(result).toBe(true);
             });
         });
@@ -184,7 +184,7 @@ describe('articleViewType()', () => {
             ];
 
             homepageSubDomains.forEach(domain => {
-                const result = doPluginsGlobal.articleViewType.isHomepageSubdomain(domain);
+                const result = s._articleViewTypeObj.isHomepageSubdomain(domain);
                 expect(result).toBe(false);
             });
         });
@@ -196,7 +196,7 @@ describe('articleViewType()', () => {
             const anyDomain = 'www.any-domain.de';
             const referrer = `https://${anyDomain}`;
             window.document.domain = anyDomain;
-            const result = doPluginsGlobal.articleViewType.isFromHome(referrer);
+            const result = s._articleViewTypeObj.isFromHome(referrer);
             expect(result).toBe(true);
         });
 
@@ -204,7 +204,7 @@ describe('articleViewType()', () => {
             const anyDomain = 'www.any-domain.de';
             const referrer = `https://${anyDomain}/any-path`;
             window.document.domain = anyDomain;
-            const result = doPluginsGlobal.articleViewType.isFromHome(referrer);
+            const result = s._articleViewTypeObj.isFromHome(referrer);
             expect(result).toBe(false);
         });
     });
@@ -212,7 +212,7 @@ describe('articleViewType()', () => {
     describe('isFromTaboola()', () => {
         let getTrackingValueMock;
         beforeEach(() => {
-            getTrackingValueMock = jest.spyOn(doPluginsGlobal.articleViewType, 'getTrackingValue');
+            getTrackingValueMock = jest.spyOn(s._articleViewTypeObj, 'getTrackingValue');
         });
 
         afterEach(() => {
@@ -222,14 +222,14 @@ describe('articleViewType()', () => {
         it('should return TRUE if referrer is from Taboola context', function () {
             const taboolaTrackingValue = 'kooperation.reco.taboola.any-text';
             getTrackingValueMock.mockReturnValue(taboolaTrackingValue);
-            const result = doPluginsGlobal.articleViewType.isFromTaboola();
+            const result = s._articleViewTypeObj.isFromTaboola();
             expect(result).toBe(true);
         });
 
         it('should return FALSE if referrer is NOT from Taboola context', function () {
             const anyTrackingValue = 'any-tracking-value';
             getTrackingValueMock.mockReturnValue(anyTrackingValue);
-            const result = doPluginsGlobal.articleViewType.isFromTaboola();
+            const result = s._articleViewTypeObj.isFromTaboola();
             expect(result).toBe(false);
         });
     });
@@ -239,7 +239,7 @@ describe('articleViewType()', () => {
 
         it('should return the referrer from the location hash', () => {
             window.location.hash = `###wt_ref=${anyValidUrl}`;
-            const result = doPluginsGlobal.articleViewType.getReferrerFromLocationHash();
+            const result = s._articleViewTypeObj.getReferrerFromLocationHash();
 
             expect(result).toBe(anyValidUrl);
         });
@@ -247,7 +247,7 @@ describe('articleViewType()', () => {
         it('should ONLY return the referrer if location hash contains a valid URL', () => {
             const anyInvalidUrl = 'invalid-url';
             window.location.hash = `###wt_ref=${anyInvalidUrl}`;
-            const result = doPluginsGlobal.articleViewType.getReferrerFromLocationHash();
+            const result = s._articleViewTypeObj.getReferrerFromLocationHash();
 
             expect(result).toBe('');
         });
@@ -263,13 +263,13 @@ describe('articleViewType()', () => {
         let getDomainFromURLStringMock;
 
         beforeEach(() => {
-            isFromSearchMock = jest.spyOn(doPluginsGlobal.articleViewType, 'isFromSearch').mockReturnValue(false);
-            isFromSocialMock = jest.spyOn(doPluginsGlobal.articleViewType, 'isFromSocial').mockReturnValue(false);
-            isFromInternalMock = jest.spyOn(doPluginsGlobal.articleViewType, 'isFromInternal').mockReturnValue(false);
-            isFromHomeMock = jest.spyOn(doPluginsGlobal.articleViewType, 'isFromHome').mockReturnValue(false);
-            isFromTaboolaMock = jest.spyOn(doPluginsGlobal.articleViewType, 'isFromTaboola').mockReturnValue(false);
-            getReferrerFromLocationHashMock = jest.spyOn(doPluginsGlobal.articleViewType, 'getReferrerFromLocationHash').mockReturnValue('');
-            getDomainFromURLStringMock = jest.spyOn(doPluginsGlobal.utils, 'getDomainFromURLString').mockReturnValue('');
+            isFromSearchMock = jest.spyOn(s._articleViewTypeObj, 'isFromSearch').mockReturnValue(false);
+            isFromSocialMock = jest.spyOn(s._articleViewTypeObj, 'isFromSocial').mockReturnValue(false);
+            isFromInternalMock = jest.spyOn(s._articleViewTypeObj, 'isFromInternal').mockReturnValue(false);
+            isFromHomeMock = jest.spyOn(s._articleViewTypeObj, 'isFromHome').mockReturnValue(false);
+            isFromTaboolaMock = jest.spyOn(s._articleViewTypeObj, 'isFromTaboola').mockReturnValue(false);
+            getReferrerFromLocationHashMock = jest.spyOn(s._articleViewTypeObj, 'getReferrerFromLocationHash').mockReturnValue('');
+            getDomainFromURLStringMock = jest.spyOn(s._utils, 'getDomainFromURLString').mockReturnValue('');
         });
 
         afterEach(() => {
@@ -279,70 +279,70 @@ describe('articleViewType()', () => {
         it('should use the URL from the location hash as the referrer if available', () => {
             const anyReferrerFromHash = 'any-referrer-from-hash';
             getReferrerFromLocationHashMock.mockReturnValue(anyReferrerFromHash);
-            doPluginsGlobal.articleViewType.getViewTypeByReferrer();
+            s._articleViewTypeObj.getViewTypeByReferrer();
             expect(getDomainFromURLStringMock).toHaveBeenCalledWith(anyReferrerFromHash);
         });
 
         it('should use the document referrer if the location hash is NOT available', () => {
             window.document.referrer = 'any-document-referrer';
-            doPluginsGlobal.articleViewType.getViewTypeByReferrer();
+            s._articleViewTypeObj.getViewTypeByReferrer();
             expect(getDomainFromURLStringMock).toHaveBeenCalledWith(window.document.referrer);
         });
 
         it('should return the right event name if referrer is of type: Other External', () => {
-            const result = doPluginsGlobal.articleViewType.getViewTypeByReferrer();
+            const result = s._articleViewTypeObj.getViewTypeByReferrer();
             expect(result).toBe('event27');
         });
 
         it('should return the right event name if referrer is of type: Search', () => {
             isFromSearchMock.mockReturnValue(true);
-            const result = doPluginsGlobal.articleViewType.getViewTypeByReferrer();
+            const result = s._articleViewTypeObj.getViewTypeByReferrer();
             expect(result).toBe('event24');
         });
 
         it('should return the right event name if referrer is of type: Social', () => {
             isFromSocialMock.mockReturnValue(true);
-            const result = doPluginsGlobal.articleViewType.getViewTypeByReferrer();
+            const result = s._articleViewTypeObj.getViewTypeByReferrer();
             expect(result).toBe('event25');
         });
 
         it('should return the right event name if referrer is of type: Taboola', () => {
             isFromInternalMock.mockReturnValue(true);
             isFromTaboolaMock.mockReturnValue(true);
-            let result = doPluginsGlobal.articleViewType.getViewTypeByReferrer();
+            let result = s._articleViewTypeObj.getViewTypeByReferrer();
             expect(result).toBe('event102');
 
             isFromInternalMock.mockReturnValue(false);
             isFromTaboolaMock.mockReturnValue(true);
-            result = doPluginsGlobal.articleViewType.getViewTypeByReferrer();
+            result = s._articleViewTypeObj.getViewTypeByReferrer();
             expect(result).not.toBe('event102');
 
             isFromInternalMock.mockReturnValue(true);
             isFromTaboolaMock.mockReturnValue(false);
-            result = doPluginsGlobal.articleViewType.getViewTypeByReferrer();
+            result = s._articleViewTypeObj.getViewTypeByReferrer();
             expect(result).not.toBe('event102');
         });
 
         it('should return the right event name if referrer is of type: Home', () => {
             isFromInternalMock.mockReturnValue(true);
             isFromHomeMock.mockReturnValue(true);
-            let result = doPluginsGlobal.articleViewType.getViewTypeByReferrer();
+            let result = s._articleViewTypeObj.getViewTypeByReferrer();
             expect(result).toBe('event22');
 
             isFromInternalMock.mockReturnValue(false);
             isFromHomeMock.mockReturnValue(true);
-            result = doPluginsGlobal.articleViewType.getViewTypeByReferrer();
+            result = s._articleViewTypeObj.getViewTypeByReferrer();
             expect(result).not.toBe('event22');
 
             isFromInternalMock.mockReturnValue(true);
             isFromHomeMock.mockReturnValue(false);
-            result = doPluginsGlobal.articleViewType.getViewTypeByReferrer();
+            result = s._articleViewTypeObj.getViewTypeByReferrer();
             expect(result).not.toBe('event22');
         });
 
         it('should return the right event name if referrer is of type: Other Internal', () => {
             isFromInternalMock.mockReturnValue(true);
-            const result = doPluginsGlobal.articleViewType.getViewTypeByReferrer();
+            const result = s._articleViewTypeObj.getViewTypeByReferrer();
             expect(result).toBe('event23');
         });
     });
@@ -351,7 +351,7 @@ describe('articleViewType()', () => {
         it('should return the value of the URL query param: cid', () => {
             const cidValue = 'any-cid-value';
             window.location.search = `?cid=${cidValue}`;
-            const result = doPluginsGlobal.articleViewType.getTrackingValue();
+            const result = s._articleViewTypeObj.getTrackingValue();
 
             expect(result).toBe(cidValue);
         });
@@ -359,7 +359,7 @@ describe('articleViewType()', () => {
         it('should return the value of the URL query param: wtrid', () => {
             const wtridValue = 'any-wtrid-value';
             window.location.search = `?cid=${wtridValue}`;
-            const result = doPluginsGlobal.articleViewType.getTrackingValue();
+            const result = s._articleViewTypeObj.getTrackingValue();
 
             expect(result).toBe(wtridValue);
         });
@@ -367,13 +367,13 @@ describe('articleViewType()', () => {
         it('should return the value of the URL query param: wtmc', () => {
             const wtmcValue = 'any-wtmc-value';
             window.location.search = `?cid=${wtmcValue}`;
-            const result = doPluginsGlobal.articleViewType.getTrackingValue();
+            const result = s._articleViewTypeObj.getTrackingValue();
 
             expect(result).toBe(wtmcValue);
         });
 
         it('should return an empty string if there are no tracking values available', () => {
-            const result = doPluginsGlobal.articleViewType.getTrackingValue();
+            const result = s._articleViewTypeObj.getTrackingValue();
 
             expect(result).toBe('');
         });
@@ -382,11 +382,7 @@ describe('articleViewType()', () => {
     describe('getViewTypeByTrackingProperty()', () => {
         let getTrackingValueMock;
         beforeEach(() => {
-            doPluginsGlobal.s.Util = {
-                getQueryParam: jest.fn()
-            };
-            getTrackingValueMock = jest.spyOn(doPluginsGlobal.articleViewType, 'getTrackingValue').mockReturnValue('');
-
+            getTrackingValueMock = jest.spyOn(s._articleViewTypeObj, 'getTrackingValue').mockReturnValue('');
         });
 
         afterEach(() => {
@@ -394,29 +390,29 @@ describe('articleViewType()', () => {
         });
 
         it('it should return the right event name if tracking value is of type: Dark Social', () => {
-            const result = doPluginsGlobal.articleViewType.getViewTypeByTrackingProperty();
+            const result = s._articleViewTypeObj.getViewTypeByTrackingProperty();
             expect(result).toBe('event26');
         });
 
         it('it should return the right event name if tracking value is of type: Search', () => {
             getTrackingValueMock.mockReturnValue('sea.');
-            const result = doPluginsGlobal.articleViewType.getViewTypeByTrackingProperty();
+            const result = s._articleViewTypeObj.getViewTypeByTrackingProperty();
             expect(result).toBe('event24');
         });
 
         it('it should return the right event name if tracking value is of type: Social', () => {
             getTrackingValueMock.mockReturnValue('social');
-            const result = doPluginsGlobal.articleViewType.getViewTypeByTrackingProperty();
+            const result = s._articleViewTypeObj.getViewTypeByTrackingProperty();
             expect(result).toBe('event25');
         });
 
         it('it should return the right event name if tracking value is of type: Other Internal', () => {
             getTrackingValueMock.mockReturnValue('kooperation');
-            let result = doPluginsGlobal.articleViewType.getViewTypeByTrackingProperty();
+            let result = s._articleViewTypeObj.getViewTypeByTrackingProperty();
             expect(result).toBe('event23');
 
             getTrackingValueMock.mockReturnValue('affiliate');
-            result = doPluginsGlobal.articleViewType.getViewTypeByTrackingProperty();
+            result = s._articleViewTypeObj.getViewTypeByTrackingProperty();
             expect(result).toBe('event23');
         });
     });
@@ -428,10 +424,10 @@ describe('articleViewType()', () => {
         let aplMock;
 
         beforeEach(() => {
-            isArticlePageMock = jest.spyOn(doPluginsGlobal.articleViewType, 'isArticlePage');
-            getViewTypeByReferrerMock = jest.spyOn(doPluginsGlobal.articleViewType, 'getViewTypeByReferrer').mockImplementation();
-            getViewTypeByTrackingPropertyMock = jest.spyOn(doPluginsGlobal.articleViewType, 'getViewTypeByTrackingProperty').mockImplementation();
-            aplMock = jest.spyOn(doPluginsGlobal.s, 'apl');
+            isArticlePageMock = jest.spyOn(s._articleViewTypeObj, 'isArticlePage');
+            getViewTypeByReferrerMock = jest.spyOn(s._articleViewTypeObj, 'getViewTypeByReferrer').mockImplementation();
+            getViewTypeByTrackingPropertyMock = jest.spyOn(s._articleViewTypeObj, 'getViewTypeByTrackingProperty').mockImplementation();
+            aplMock = jest.spyOn(s, 'apl');
         });
 
         afterEach(() => {
@@ -442,7 +438,7 @@ describe('articleViewType()', () => {
             const anyViewType = 'any-view-type';
             isArticlePageMock.mockReturnValue(true);
             getViewTypeByTrackingPropertyMock.mockReturnValue(anyViewType);
-            doPluginsGlobal.articleViewType.setViewType();
+            s._articleViewTypeObj.setViewType();
             expect(aplMock).toHaveBeenCalledWith('', anyViewType);
         });
 
@@ -450,27 +446,27 @@ describe('articleViewType()', () => {
             const anyViewType = 'any-view-type';
             isArticlePageMock.mockReturnValue(true);
             getViewTypeByTrackingPropertyMock.mockReturnValue(anyViewType);
-            doPluginsGlobal.articleViewType.setViewType();
-            expect(doPluginsGlobal.s._articleViewType).toBe(anyViewType);
+            s._articleViewTypeObj.setViewType();
+            expect(s._articleViewType).toBe(anyViewType);
         });
 
         it('should NOT set the article-view-type on NON article pages', function () {
             isArticlePageMock.mockReturnValue(false);
-            doPluginsGlobal.articleViewType.setViewType();
+            s._articleViewTypeObj.setViewType();
             expect(aplMock).not.toHaveBeenCalled();
         });
 
         it('should evaluate referrer URL when available to determine article-view-type', function () {
             isArticlePageMock.mockReturnValue(true);
             window.document.referrer = 'any-referrer-url';
-            doPluginsGlobal.articleViewType.setViewType();
+            s._articleViewTypeObj.setViewType();
             expect(getViewTypeByReferrerMock).toHaveBeenCalled();
         });
 
         it('should evaluate tracking URL param when referrer is NOT available', function () {
             isArticlePageMock.mockReturnValue(true);
             window.document.referrer = '';
-            doPluginsGlobal.articleViewType.setViewType();
+            s._articleViewTypeObj.setViewType();
             expect(getViewTypeByTrackingPropertyMock).toHaveBeenCalled();
         });
     });

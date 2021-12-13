@@ -1,5 +1,5 @@
 /* eslint-disable */
-const s = window.s || {};
+const s = window.s || window.cmp || {};
 
 // START: Pre-defined Adobe Plugins
 /* istanbul ignore next */
@@ -26,7 +26,7 @@ s.split = new Function("l","d",""
 // END: Pre-defined Adobe Plugins
 
 
-const utils = {
+s._utils = {
     getDomainFromURLString: function (urlString) {
         try {
             const urlObject = new URL(urlString);
@@ -40,7 +40,7 @@ const utils = {
 /**
  * Module sets the referring context of an article page view as an certain event to the events variable.
  */
-const articleViewType = {
+s._articleViewTypeObj = {
     getPageType: function () {
         return window.utag.data.page_type || window.utag.data.page_document_type || window.utag.data.page_mapped_doctype_for_pagename;
     },
@@ -161,7 +161,7 @@ const articleViewType = {
 
     getViewTypeByReferrer: function () {
         const referrer = this.getReferrerFromLocationHash() || window.document.referrer;
-        const referringDomain = utils.getDomainFromURLString(referrer);
+        const referringDomain = s._utils.getDomainFromURLString(referrer);
         const domain = window.document.domain;
         let articleViewType = 'event27'; //Other External
         if (this.isFromSearch(referringDomain)) {
@@ -207,7 +207,7 @@ const articleViewType = {
     }
 };
 
-function setExternalReferringDomainEvents(s) {
+s._setExternalReferringDomainEvents = function(s) {
     const domainsToEventMapping = [
         {
             domains: ['www.google.com', 'www.google.de'],
@@ -252,18 +252,18 @@ function setExternalReferringDomainEvents(s) {
         });
         s.events = domainMatches ? s.apl(s.events, event) : s.events;
     });
-}
+};
 
-function setKameleoonTracking(s) {
+s._setKameleoonTracking = function (s) {
     if (s.linkName === 'Kameleoon Tracking') {
         if (window.Kameleoon) {
             window.Kameleoon.API.Tracking.processOmniture(s);
         }
         window.kameleoonOmnitureCallSent = true;
     }
-}
+};
 
-const bildPageName = {
+s._bildPageNameObj = {
     isDocTypeArticle: function () {
         return !!window.utag.data.adobe_doc_type
             && window.utag.data.adobe_doc_type === 'article';
@@ -316,7 +316,7 @@ const bildPageName = {
     },
 };
 
-const campaign = {
+s._campaignObj = {
     getAdobeCampaign: function () {
         if (typeof window.utag.data['qp.cid'] !== 'undefined') {
             return ('cid=' + window.utag.data['qp.cid']);
@@ -341,7 +341,7 @@ const campaign = {
     },
 };
 
-function setPageSourceForCheckout (s) {
+s._setPageSourceForCheckout = function (s) {
     //Adding article view type and page age to cookies for checkout
     if (s._articleViewType) {
         s.eVar44 = s._articleViewType;
@@ -350,10 +350,10 @@ function setPageSourceForCheckout (s) {
         window.utag.loader.SC('utag_main', { 'pa': window.utag.data.page_datePublication_age + ';exp-session' });
         window.utag.data['cp.utag_main_pa'] = window.utag.data.page_datePublication_age;
     }
-}
+};
 
 //internal Campaign
-const ICIDTracking = {
+s._ICIDTracking = {
     setVariables: function (s) {
         let icid = '';
         try {
@@ -367,7 +367,7 @@ const ICIDTracking = {
     }
 };
 
-function init() {
+s._init = function () {
     s.currencyCode = 'EUR';
     s.execdoplugins = 0;
     s.expectSupplementalData = false;
@@ -382,20 +382,21 @@ function init() {
 
     //Referrer for link events
     s.referrer = window.document.referrer || '';
-    s._referringDomain = utils.getDomainFromURLString(window.document.referrer);
+    s._referringDomain = s._utils.getDomainFromURLString(window.document.referrer);
 
     //height & width for iPhones
     if (window.navigator.userAgent.indexOf('iPhone') > -1) {
         s.eVar94 = window.screen.width + 'x' + window.screen.height;
     }
 
-    ICIDTracking.setVariables(s);
-    campaign.setCampaignVariables(s);
-    setPageSourceForCheckout(s);
-    setExternalReferringDomainEvents(s);
-}
+    s._articleViewTypeObj.setViewType();
+    s._ICIDTracking.setVariables(s);
+    s._campaignObj.setCampaignVariables(s);
+    s._setPageSourceForCheckout(s);
+    s._setExternalReferringDomainEvents(s);
+};
 
-s.doPluginsGlobal = function (s) {
+s._doPluginsGlobal = function (s) {
     //Config
     s.eVar63 = s.version;
 
@@ -403,24 +404,12 @@ s.doPluginsGlobal = function (s) {
     s.eVar184 = new Date().getHours().toString();
     s.eVar181 = new Date().getMinutes().toString();
     s.eVar185 = window.utag.data.myCW || '';
-    articleViewType.setViewType();
 };
 
 // Evaluate runtime environment
 if (typeof exports === 'object') {
-    // Expose reference to members for unit testing.
-    module.exports = {
-        s,
-        utils,
-        init,
-        campaign,
-        bildPageName,
-        articleViewType,
-        setPageSourceForCheckout,
-        setExternalReferringDomainEvents,
-        setKameleoonTracking,
-        ICIDTracking
-    };
+    // Export s-object for unit testing
+    module.exports = s;
 } else {
-    init();
+    s._init();
 }

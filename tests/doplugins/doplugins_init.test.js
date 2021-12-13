@@ -1,4 +1,4 @@
-const doPluginsGlobal = require('../../extensions/doPlugins_global');
+const s = require('../../extensions/doPlugins_global');
 const {createWindowMock} = require('../mocks/browserMocks');
 
 describe('init()', () => {
@@ -12,37 +12,32 @@ describe('init()', () => {
         jest.spyOn(global, 'window', 'get')
             .mockImplementation(() => (windowMock));
 
-        doPluginsGlobal.s.Util = {
-            getQueryParam: jest.fn()
-        };
-
-        setCampaignVariablesMock = jest.spyOn(doPluginsGlobal.campaign, 'setCampaignVariables').mockImplementation();
-        setViewTypeMock = jest.spyOn(doPluginsGlobal.articleViewType, 'setViewType').mockImplementation();
-        setICIDTrackingVariables = jest.spyOn(doPluginsGlobal.ICIDTracking, 'setVariables').mockImplementation();
+        setCampaignVariablesMock = jest.spyOn(s._campaignObj, 'setCampaignVariables').mockImplementation();
+        setViewTypeMock = jest.spyOn(s._articleViewTypeObj, 'setViewType').mockImplementation();
+        setICIDTrackingVariables = jest.spyOn(s._ICIDTracking, 'setVariables').mockImplementation();
 
     });
 
     afterEach(() => {
         jest.restoreAllMocks();
-        delete doPluginsGlobal.s.eVar94;
+        delete s.eVar94;
     });
 
     it('should set global configuration properties of the Adobe s-object', () => {
-        doPluginsGlobal.s.visitor = {version: 'test'};
+        s.visitor = {version: 'test'};
         window.document.referrer = 'any_referrer';
-        const setCampaignVariables = jest.spyOn(doPluginsGlobal.campaign, 'setCampaignVariables');
-        doPluginsGlobal.init();
+        s._init();
 
-        expect(doPluginsGlobal.s.currencyCode).toBe('EUR');
-        expect(doPluginsGlobal.s.execdoplugins).toBe(0);
-        expect(doPluginsGlobal.s.expectSupplementalData).toBe(false);
-        expect(doPluginsGlobal.s.myChannels).toBe(0);
-        expect(doPluginsGlobal.s.usePlugins).toBe(true);
-        expect(doPluginsGlobal.s.trackExternalLinks).toBe(true);
-        expect(doPluginsGlobal.s.eVar64).toBe(doPluginsGlobal.s.visitor.version);
-        expect(doPluginsGlobal.s.expectSupplementalData).toBe(false);
-        expect(doPluginsGlobal.s.referrer).toBe(window.document.referrer);
-        expect(setCampaignVariables).toHaveBeenCalledWith(doPluginsGlobal.s);
+        expect(s.currencyCode).toBe('EUR');
+        expect(s.execdoplugins).toBe(0);
+        expect(s.expectSupplementalData).toBe(false);
+        expect(s.myChannels).toBe(0);
+        expect(s.usePlugins).toBe(true);
+        expect(s.trackExternalLinks).toBe(true);
+        expect(s.eVar64).toBe(s.visitor.version);
+        expect(s.expectSupplementalData).toBe(false);
+        expect(s.referrer).toBe(window.document.referrer);
+        expect(setCampaignVariablesMock).toHaveBeenCalledWith(s);
     });
 
     it('should set eVar94 to the iPhone screen size', () => {
@@ -50,30 +45,30 @@ describe('init()', () => {
         window.screen.width = window.screen.height = anyScreenSize;
         window.navigator.userAgent = 'Mozilla/5.0 (iPhone; CPU iPhone OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148';
 
-        doPluginsGlobal.init();
+        s._init();
 
-        expect(doPluginsGlobal.s.eVar94).toBe(`${anyScreenSize}x${anyScreenSize}`);
+        expect(s.eVar94).toBe(`${anyScreenSize}x${anyScreenSize}`);
     });
 
     it('should NOT set eVar94 when not viewed on iPhones', () => {
-        doPluginsGlobal.init();
-        expect(doPluginsGlobal.s.eVar94).toBeUndefined();
+        s._init();
+        expect(s.eVar94).toBeUndefined();
     });
 
     it('should call campaign.setCampaignVariables(s)', () => {
-        doPluginsGlobal.init();
-        const sObject = doPluginsGlobal.s;
+        s._init();
+        const sObject = s;
         expect(setCampaignVariablesMock).toHaveBeenCalledWith(sObject);
     });
 
     it('should call articleViewType.setViewType()', () => {
-        doPluginsGlobal.init();
+        s._init();
         expect(setViewTypeMock).toHaveBeenCalled();
     });
 
     it('should call articleViewType.setViewType()', () => {
-        doPluginsGlobal.init();
-        const sObject = doPluginsGlobal.s;
+        s._init();
+        const sObject = s;
         expect(setICIDTrackingVariables).toHaveBeenCalledWith(sObject);
     });
 });

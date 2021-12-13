@@ -1,5 +1,5 @@
 /* eslint-disable */
-var s = s || {};
+const s = window.s || {};
 
 // START: Pre-defined Adobe Plugins
 /* istanbul ignore next */
@@ -15,10 +15,8 @@ s.p_fo = function(c){if("-v"===c)return{plugin:"p_fo",version:"3.0"};a:{if("unde
 /* Adobe Consulting Plugin: apl (appendToList) v4.0 */
 s.apl = function (lv,va,d1,d2,cc){var b=lv,d=va,e=d1,c=d2,g=cc;if("-v"===b)return{plugin:"apl",version:"4.0"};var h=function(){if("undefined"!==typeof window.s_c_il)for(var k=0,b;k<window.s_c_il.length;k++)if(b=window.s_c_il[k],b._c&&"s_c"===b._c)return b}();"undefined"!==typeof h&&(h.contextData.apl="4.0");window.inList=window.inList||function(b,d,c,e){if("string"!==typeof d)return!1;if("string"===typeof b)b=b.split(c||",");else if("object"!==typeof b)return!1;c=0;for(a=b.length;c<a;c++)if(1==e&&d===b[c]||d.toLowerCase()===b[c].toLowerCase())return!0;return!1};if(!b||"string"===typeof b){if("string"!==typeof d||""===d)return b;e=e||",";c=c||e;1==c&&(c=e,g||(g=1));2==c&&1!=g&&(c=e);d=d.split(",");h=d.length;for(var f=0;f<h;f++)window.inList(b,d[f],e,g)||(b=b?b+c+d[f]:d[f])}return b};
 /* istanbul ignore next */
-/* Adobe Consulting Plugin: getValOnce v3.0 (Requires AppMeasurement) */
-s.getValOnce = function (vtc,cn,et,ep){var e=vtc,k=cn,l=et,m=ep;if(arguments&&"-v"===arguments[0])return{plugin:"getValOnce",version:"3.0"};var c=function(){if("undefined"!==typeof window.s_c_il)for(var b=0,a;b<window.s_c_il.length;b++)if(a=window.s_c_il[b],a._c&&"s_c"===a._c)return a}();"undefined"!==typeof c&&(c.contextData.getValOnce="3.0");window.cookieWrite=window.cookieWrite||function(b,a,d){if("string"===typeof b){var h=window.location.hostname,c=window.location.hostname.split(".").length-1;if(h&&!/^[0-9.]+$/.test(h)){c=2<c?
-c:2;var f=h.lastIndexOf(".");if(0<=f){for(;0<=f&&1<c;)f=h.lastIndexOf(".",f-1),c--;f=0<f?h.substring(f):h}}g=f;a="undefined"!==typeof a?""+a:"";if(d||""===a)if(""===a&&(d=-60),"number"===typeof d){var e=new Date;e.setTime(e.getTime()+6E4*d)}else e=d;return b&&(document.cookie=encodeURIComponent(b)+"="+encodeURIComponent(a)+"; path=/;"+(d?" expires="+e.toUTCString()+";":"")+(g?" domain="+g+";":""),"undefined"!==typeof cookieRead)?cookieRead(b)===a:!1}};window.cookieRead=window.cookieRead||function(b){if("string"===
-typeof b)b=encodeURIComponent(b);else return"";var a=" "+document.cookie,d=a.indexOf(" "+b+"="),c=0>d?d:a.indexOf(";",d);return(b=0>d?"":decodeURIComponent(a.substring(d+2+b.length,0>c?a.length:c)))?b:""};return e&&(k=k||"s_gvo",l=l||0,m="m"===m?6E4:864E5,e!==this.c_r(k))?(c=new Date,c.setTime(c.getTime()+l*m),cookieWrite(k,e,0===l?0:m),e):""};
+/* Adobe Consulting Plugin: getValOnce v2.01 */
+s.getValOnce = function (e, t, i, n) { if (e && (t = t || "s_gvo", i = i || 0, n = "m" === n ? 6e4 : 864e5, e !== this.c_r(t))) { var r = new Date; return r.setTime(r.getTime() + i * n), this.c_w(t, e, 0 === i ? 0 : r), e } return "" };
 /* istanbul ignore next */
 /* Utility Function: split v1.5 - split a string (JS 1.0 compatible) */
 s.split = new Function("l","d",""
@@ -26,6 +24,18 @@ s.split = new Function("l","d",""
 +"++]=l.substring(0,i);l=l.substring(i+d.length);}return a");
 /* eslint-enable */
 // END: Pre-defined Adobe Plugins
+
+
+const utils = {
+    getDomainFromURLString: function (urlString) {
+        try {
+            const urlObject = new URL(urlString);
+            return urlObject.hostname;
+        } catch (err) {
+            return '';
+        }
+    }
+};
 
 /**
  * Module sets the referring context of an article page view as an certain event to the events variable.
@@ -51,20 +61,11 @@ const articleViewType = {
         return ARTICLE_TYPES.indexOf(pageType) !== -1;
     },
 
-    getDomainFromURLString: function (urlString) {
-        try {
-            const urlObject = new URL(urlString);
-            return urlObject.hostname;
-        } catch (err) {
-            return '';
-        }
-    },
-
-    isFromSearch: function (referrer) {
+    isFromSearch: function (referringDomain) {
         const searchEngines = ['google.', 'bing.com', 'ecosia.org', 'duckduckgo.com', 'amp-welt-de.cdn.ampproject.org', 'qwant.com', 'suche.t-online.de', '.yandex.', 'yahoo.com', 'googleapis.com', 'nortonsafe.search.ask.com', 'wikipedia.org', 'googleadservices.com', 'search.myway.com', 'lycos.de'];
 
         return searchEngines.some(item => {
-            return referrer.indexOf(item) !== -1;
+            return referringDomain.indexOf(item) !== -1;
         });
     },
 
@@ -76,31 +77,28 @@ const articleViewType = {
         });
     },
 
-    isFromBild: function (referrer) {
-        const referrerDomain = this.getDomainFromURLString(referrer);
-        return referrerDomain === 'www.bild.de';
+    isFromBild: function (referringDomain) {
+        return referringDomain === 'www.bild.de';
     },
 
-    isFromBildMobile: function (referrer) {
-        const referrerDomain = this.getDomainFromURLString(referrer);
-        return referrerDomain === 'm.bild.de';
+    isFromBildMobile: function (referringDomain) {
+        return referringDomain === 'm.bild.de';
     },
 
     /**
      * Same domain check including subdomains.
      */
-    isFromInternal: function (referrer, domain) {
-        const referrerDomain = this.getDomainFromURLString(referrer);
-        const referrerDomainSegments = referrerDomain.split('.');
+    isFromInternal: function (referringDomain, domain) {
+        const referringDomainSegments = referringDomain.split('.');
         const documentDomainSegments = domain.split('.');
 
         // Exception for Sportbild: 'sportbild.bild.de' should not be treated as an internal (sub) domain of Bild
-        if(referrerDomain.indexOf('sportbild') !== -1) {
+        if (referringDomain.indexOf('sportbild') !== -1) {
             return domain.indexOf('sportbild') !== -1;
         }
 
         // compare next to last segments (eg. www.bild.de, m.bild.de --> bild)
-        return referrerDomainSegments[referrerDomainSegments.length - 2] === documentDomainSegments[documentDomainSegments.length - 2];
+        return referringDomainSegments[referringDomainSegments.length - 2] === documentDomainSegments[documentDomainSegments.length - 2];
     },
 
     /**
@@ -128,7 +126,14 @@ const articleViewType = {
     },
 
     getTrackingValue: function () {
-        return s.Util.getQueryParam('cid') || s.Util.getQueryParam('wtrid') || s.Util.getQueryParam('wtmc') || '';
+        let trackingValue;
+        try {
+            const queryParams = new URLSearchParams(window.location.search);
+            trackingValue = queryParams.get('cid') || queryParams.get('wtrid') || queryParams.get('wtmc') || '';
+        } catch (error) {
+            trackingValue = '';
+        }
+        return trackingValue;
     },
 
     isFromTaboola: function () {
@@ -156,21 +161,22 @@ const articleViewType = {
 
     getViewTypeByReferrer: function () {
         const referrer = this.getReferrerFromLocationHash() || window.document.referrer;
+        const referringDomain = utils.getDomainFromURLString(referrer);
         const domain = window.document.domain;
         let articleViewType = 'event27'; //Other External
-        if (this.isFromSearch(referrer)) {
+        if (this.isFromSearch(referringDomain)) {
             articleViewType = 'event24'; //Search
         } else if (this.isFromSocial(referrer)) {
             articleViewType = 'event25'; //Social
-        } else if (this.isFromInternal(referrer, domain) && this.isFromTaboola(referrer)) {
+        } else if (this.isFromInternal(referringDomain, domain) && this.isFromTaboola()) {
             articleViewType = 'event102'; //Taboola
-        } else if (this.isFromInternal(referrer, domain) && this.isFromHome(referrer)) {
+        } else if (this.isFromInternal(referringDomain, domain) && this.isFromHome(referrer)) {
             articleViewType = 'event22'; //Home
-        } else if (this.isFromInternal(referrer)) {
+        } else if (this.isFromInternal(referringDomain)) {
             articleViewType = 'event23'; //Other Internal
-        } else if (this.isFromBild(referrer)) {
+        } else if (this.isFromBild(referringDomain)) {
             articleViewType = 'event76'; // Bild
-        } else if (this.isFromBildMobile(referrer)) {
+        } else if (this.isFromBildMobile(referringDomain)) {
             articleViewType = 'event77'; // Bild mobile
         }
         return articleViewType;
@@ -196,7 +202,7 @@ const articleViewType = {
             // Expose view type to the s-object because it is needed by other functionalities.
             s._articleViewType = articleViewType;
             s.events = s.events || '';
-            s.apl(s.events, articleViewType, ',', 1);
+            s.events = s.apl(s.events, articleViewType);
         }
     }
 };
@@ -263,7 +269,7 @@ s.scrollDepthObj = {
     },
 };
 
-function setExternalReferringDomainEvents (s) {
+function setExternalReferringDomainEvents(s) {
     const domainsToEventMapping = [
         {
             domains: ['www.google.com', 'www.google.de'],
@@ -306,7 +312,7 @@ function setExternalReferringDomainEvents (s) {
             }
 
         });
-        s.events = domainMatches ? s.events = s.apl(s.events, event, ',', 1) : s.events;
+        s.events = domainMatches ? s.apl(s.events, event) : s.events;
     });
 }
 
@@ -398,13 +404,11 @@ const campaign = {
 };
 
 function setPageSourceForCheckout (s) {
-    //Page Source Aufsplittung und in Checkout schieben inklusive Page Age
+    //Adding article view type and page age to cookies for checkout
     if (s._articleViewType) {
         s.eVar44 = s._articleViewType;
-        //eVar44 in den checkout schieben
         window.utag.loader.SC('utag_main', { 'articleview': s._articleViewType + ';exp-session' });
         window.utag.data['cp.utag_main_articleview'] = s._articleViewType;
-        //eVar14 Page Age in den checkout schieben
         window.utag.loader.SC('utag_main', { 'pa': window.utag.data.page_datePublication_age + ';exp-session' });
         window.utag.data['cp.utag_main_pa'] = window.utag.data.page_datePublication_age;
     }
@@ -412,7 +416,7 @@ function setPageSourceForCheckout (s) {
 
 //internal Campaign
 const ICIDTracking = {
-    setVariables: function(s) {
+    setVariables: function (s) {
         let icid = '';
         try {
             const queryParams = new URLSearchParams(window.location.search);
@@ -440,10 +444,7 @@ function init() {
 
     //Referrer for link events
     s.referrer = window.document.referrer || '';
-
-    campaign.setCampaignVariables(s);
-    setPageSourceForCheckout(s);
-    setExternalReferringDomainEvents(s);
+    s._referringDomain = utils.getDomainFromURLString(window.document.referrer);
 
     //height & width for iPhones
     if (window.navigator.userAgent.indexOf('iPhone') > -1) {
@@ -452,7 +453,8 @@ function init() {
 
     ICIDTracking.setVariables(s);
     campaign.setCampaignVariables(s);
-    articleViewType.setViewType();
+    setPageSourceForCheckout(s);
+    setExternalReferringDomainEvents(s);
 }
 
 s.doPluginsGlobal = function (s) {
@@ -464,6 +466,7 @@ s.doPluginsGlobal = function (s) {
     s.eVar181 = new Date().getMinutes().toString();
     s.eVar185 = window.utag.data.myCW || '';
     s.setScrollDepthData(s);
+    articleViewType.setViewType();
 };
 
 // Evaluate runtime environment
@@ -471,6 +474,7 @@ if (typeof exports === 'object') {
     // Expose reference to members for unit testing.
     module.exports = {
         s,
+        utils,
         init,
         campaign,
         bildPageName,

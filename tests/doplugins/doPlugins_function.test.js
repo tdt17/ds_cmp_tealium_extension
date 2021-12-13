@@ -2,11 +2,19 @@ const s = require('../../extensions/doPlugins_global');
 const {createWindowMock} = require('../mocks/browserMocks');
 
 describe('s.doPlugins()', () => {
+    let sObject;
+    let setEventsPropertyMock;
+
     beforeEach(() => {
+        sObject = {
+            ...s
+        };
         // Create a fresh window mock for each test.
         const windowMock = createWindowMock();
         jest.spyOn(global, 'window', 'get')
             .mockImplementation(() => (windowMock));
+
+        setEventsPropertyMock = jest.spyOn(sObject, '_setEventsProperty');
 
     });
 
@@ -14,11 +22,8 @@ describe('s.doPlugins()', () => {
         jest.restoreAllMocks();
     });
 
-    it('should set the configurations inside the s.doPlugins function', () => {
-        const sObject = {
-            s,
-            version: 'test',
-        };
+    it('should assign values to some eVars', () => {
+        sObject.version = 'test';
         window.utag.data.myCW = 'test_cw';
 
         s._doPluginsGlobal(sObject);
@@ -27,6 +32,12 @@ describe('s.doPlugins()', () => {
         expect(sObject.eVar184.length).toBeGreaterThanOrEqual(1);
         expect(sObject.eVar181.length).toBeGreaterThanOrEqual(1);
         expect(sObject.eVar185).toBe(window.utag.data.myCW);
+    });
+
+    it('should call s._setEventsProperty() function', () => {
+        s._doPluginsGlobal(sObject);
+
+        expect(setEventsPropertyMock).toHaveBeenCalled();
     });
 
 });

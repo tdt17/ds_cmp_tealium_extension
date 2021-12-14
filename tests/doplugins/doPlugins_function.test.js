@@ -16,7 +16,7 @@ describe('s.doPlugins()', () => {
 
     it('should set the configurations inside the s.doPlugins function', () => {
         const sObject = {
-            s,
+            ...s,
             version: 'test',
         };
         window.utag.data.myCW = 'test_cw';

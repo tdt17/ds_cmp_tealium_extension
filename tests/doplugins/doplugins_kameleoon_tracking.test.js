@@ -34,7 +34,7 @@ describe('setKameleoonTracking', () => {
 
     it('should not set kameleoon tracking if s.linkName is not Kameleoon Tracking', () => {
         const sObject = {
-            s,
+            ...s,
         };
 
         s._setKameleoonTracking(sObject);

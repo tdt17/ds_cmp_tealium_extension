@@ -381,6 +381,7 @@ s._init = function () {
     s.usePlugins = true;
 
     s.trackExternalLinks = true;
+    s.eVar61 = window.navigator.userAgent;
     s.eVar64 = s.visitor && s.visitor.version ? s.visitor.version : undefined;
 
     //no sdid for A4T

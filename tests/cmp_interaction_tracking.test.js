@@ -383,7 +383,6 @@ describe('CMP Interaction Tracking', () => {
 
         it('should call utag.view with correct values', () => {
             cmpInteractionTracking.onCmpuishown({eventStatus: 'cmpuishown'});
-            jest.runAllTimers();
             expect(window.utag.view).toHaveBeenNthCalledWith(1,
                 {
                     'cmp_events': 'cm_layer_shown',
@@ -417,6 +416,25 @@ describe('CMP Interaction Tracking', () => {
                     'event_label': 'cm_layer_shown',
                     'event_data': `${ABTestingProperties.messageId} ${ABTestingProperties.msgDescription} ${ABTestingProperties.bucket}`
                 });
+        });
+    });
+
+    describe('onMessage', () => {
+        it('should call utag.link function with correct parameters', function () {
+            const label = 'any-label';
+            setABTestingProperties();
+            cmpInteractionTracking.onMessage({
+                data: {
+                    cmpLayerMessage: true,
+                    payload: label
+                },
+            });
+            expect(window.utag.link).toHaveBeenCalledWith({
+                'event_name': 'cmp_interactions',
+                'event_action': 'click',
+                'event_label': label,
+                'event_data': `${ABTestingProperties.messageId} ${ABTestingProperties.msgDescription} ${ABTestingProperties.bucket}`
+            });
         });
     });
 

@@ -55,7 +55,8 @@
         onPrivacyManagerAction,
         onCmpuishown,
         initABTestingProperties,
-        sendLinkEvent
+        sendLinkEvent,
+        onMessage
     };
 
     function getABTestingProperties() {
@@ -111,18 +112,21 @@
     function onCmpuishown(tcData) {
         if (tcData && tcData.eventStatus === 'cmpuishown') {
             window.utag.data.cmp_events = 'cm_layer_shown';
-
-            setTimeout(()=>{
-                window.utag.data['cmp_events'] = TCFAPI_COMMON_EVENTS.CMP_UI_SHOWN;
-                window.utag.data['cmp_interactions_true'] = 'true';
-                window.utag.data['first_pv'] = 'true';
-                window.utag.view(window.utag.data, null, [adobeTagId]);
-            }, 300);
-
+            window.utag.data['cmp_events'] = TCFAPI_COMMON_EVENTS.CMP_UI_SHOWN;
+            window.utag.data['cmp_interactions_true'] = 'true';
+            window.utag.data['first_pv'] = 'true';
+            window.utag.view(window.utag.data, null, [adobeTagId]);
+            // Ensure that view event gets processed before link event by adding a delay.
             setTimeout(() => {
                 exportedFunctions.sendLinkEvent(TCFAPI_COMMON_EVENTS.CMP_UI_SHOWN);
-            }, 800);
-            window.utag.data['cmp_interactions_true'] = 'false';
+                window.utag.data['cmp_interactions_true'] = 'false';
+            }, 500);
+        }
+    }
+
+    function onMessage(event){
+        if (event.data && event.data.cmpLayerMessage) {
+            exportedFunctions.sendLinkEvent(event.data.payload);
         }
     }
 
@@ -148,6 +152,7 @@
         window._sp_queue.push(() => {
             window.__tcfapi('addEventListener', 2, onCmpuishown);
         });
+        window.addEventListener('message', onMessage, false);
     }
 
     function configSourcepoint() {

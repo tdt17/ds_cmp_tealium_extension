@@ -54,7 +54,8 @@
         onMessageChoiceSelect,
         onPrivacyManagerAction,
         onCmpuishown,
-        initABTestingProperties
+        initABTestingProperties,
+        sendLinkEvent
     };
 
     function getABTestingProperties() {
@@ -78,6 +79,15 @@
 
     function onMessageReceiveData(data) {
         setABTestingProperties(data);
+    }
+
+    function sendLinkEvent(label) {
+        window.utag.link({
+            'event_name': 'cmp_interactions',
+            'event_action': 'click',
+            'event_label': label,
+            'event_data': getABTestingProperties()
+        });
     }
 
     function onMessageChoiceSelect(id, eventType) {

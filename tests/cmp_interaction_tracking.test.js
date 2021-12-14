@@ -191,6 +191,21 @@ describe('CMP Interaction Tracking', () => {
         });
     });
 
+    describe('sendLinkEvent()', () => {
+        it('should call utag.link function with correct arguments', () => {
+            const anyLabel = 'any-label';
+            setABTestingProperties();
+            cmpInteractionTracking.sendLinkEvent(anyLabel);
+            expect(window.utag.link).toHaveBeenCalledWith(
+                {
+                    'event_name': 'cmp_interactions',
+                    'event_action': 'click',
+                    'event_label': anyLabel,
+                    'event_data': `${ABTestingProperties.messageId} ${ABTestingProperties.msgDescription} ${ABTestingProperties.bucket}`
+                });
+        });
+    });
+
     describe('onMessageChoiceSelect(id, eventType)', () => {
         it('should set correct utag.data properties when eventType === 11', () => {
             cmpInteractionTracking.onMessageChoiceSelect('any-id', 11);

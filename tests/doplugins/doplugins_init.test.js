@@ -1,7 +1,8 @@
-const s = require('../../extensions/doPlugins_global');
+const sObject = require('../../extensions/doPlugins_global');
 const {createWindowMock} = require('../mocks/browserMocks');
 
 describe('init()', () => {
+    let s;
     let setCampaignVariablesMock;
     let setViewTypeMock;
     let setICIDTrackingVariables;
@@ -11,6 +12,9 @@ describe('init()', () => {
         const windowMock = createWindowMock();
         jest.spyOn(global, 'window', 'get')
             .mockImplementation(() => (windowMock));
+
+        // Provide a fresh copy of the s-object for each test.
+        s = {...sObject};
 
         setCampaignVariablesMock = jest.spyOn(s._campaignObj, 'setCampaignVariables').mockImplementation();
         setViewTypeMock = jest.spyOn(s._articleViewTypeObj, 'setViewType').mockImplementation();
@@ -27,7 +31,7 @@ describe('init()', () => {
         s.visitor = {version: 'test'};
         window.document.referrer = 'any_referrer';
         window.navigator.userAgent = 'any-user-agent';
-        s._init();
+        s._init(s);
 
         expect(s.currencyCode).toBe('EUR');
         expect(s.execdoplugins).toBe(0);
@@ -47,30 +51,28 @@ describe('init()', () => {
         window.screen.width = window.screen.height = anyScreenSize;
         window.navigator.userAgent = 'Mozilla/5.0 (iPhone; CPU iPhone OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148';
 
-        s._init();
+        s._init(s);
 
         expect(s.eVar94).toBe(`${anyScreenSize}x${anyScreenSize}`);
     });
 
     it('should NOT set eVar94 when not viewed on iPhones', () => {
-        s._init();
+        s._init(s);
         expect(s.eVar94).toBeUndefined();
     });
 
     it('should call campaign.setCampaignVariables(s)', () => {
-        s._init();
-        const sObject = s;
-        expect(setCampaignVariablesMock).toHaveBeenCalledWith(sObject);
+        s._init(s);
+        expect(setCampaignVariablesMock).toHaveBeenCalledWith(s);
     });
 
     it('should call articleViewType.setViewType()', () => {
-        s._init();
+        s._init(s);
         expect(setViewTypeMock).toHaveBeenCalled();
     });
 
     it('should call articleViewType.setViewType()', () => {
-        s._init();
-        const sObject = s;
-        expect(setICIDTrackingVariables).toHaveBeenCalledWith(sObject);
+        s._init(s);
+        expect(setICIDTrackingVariables).toHaveBeenCalledWith(s);
     });
 });

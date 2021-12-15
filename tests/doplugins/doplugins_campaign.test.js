@@ -1,12 +1,16 @@
-const s = require('../../extensions/doPlugins_global');
+const sObject = require('../../extensions/doPlugins_global');
 const {createWindowMock} = require('../mocks/browserMocks');
 
 describe('campaign', () => {
+    let s;
     beforeEach(() => {
         // Create a fresh window mock for each test.
         const windowMock = createWindowMock();
         jest.spyOn(global, 'window', 'get')
             .mockImplementation(() => (windowMock));
+
+        // Provide a fresh copy of the s-object for each test.
+        s = {...sObject};
     });
 
     afterEach(() => {
@@ -70,19 +74,15 @@ describe('campaign', () => {
         });
 
         it('should get adobe campaign and set correct data if s.campaign is not present', () => {
-            const sObject = {
-                ...s
-            };
-
             jest.spyOn(s._campaignObj, 'getAdobeCampaign').mockReturnValue('cid=cid.test');
             getValOnceMock.mockReturnValue('cid=cid.test');
 
-            s._campaignObj.setCampaignVariables(sObject);
+            s._campaignObj.setCampaignVariables(s);
 
             expect(window.utag.data.adobe_campaign).toBe('cid=cid.test');
             expect(s.getValOnce).toHaveBeenCalledWith('cid=cid.test', 's_ev0', 0, 'm');
-            expect(sObject.campaign).toBe('cid=cid.test');
-            expect(sObject.eVar88).toBe(window.utag.data.adobe_campaign);
+            expect(s.campaign).toBe('cid=cid.test');
+            expect(s.eVar88).toBe(window.utag.data.adobe_campaign);
         });
 
     });

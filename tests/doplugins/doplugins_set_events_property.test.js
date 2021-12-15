@@ -14,13 +14,13 @@ describe('_setEventsProperty', () => {
 
     it('should add article-view-type value to the events property if defined', () => {
         s._articleViewType = 'any-article-view-type';
-        s._setEventsProperty();
+        s._setEventsProperty(s);
 
         expect(aplMock).toHaveBeenCalled();
     });
 
     it('should NOT add article-view-type value to the events property if undefined', () => {
-        s._setEventsProperty();
+        s._setEventsProperty(s);
 
         expect(aplMock).not.toHaveBeenCalled();
     });

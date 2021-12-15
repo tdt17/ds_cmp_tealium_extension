@@ -196,7 +196,7 @@ s._articleViewTypeObj = {
         return articleViewType;
     },
 
-    setPageSourceForCheckout: function () {
+    setPageSourceForCheckout: function (s) {
         //Adding article view type and page age to cookies for checkout
         window.utag.loader.SC('utag_main', {'articleview': s._articleViewType + ';exp-session'});
         window.utag.data['cp.utag_main_articleview'] = s._articleViewType;
@@ -204,14 +204,14 @@ s._articleViewTypeObj = {
         window.utag.data['cp.utag_main_pa'] = window.utag.data.page_datePublication_age;
     },
 
-    setViewType: function () {
+    setViewType: function (s) {
         if (this.isArticlePage()) {
             const articleViewType = window.document.referrer ? this.getViewTypeByReferrer() : this.getViewTypeByTrackingProperty();
             // Expose view type to the s-object because it is needed by other functionalities.
             s._articleViewType = articleViewType;
             s.eVar44 = s._articleViewType;
             // Todo: there might be a consent check needed before setting cookies
-            this.setPageSourceForCheckout();
+            this.setPageSourceForCheckout(s);
         }
     }
 };
@@ -366,14 +366,14 @@ s._ICIDTracking = {
     }
 };
 
-s._setEventsProperty = function () {
+s._setEventsProperty = function (s) {
     s.events = s.events || '';
     if (s._articleViewType) {
         s.events = s.apl(s.events, s._articleViewType);
     }
 };
 
-s._init = function () {
+s._init = function (s) {
     s.currencyCode = 'EUR';
     s.execdoplugins = 0;
     s.expectSupplementalData = false;
@@ -411,7 +411,7 @@ s._doPluginsGlobal = function (s) {
     s.eVar181 = new Date().getMinutes().toString();
     s.eVar185 = window.utag.data.myCW || '';
 
-    s._setEventsProperty();
+    s._setEventsProperty(s);
 };
 
 // Evaluate runtime environment

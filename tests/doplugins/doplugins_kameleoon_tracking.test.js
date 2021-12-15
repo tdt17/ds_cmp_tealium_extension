@@ -1,7 +1,8 @@
-const s = require('../../extensions/doPlugins_global');
+const sObject = require('../../extensions/doPlugins_global');
 const {createWindowMock} = require('../mocks/browserMocks');
 
 describe('setKameleoonTracking', () => {
+    let s;
     let processOmnitureMock;
     beforeEach(() => {
         // Create a fresh window mock for each test.
@@ -15,29 +16,25 @@ describe('setKameleoonTracking', () => {
             },
         };
         jest.spyOn(global, 'window', 'get').mockImplementation(() => (windowMock));
+
+        // Provide a fresh copy of the s-object for each test.
+        s = {...sObject};
     });
     afterEach(() => {
         jest.restoreAllMocks();
     });
 
     it('should call kameleoon process omniture if s.linkName is Kameleoon Tracking and window.Kameleoon exists', () => {
-        const sObject = {
-            ...s,
-            linkName: 'Kameleoon Tracking',
-        };
+        s.linkName = 'Kameleoon Tracking';
 
-        s._setKameleoonTracking(sObject);
+        s._setKameleoonTracking(s);
 
         expect(processOmnitureMock).toHaveBeenCalled();
         expect(window.kameleoonOmnitureCallSent).toBe(true);
     });
 
     it('should not set kameleoon tracking if s.linkName is not Kameleoon Tracking', () => {
-        const sObject = {
-            s,
-        };
-
-        s._setKameleoonTracking(sObject);
+        s._setKameleoonTracking(s);
 
         expect(processOmnitureMock).not.toHaveBeenCalled();
         expect(window.kameleoonOmnitureCallSent).toBeUndefined();

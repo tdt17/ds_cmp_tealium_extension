@@ -1,13 +1,16 @@
-const s = require('../../extensions/doPlugins_global');
+const sObject = require('../../extensions/doPlugins_global');
 const {createWindowMock} = require('../mocks/browserMocks');
 
 describe('articleViewType()', () => {
-
+    let s;
     beforeEach(() => {
         // Create a fresh window mock for each test.
         const windowMock = createWindowMock();
         jest.spyOn(global, 'window', 'get')
             .mockImplementation(() => (windowMock));
+
+        // Provide a fresh copy of the s-object for each test.
+        s = {...sObject};
     });
 
     afterEach(() => {
@@ -424,12 +427,11 @@ describe('articleViewType()', () => {
 
         afterEach(() => {
             jest.restoreAllMocks();
-            delete s._articleViewType;
         });
 
         it('should store the article-view-type in the utag_main cookie', () => {
             s._articleViewType = 'any-view-type';
-            s._articleViewTypeObj.setPageSourceForCheckout();
+            s._articleViewTypeObj.setPageSourceForCheckout(s);
 
             expect(window.utag.loader.SC).toHaveBeenCalledWith('utag_main', { 'articleview': s._articleViewType + ';exp-session' });
             expect(window.utag.data['cp.utag_main_articleview']).toBe(s._articleViewType);
@@ -437,7 +439,7 @@ describe('articleViewType()', () => {
 
         it('should store the publication age in the utag_main cookie', () => {
             window.utag.data.page_datePublication_age = 'any-publication-age';
-            s._articleViewTypeObj.setPageSourceForCheckout();
+            s._articleViewTypeObj.setPageSourceForCheckout(s);
 
             expect(window.utag.loader.SC).toHaveBeenCalledWith('utag_main', { 'pa': window.utag.data.page_datePublication_age + ';exp-session' });
             expect(window.utag.data['cp.utag_main_pa']).toBe(window.utag.data.page_datePublication_age);
@@ -464,28 +466,28 @@ describe('articleViewType()', () => {
         it('should evaluate the article-view-type on article pages', function () {
             isArticlePageMock.mockReturnValue(true);
 
-            s._articleViewTypeObj.setViewType();
+            s._articleViewTypeObj.setViewType(s);
             expect(getViewTypeByTrackingPropertyMock).toHaveBeenCalled();
         });
 
         it('should NOT evaluate the article-view-type on NON article pages', function () {
             isArticlePageMock.mockReturnValue(false);
 
-            s._articleViewTypeObj.setViewType();
+            s._articleViewTypeObj.setViewType(s);
             expect(getViewTypeByTrackingPropertyMock).not.toHaveBeenCalled();
         });
 
         it('should evaluate referrer URL when available to determine article-view-type', function () {
             isArticlePageMock.mockReturnValue(true);
             window.document.referrer = 'any-referrer-url';
-            s._articleViewTypeObj.setViewType();
+            s._articleViewTypeObj.setViewType(s);
             expect(getViewTypeByReferrerMock).toHaveBeenCalled();
         });
 
         it('should evaluate tracking URL param when referrer is NOT available', function () {
             isArticlePageMock.mockReturnValue(true);
             window.document.referrer = '';
-            s._articleViewTypeObj.setViewType();
+            s._articleViewTypeObj.setViewType(s);
             expect(getViewTypeByTrackingPropertyMock).toHaveBeenCalled();
         });
 
@@ -497,7 +499,7 @@ describe('articleViewType()', () => {
             expect(s._articleViewType).toBeUndefined();
             expect(s.eVar44).toBeUndefined();
 
-            s._articleViewTypeObj.setViewType();
+            s._articleViewTypeObj.setViewType(s);
 
             expect(s._articleViewType).toBe(anyViewType);
             expect(s.eVar44).toBe(anyViewType);
@@ -506,7 +508,7 @@ describe('articleViewType()', () => {
         it('should call setPageSourceForCheckout() function', function () {
             isArticlePageMock.mockReturnValue(true);
 
-            s._articleViewTypeObj.setViewType();
+            s._articleViewTypeObj.setViewType(s);
             expect(setPageSourceForCheckoutMock).toHaveBeenCalled();
         });
 

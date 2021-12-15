@@ -427,9 +427,9 @@ describe('articleViewType()', () => {
         let aplMock;
 
         beforeEach(() => {
-            isArticlePageMock = jest.spyOn(sObject._articleViewTypeObj, 'isArticlePage');
-            getViewTypeByReferrerMock = jest.spyOn(sObject._articleViewTypeObj, 'getViewTypeByReferrer').mockImplementation();
-            getViewTypeByTrackingPropertyMock = jest.spyOn(sObject._articleViewTypeObj, 'getViewTypeByTrackingProperty').mockImplementation();
+            isArticlePageMock = jest.spyOn(s._articleViewTypeObj, 'isArticlePage');
+            getViewTypeByReferrerMock = jest.spyOn(s._articleViewTypeObj, 'getViewTypeByReferrer').mockImplementation();
+            getViewTypeByTrackingPropertyMock = jest.spyOn(s._articleViewTypeObj, 'getViewTypeByTrackingProperty').mockImplementation();
             aplMock = jest.spyOn(s, 'apl');
         });
 

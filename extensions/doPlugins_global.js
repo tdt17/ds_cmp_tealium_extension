@@ -196,7 +196,7 @@ s._articleViewTypeObj = {
         return articleViewType;
     },
 
-    setViewType: function () {
+    setViewType: function (s) {
         if (this.isArticlePage()) {
             const articleViewType = window.document.referrer ? this.getViewTypeByReferrer() : this.getViewTypeByTrackingProperty();
             // Expose view type to the s-object because it is needed by other functionalities.
@@ -367,7 +367,7 @@ s._ICIDTracking = {
     }
 };
 
-s._init = function () {
+s._init = function (s) {
     s.currencyCode = 'EUR';
     s.execdoplugins = 0;
     s.expectSupplementalData = false;

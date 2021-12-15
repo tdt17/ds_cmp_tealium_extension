@@ -1,16 +1,16 @@
-const s = require('../../extensions/doPlugins_global');
+const sObject = require('../../extensions/doPlugins_global');
 const {createWindowMock} = require('../mocks/browserMocks');
 
 describe('setICIDTrackingCode', () => {
-    let sObject;
+    let s;
     beforeEach(() => {
         // Create a fresh window mock for each test.
         const windowMock = createWindowMock();
         jest.spyOn(global, 'window', 'get')
             .mockImplementation(() => (windowMock));
 
-        sObject = {
-            ...s
+        s = {
+            ...sObject
         };
     });
 

@@ -1,13 +1,16 @@
-const s = require('../../extensions/doPlugins_global');
+const sObject = require('../../extensions/doPlugins_global');
 const {createWindowMock} = require('../mocks/browserMocks');
 
 describe('articleViewType()', () => {
-
+    let s;
     beforeEach(() => {
         // Create a fresh window mock for each test.
         const windowMock = createWindowMock();
         jest.spyOn(global, 'window', 'get')
             .mockImplementation(() => (windowMock));
+
+        // Provide a fresh copy of the s-object for each test.
+        s = {...sObject};
     });
 
     afterEach(() => {
@@ -424,9 +427,9 @@ describe('articleViewType()', () => {
         let aplMock;
 
         beforeEach(() => {
-            isArticlePageMock = jest.spyOn(s._articleViewTypeObj, 'isArticlePage');
-            getViewTypeByReferrerMock = jest.spyOn(s._articleViewTypeObj, 'getViewTypeByReferrer').mockImplementation();
-            getViewTypeByTrackingPropertyMock = jest.spyOn(s._articleViewTypeObj, 'getViewTypeByTrackingProperty').mockImplementation();
+            isArticlePageMock = jest.spyOn(sObject._articleViewTypeObj, 'isArticlePage');
+            getViewTypeByReferrerMock = jest.spyOn(sObject._articleViewTypeObj, 'getViewTypeByReferrer').mockImplementation();
+            getViewTypeByTrackingPropertyMock = jest.spyOn(sObject._articleViewTypeObj, 'getViewTypeByTrackingProperty').mockImplementation();
             aplMock = jest.spyOn(s, 'apl');
         });
 
@@ -438,7 +441,7 @@ describe('articleViewType()', () => {
             const anyViewType = 'any-view-type';
             isArticlePageMock.mockReturnValue(true);
             getViewTypeByTrackingPropertyMock.mockReturnValue(anyViewType);
-            s._articleViewTypeObj.setViewType();
+            s._articleViewTypeObj.setViewType(s);
             expect(aplMock).toHaveBeenCalledWith('', anyViewType);
         });
 
@@ -446,27 +449,27 @@ describe('articleViewType()', () => {
             const anyViewType = 'any-view-type';
             isArticlePageMock.mockReturnValue(true);
             getViewTypeByTrackingPropertyMock.mockReturnValue(anyViewType);
-            s._articleViewTypeObj.setViewType();
+            s._articleViewTypeObj.setViewType(s);
             expect(s._articleViewType).toBe(anyViewType);
         });
 
         it('should NOT set the article-view-type on NON article pages', function () {
             isArticlePageMock.mockReturnValue(false);
-            s._articleViewTypeObj.setViewType();
+            s._articleViewTypeObj.setViewType(s);
             expect(aplMock).not.toHaveBeenCalled();
         });
 
         it('should evaluate referrer URL when available to determine article-view-type', function () {
             isArticlePageMock.mockReturnValue(true);
             window.document.referrer = 'any-referrer-url';
-            s._articleViewTypeObj.setViewType();
+            s._articleViewTypeObj.setViewType(s);
             expect(getViewTypeByReferrerMock).toHaveBeenCalled();
         });
 
         it('should evaluate tracking URL param when referrer is NOT available', function () {
             isArticlePageMock.mockReturnValue(true);
             window.document.referrer = '';
-            s._articleViewTypeObj.setViewType();
+            s._articleViewTypeObj.setViewType(s);
             expect(getViewTypeByTrackingPropertyMock).toHaveBeenCalled();
         });
     });

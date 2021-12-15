@@ -389,6 +389,7 @@ function init() {
         s.eVar94 = window.screen.width + 'x' + window.screen.height;
     }
 
+    articleViewType.setViewType();
     ICIDTracking.setVariables(s);
     campaign.setCampaignVariables(s);
     setPageSourceForCheckout(s);
@@ -403,7 +404,6 @@ s.doPluginsGlobal = function (s) {
     s.eVar184 = new Date().getHours().toString();
     s.eVar181 = new Date().getMinutes().toString();
     s.eVar185 = window.utag.data.myCW || '';
-    articleViewType.setViewType();
 };
 
 // Evaluate runtime environment

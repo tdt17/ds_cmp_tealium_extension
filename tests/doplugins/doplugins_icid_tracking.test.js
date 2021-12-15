@@ -21,9 +21,9 @@ describe('setICIDTrackingCode', () => {
     it('should assign the value of the ICID tracking value to eVar78 and eVar79', function () {
         const anyICID = 'any-icid';
         window.location.search = `?icid=${anyICID}`;
-        s._ICIDTracking.setVariables(sObject);
-        expect(sObject.eVar78).toBe(anyICID);
-        expect(sObject.eVar79).toBe(anyICID);
+        s._ICIDTracking.setVariables(s);
+        expect(s.eVar78).toBe(anyICID);
+        expect(s.eVar79).toBe(anyICID);
     });
 
     it('should assign empty string to eVar78 and eVar79 if there is no ICID tracking value', function () {

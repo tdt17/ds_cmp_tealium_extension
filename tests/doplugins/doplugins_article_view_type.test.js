@@ -431,18 +431,34 @@ describe('articleViewType()', () => {
 
         it('should store the article-view-type in the utag_main cookie', () => {
             s._articleViewType = 'any-view-type';
-            s._articleViewTypeObj.setPageSourceForCheckout(s);
+            s._articleViewTypeObj.setPageSourceAndAgeForCheckout(s);
 
             expect(window.utag.loader.SC).toHaveBeenCalledWith('utag_main', { 'articleview': s._articleViewType + ';exp-session' });
             expect(window.utag.data['cp.utag_main_articleview']).toBe(s._articleViewType);
         });
 
-        it('should store the publication age in the utag_main cookie', () => {
+        it('should store the publication age (utag.data.page_age) in the utag_main cookie', () => {
+            window.utag.data.page_age = 'any-publication-age';
+            s._articleViewTypeObj.setPageSourceAndAgeForCheckout(s);
+
+            expect(window.utag.loader.SC).toHaveBeenCalledWith('utag_main', { 'pa': window.utag.data.page_age + ';exp-session' });
+            expect(window.utag.data['cp.utag_main_pa']).toBe(window.utag.data.page_age);
+        });
+
+        it('should store the publication age (utag.data.page_datePublication_age) in the utag_main cookie', () => {
             window.utag.data.page_datePublication_age = 'any-publication-age';
-            s._articleViewTypeObj.setPageSourceForCheckout(s);
+            s._articleViewTypeObj.setPageSourceAndAgeForCheckout(s);
 
             expect(window.utag.loader.SC).toHaveBeenCalledWith('utag_main', { 'pa': window.utag.data.page_datePublication_age + ';exp-session' });
             expect(window.utag.data['cp.utag_main_pa']).toBe(window.utag.data.page_datePublication_age);
+        });
+
+        it('should store the publication age (utag.data.screen_agePublication) in the utag_main cookie', () => {
+            window.utag.data.screen_agePublication = 'any-publication-age';
+            s._articleViewTypeObj.setPageSourceAndAgeForCheckout(s);
+
+            expect(window.utag.loader.SC).toHaveBeenCalledWith('utag_main', { 'pa': window.utag.data.screen_agePublication + ';exp-session' });
+            expect(window.utag.data['cp.utag_main_pa']).toBe(window.utag.data.screen_agePublication);
         });
     });
 
@@ -450,13 +466,13 @@ describe('articleViewType()', () => {
         let isArticlePageMock;
         let getViewTypeByReferrerMock;
         let getViewTypeByTrackingPropertyMock;
-        let setPageSourceForCheckoutMock;
+        let setPageSourceAndAgeForCheckoutMock;
 
         beforeEach(() => {
             isArticlePageMock = jest.spyOn(s._articleViewTypeObj, 'isArticlePage');
             getViewTypeByReferrerMock = jest.spyOn(s._articleViewTypeObj, 'getViewTypeByReferrer').mockImplementation();
             getViewTypeByTrackingPropertyMock = jest.spyOn(s._articleViewTypeObj, 'getViewTypeByTrackingProperty').mockImplementation();
-            setPageSourceForCheckoutMock = jest.spyOn(s._articleViewTypeObj, 'setPageSourceForCheckout').mockImplementation();
+            setPageSourceAndAgeForCheckoutMock = jest.spyOn(s._articleViewTypeObj, 'setPageSourceAndAgeForCheckout').mockImplementation();
         });
 
         afterEach(() => {
@@ -505,11 +521,11 @@ describe('articleViewType()', () => {
             expect(s.eVar44).toBe(anyViewType);
         });
 
-        it('should call setPageSourceForCheckout() function', function () {
+        it('should call setPageSourceAndAgeForCheckout() function', function () {
             isArticlePageMock.mockReturnValue(true);
 
             s._articleViewTypeObj.setViewType(s);
-            expect(setPageSourceForCheckoutMock).toHaveBeenCalled();
+            expect(setPageSourceAndAgeForCheckoutMock).toHaveBeenCalled();
         });
 
     });

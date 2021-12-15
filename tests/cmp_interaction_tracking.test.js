@@ -38,6 +38,7 @@ function setABTestingProperties() {
 function createWindowMock() {
     return {
         localStorage: browserMocks.localStorageMock,
+        addEventListener: jest.fn(),
         _sp_: {
             addEventListener: jest.fn(),
             config: 'any-config'
@@ -160,6 +161,7 @@ describe('CMP Interaction Tracking', () => {
             expect(window._sp_.addEventListener).toHaveBeenCalledWith('onMessageChoiceSelect', cmpInteractionTracking.onMessageChoiceSelect);
             expect(window._sp_.addEventListener).toHaveBeenCalledWith('onPrivacyManagerAction', cmpInteractionTracking.onPrivacyManagerAction);
             expect(window.__tcfapi).toHaveBeenCalledWith('addEventListener', 2, cmpInteractionTracking.onCmpuishown);
+            expect(window.addEventListener).toHaveBeenCalledWith('message', cmpInteractionTracking.onMessage, false);
         });
     });
 
@@ -407,8 +409,6 @@ describe('CMP Interaction Tracking', () => {
             setABTestingProperties();
             cmpInteractionTracking.onCmpuishown({eventStatus: 'cmpuishown'});
             jest.runAllTimers();
-            const utagViewCallback = window.utag.view.mock.calls[0][1];
-            utagViewCallback();
             expect(window.utag.link).toHaveBeenNthCalledWith(1,
                 {
                     'event_name': 'cmp_interactions',

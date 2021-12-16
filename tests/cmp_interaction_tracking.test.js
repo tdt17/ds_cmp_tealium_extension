@@ -38,6 +38,7 @@ function setABTestingProperties() {
 function createWindowMock() {
     return {
         localStorage: browserMocks.localStorageMock,
+        addEventListener: jest.fn(),
         _sp_: {
             addEventListener: jest.fn(),
             config: 'any-config'
@@ -160,6 +161,7 @@ describe('CMP Interaction Tracking', () => {
             expect(window._sp_.addEventListener).toHaveBeenCalledWith('onMessageChoiceSelect', cmpInteractionTracking.onMessageChoiceSelect);
             expect(window._sp_.addEventListener).toHaveBeenCalledWith('onPrivacyManagerAction', cmpInteractionTracking.onPrivacyManagerAction);
             expect(window.__tcfapi).toHaveBeenCalledWith('addEventListener', 2, cmpInteractionTracking.onCmpuishown);
+            expect(window.addEventListener).toHaveBeenCalledWith('message', cmpInteractionTracking.onMessage, false);
         });
     });
 
@@ -191,6 +193,21 @@ describe('CMP Interaction Tracking', () => {
         });
     });
 
+    describe('sendLinkEvent()', () => {
+        it('should call utag.link function with correct arguments', () => {
+            const anyLabel = 'any-label';
+            setABTestingProperties();
+            cmpInteractionTracking.sendLinkEvent(anyLabel);
+            expect(window.utag.link).toHaveBeenCalledWith(
+                {
+                    'event_name': 'cmp_interactions',
+                    'event_action': 'click',
+                    'event_label': anyLabel,
+                    'event_data': `${ABTestingProperties.messageId} ${ABTestingProperties.msgDescription} ${ABTestingProperties.bucket}`
+                });
+        });
+    });
+
     describe('onMessageChoiceSelect(id, eventType)', () => {
         it('should set correct utag.data properties when eventType === 11', () => {
             cmpInteractionTracking.onMessageChoiceSelect('any-id', 11);
@@ -209,7 +226,7 @@ describe('CMP Interaction Tracking', () => {
                     'event_action': 'click',
                     'event_label': 'cm_accept_all',
                     'event_data': `${ABTestingProperties.messageId} ${ABTestingProperties.msgDescription} ${ABTestingProperties.bucket}`
-                }, expect.any(Function));
+                });
         });
 
         it('should set correct utag.data properties when eventType === 12', () => {
@@ -229,7 +246,7 @@ describe('CMP Interaction Tracking', () => {
                     'event_action': 'click',
                     'event_label': 'cm_show_privacy_manager',
                     'event_data': `${ABTestingProperties.messageId} ${ABTestingProperties.msgDescription} ${ABTestingProperties.bucket}`
-                }, expect.any(Function));
+                });
         });
 
         it('should set correct utag.data properties when eventType === 13', () => {
@@ -249,7 +266,7 @@ describe('CMP Interaction Tracking', () => {
                     'event_action': 'click',
                     'event_label': 'cm_reject_all',
                     'event_data': `${ABTestingProperties.messageId} ${ABTestingProperties.msgDescription} ${ABTestingProperties.bucket}`
-                }, expect.any(Function));
+                });
         });
 
         it('should NOT call utag.link when called with wrong event type', () => {
@@ -278,7 +295,7 @@ describe('CMP Interaction Tracking', () => {
                     'event_action': 'click',
                     'event_label': 'pm_save_and_exit',
                     'event_data': `${ABTestingProperties.messageId} ${ABTestingProperties.msgDescription} ${ABTestingProperties.bucket}`
-                }, expect.any(Function));
+                });
         });
 
         it('should set correct utag.data properties when eventType === ACCEPT_ALL', () => {
@@ -299,7 +316,7 @@ describe('CMP Interaction Tracking', () => {
                     'event_action': 'click',
                     'event_label': 'pm_accept_all',
                     'event_data': `${ABTestingProperties.messageId} ${ABTestingProperties.msgDescription} ${ABTestingProperties.bucket}`
-                }, expect.any(Function));
+                });
         });
 
         it('should set utag.data properties when called with an all purposeConsent', () => {
@@ -319,7 +336,7 @@ describe('CMP Interaction Tracking', () => {
                     'event_action': 'click',
                     'event_label': 'pm_accept_all',
                     'event_data': `${ABTestingProperties.messageId} ${ABTestingProperties.msgDescription} ${ABTestingProperties.bucket}`
-                }, expect.any(Function));
+                });
         });
 
         it('should set utag.data properties when called with a purposeConsent other from all', () => {
@@ -339,7 +356,7 @@ describe('CMP Interaction Tracking', () => {
                     'event_action': 'click',
                     'event_label': 'pm_save_and_exit',
                     'event_data': `${ABTestingProperties.messageId} ${ABTestingProperties.msgDescription} ${ABTestingProperties.bucket}`
-                }, expect.any(Function));
+                });
         });
 
         it('should NOT call utag.link when called with wrong eventType', () => {
@@ -358,22 +375,22 @@ describe('CMP Interaction Tracking', () => {
 
         it('should set correct utag.data properties', () => {
             cmpInteractionTracking.onCmpuishown({eventStatus: 'cmpuishown'});
-
+            jest.runAllTimers();
             expect(window.utag.data).toEqual({
                 'cmp_events': 'cm_layer_shown',
-                'cmp_interactions_true': 'false'
+                'cmp_interactions_true': 'false',
+                'first_pv': 'true'
             });
         });
 
         it('should call utag.view with correct values', () => {
             cmpInteractionTracking.onCmpuishown({eventStatus: 'cmpuishown'});
-            jest.runAllTimers();
             expect(window.utag.view).toHaveBeenNthCalledWith(1,
                 {
                     'cmp_events': 'cm_layer_shown',
                     'cmp_interactions_true': 'true',
                     'first_pv': 'true'
-                }, expect.any(Function), [undefined]);
+                }, null, [undefined]);
         });
 
         it('should NOT call utag.view when called without event status', () => {
@@ -392,15 +409,32 @@ describe('CMP Interaction Tracking', () => {
             setABTestingProperties();
             cmpInteractionTracking.onCmpuishown({eventStatus: 'cmpuishown'});
             jest.runAllTimers();
-            const utagViewCallback = window.utag.view.mock.calls[0][1];
-            utagViewCallback();
             expect(window.utag.link).toHaveBeenNthCalledWith(1,
                 {
                     'event_name': 'cmp_interactions',
                     'event_action': 'click',
                     'event_label': 'cm_layer_shown',
                     'event_data': `${ABTestingProperties.messageId} ${ABTestingProperties.msgDescription} ${ABTestingProperties.bucket}`
-                }, expect.any(Function));
+                });
+        });
+    });
+
+    describe('onMessage', () => {
+        it('should call utag.link function with correct parameters', function () {
+            const label = 'any-label';
+            setABTestingProperties();
+            cmpInteractionTracking.onMessage({
+                data: {
+                    cmpLayerMessage: true,
+                    payload: label
+                },
+            });
+            expect(window.utag.link).toHaveBeenCalledWith({
+                'event_name': 'cmp_interactions',
+                'event_action': 'click',
+                'event_label': label,
+                'event_data': `${ABTestingProperties.messageId} ${ABTestingProperties.msgDescription} ${ABTestingProperties.bucket}`
+            });
         });
     });
 

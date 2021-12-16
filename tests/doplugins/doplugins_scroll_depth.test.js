@@ -1,14 +1,12 @@
 const doPlugins_global = require('../../extensions/doPlugins_global');
 const { createWindowMock } = require('../mocks/browserMocks');
 
-
 describe('_scrollDepthObj', () => {
     beforeEach(() => {
         // Create a fresh window mock for each test.
         const windowMock = createWindowMock();
         jest.spyOn(global, 'window', 'get')
             .mockImplementation(() => (windowMock));
-
     });
 
     afterEach(() => {
@@ -124,6 +122,7 @@ describe('_scrollDepthObj', () => {
                 ...doPlugins_global.s,
             };
             const value = sObject._scrollDepthObj.getDocType();
+
             expect(value).toBe('');
         });
 
@@ -133,6 +132,7 @@ describe('_scrollDepthObj', () => {
             };
             window.utag.data.adobe_doc_type = 'test_doc_type';
             const value = sObject._scrollDepthObj.getDocType();
+
             expect(value).toBe(window.utag.data.adobe_doc_type);
         });
 
@@ -142,6 +142,7 @@ describe('_scrollDepthObj', () => {
             };
             window.utag.data.ad_page_document_type = 'test_ad_page_document_type';
             const value = sObject._scrollDepthObj.getDocType();
+
             expect(value).toBe(window.utag.data.ad_page_document_type);
         });
 
@@ -151,6 +152,7 @@ describe('_scrollDepthObj', () => {
             };
             window.utag.data.page_type = 'test_page_type';
             const value = sObject._scrollDepthObj.getDocType();
+
             expect(value).toBe(window.utag.data.page_type);
         });
 
@@ -160,9 +162,9 @@ describe('_scrollDepthObj', () => {
             };
             window.utag.data.adobe_docType = 'test_adobe_docType';
             const value = sObject._scrollDepthObj.getDocType();
+
             expect(value).toBe(window.utag.data.adobe_docType);
         });
-
 
     });
 
@@ -173,6 +175,7 @@ describe('_scrollDepthObj', () => {
                 ...doPlugins_global.s,
             };
             const value = sObject._scrollDepthObj.getPageId();
+
             expect(value).toBe('');
         });
 
@@ -182,6 +185,7 @@ describe('_scrollDepthObj', () => {
             };
             window.utag.data.page_id = 'test_page_id';
             const value = sObject._scrollDepthObj.getPageId();
+
             expect(value).toBe(window.utag.data.page_id);
         });
 
@@ -191,6 +195,7 @@ describe('_scrollDepthObj', () => {
             };
             window.utag.data.cid = 'test_cid';
             const value = sObject._scrollDepthObj.getPageId();
+
             expect(value).toBe(window.utag.data.cid);
         });
 
@@ -200,8 +205,10 @@ describe('_scrollDepthObj', () => {
             };
             window.utag.data.screen_escenicId = 'test_screen_escenicId';
             const value = sObject._scrollDepthObj.getPageId();
+
             expect(value).toBe(window.utag.data.screen_escenicId);
         });
+
     });
 
     describe('getPageChannel', () => {
@@ -211,6 +218,7 @@ describe('_scrollDepthObj', () => {
                 ...doPlugins_global.s,
             };
             const value = sObject._scrollDepthObj.getPageChannel();
+
             expect(value).toBe('');
         });
 
@@ -220,6 +228,7 @@ describe('_scrollDepthObj', () => {
             };
             window.utag.data._pathname1 = 'test_pathname1';
             const value = sObject._scrollDepthObj.getPageChannel();
+
             expect(value).toBe(window.utag.data._pathname1);
         });
 
@@ -229,6 +238,7 @@ describe('_scrollDepthObj', () => {
             };
             window.utag.data.page_channel1 = 'test_page_channel1';
             const value = sObject._scrollDepthObj.getPageChannel();
+
             expect(value).toBe(window.utag.data.page_channel1);
         });
 
@@ -238,6 +248,7 @@ describe('_scrollDepthObj', () => {
             };
             window.utag.data.nav1 = 'test_nav1';
             const value = sObject._scrollDepthObj.getPageChannel();
+
             expect(value).toBe(window.utag.data.nav1);
         });
 
@@ -247,6 +258,7 @@ describe('_scrollDepthObj', () => {
             };
             window.utag.data.screen_sectionPath_level1 = 'test_screen_sectionPath_level1';
             const value = sObject._scrollDepthObj.getPageChannel();
+
             expect(value).toBe(window.utag.data.screen_sectionPath_level1);
         });
 
@@ -256,8 +268,10 @@ describe('_scrollDepthObj', () => {
             };
             window.utag.data.page_sectionPath1 = 'test_page_sectionPath1';
             const value = sObject._scrollDepthObj.getPageChannel();
+
             expect(value).toBe(window.utag.data.page_sectionPath1);
         });
+
     });
 
     describe('getPagePremiumStatus', () => {
@@ -267,6 +281,7 @@ describe('_scrollDepthObj', () => {
                 ...doPlugins_global.s,
             };
             const value = sObject._scrollDepthObj.getPagePremiumStatus();
+
             expect(value).toBe('');
         });
 
@@ -276,6 +291,7 @@ describe('_scrollDepthObj', () => {
             };
             window.utag.data.is_status_premium = 'is_status_premium_yes';
             const value = sObject._scrollDepthObj.getPagePremiumStatus();
+
             expect(value).toBe(window.utag.data.is_status_premium + ' : ');
         });
 
@@ -285,6 +301,7 @@ describe('_scrollDepthObj', () => {
             };
             window.utag.data.page_isPremium = 'page_isPremium_yes';
             const value = sObject._scrollDepthObj.getPagePremiumStatus();
+
             expect(value).toBe(window.utag.data.page_isPremium + ' : ');
         });
 
@@ -294,8 +311,10 @@ describe('_scrollDepthObj', () => {
             };
             window.utag.data.screen_isPremium = 'screen_isPremium_yes';
             const value = sObject._scrollDepthObj.getPagePremiumStatus();
+
             expect(value).toBe(window.utag.data.screen_isPremium + ' : ');
         });
+
     });
 
     describe('setPreviousPage', () => {
@@ -309,6 +328,7 @@ describe('_scrollDepthObj', () => {
             jest.spyOn(sObject._scrollDepthObj, 'isDocTypeArticleOrVideo').mockReturnValue(false);
 
             sObject._scrollDepthObj.setPreviousPage(sObject);
+
             expect(sObject._prevPage).toBe(sObject.pageName);
         });
 
@@ -324,6 +344,7 @@ describe('_scrollDepthObj', () => {
             jest.spyOn(sObject._scrollDepthObj, 'getPagePremiumStatus').mockReturnValue('test_is_page_premium_yes : ');
         
             sObject._scrollDepthObj.setPreviousPage(sObject);
+
             expect(sObject._prevPage).toBe('test_docType : test_is_page_premium_yes : test_pageId : test_pageChannel');
         });
 
@@ -339,8 +360,10 @@ describe('_scrollDepthObj', () => {
             jest.spyOn(sObject._scrollDepthObj, 'getPagePremiumStatus').mockReturnValue('');
         
             sObject._scrollDepthObj.setPreviousPage(sObject);
+
             expect(sObject._prevPage).toBe('test_docType : test_pageId : test_pageChannel');
         });
+
     });
 
     describe('setScrollDepthData', () => {
@@ -349,7 +372,6 @@ describe('_scrollDepthObj', () => {
             const sObject = {
                 ...doPlugins_global.s,
             };
-
             const setPrevPage = jest.spyOn(sObject._scrollDepthObj, 'setPreviousPage');
 
             sObject._scrollDepthObj.setScrollDepthData(sObject);
@@ -363,7 +385,6 @@ describe('_scrollDepthObj', () => {
                 ...doPlugins_global.s,
                 _prevPage: 'test_prevPage',
             };
-
             jest.spyOn(sObject, 'getPercentPageViewed').mockImplementation(jest.fn());
             jest.spyOn(sObject._scrollDepthObj, 'isPrevPageDefined').mockReturnValue(true);
             jest.spyOn(sObject._scrollDepthObj, 'isPpvPreviousPageDefined').mockReturnValue(false);
@@ -399,7 +420,6 @@ describe('_scrollDepthObj', () => {
             expect(sObject.prop65).toBe(Math.round(sObject._ppvHighestPercentViewed / 10) * 10);
             expect(sObject.events).toMatch('event45=' + sObject.prop64);
             expect(sObject.events).toMatch('event46=' + sObject.prop65);
-
         });
         
     });

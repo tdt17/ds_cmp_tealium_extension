@@ -467,7 +467,9 @@ function init() {
         s.eVar94 = window.screen.width + 'x' + window.screen.height;
     }
 
+    setKameleoonTracking(s);
     ICIDTracking.setVariables(s);
+    articleViewType.setViewType();
     campaign.setCampaignVariables(s);
     setPageSourceForCheckout(s);
     setExternalReferringDomainEvents(s);
@@ -482,7 +484,6 @@ s.doPluginsGlobal = function (s) {
     s.eVar181 = new Date().getMinutes().toString();
     s.eVar185 = window.utag.data.myCW || '';
     s._scrollDepthObj.setScrollDepthData(s);
-    articleViewType.setViewType();
 };
 
 // Evaluate runtime environment

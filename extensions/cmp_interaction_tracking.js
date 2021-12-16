@@ -120,7 +120,7 @@
             setTimeout(() => {
                 exportedFunctions.sendLinkEvent(TCFAPI_COMMON_EVENTS.CMP_UI_SHOWN);
                 window.utag.data['cmp_interactions_true'] = 'false';
-            }, 500);
+            }, 3000);
         }
     }
 

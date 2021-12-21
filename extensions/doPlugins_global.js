@@ -155,6 +155,7 @@ s._articleViewTypeObj = {
         let referrerFromHash;
         if (window.location.hash.indexOf('wt_ref') !== -1) {
             referrerFromHash = window.location.hash.replace('###wt_ref=', '');
+            referrerFromHash = decodeURIComponent(referrerFromHash);
         }
         return this.isValidURL(referrerFromHash) ? referrerFromHash : '';
     },

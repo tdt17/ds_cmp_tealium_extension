@@ -1,5 +1,6 @@
 const sObject = require('../../extensions/doPlugins_global');
 const {createWindowMock} = require('../mocks/browserMocks');
+const {add} = require("husky");
 
 describe('articleViewType()', () => {
     let s;
@@ -467,12 +468,14 @@ describe('articleViewType()', () => {
         let getViewTypeByReferrerMock;
         let getViewTypeByTrackingPropertyMock;
         let setPageSourceAndAgeForCheckoutMock;
+        let addEventMock;
 
         beforeEach(() => {
             isArticlePageMock = jest.spyOn(s._articleViewTypeObj, 'isArticlePage');
             getViewTypeByReferrerMock = jest.spyOn(s._articleViewTypeObj, 'getViewTypeByReferrer').mockImplementation();
             getViewTypeByTrackingPropertyMock = jest.spyOn(s._articleViewTypeObj, 'getViewTypeByTrackingProperty').mockImplementation();
             setPageSourceAndAgeForCheckoutMock = jest.spyOn(s._articleViewTypeObj, 'setPageSourceAndAgeForCheckout').mockImplementation();
+            addEventMock = jest.spyOn(s._eventsObj, 'addEvent').mockImplementation();
         });
 
         afterEach(() => {
@@ -528,6 +531,15 @@ describe('articleViewType()', () => {
             expect(setPageSourceAndAgeForCheckoutMock).toHaveBeenCalled();
         });
 
+        it('should call s._eventsObj.addEvent() with article-view-type as the argument', function () {
+            const anyViewType = 'any-view-type';
+            isArticlePageMock.mockReturnValue(true);
+            getViewTypeByTrackingPropertyMock.mockReturnValue(anyViewType);
+
+            s._articleViewTypeObj.setViewType(s);
+
+            expect(addEventMock).toHaveBeenCalledWith(anyViewType);
+        });
     });
 
 });

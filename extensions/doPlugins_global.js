@@ -213,7 +213,7 @@ s._articleViewTypeObj = {
         if (this.isArticlePage()) {
             s._articleViewType = window.document.referrer ? this.getViewTypeByReferrer() : this.getViewTypeByTrackingProperty();
             s.eVar44 = s._articleViewType;
-            // Todo: there might be a consent check needed before setting cookies
+            s._eventsObj.addEvent(s._articleViewType);
             this.setPageSourceAndAgeForCheckout(s);
         }
     }
@@ -262,7 +262,9 @@ s._setExternalReferringDomainEvents = function (s) {
             }
 
         });
-        s.events = domainMatches ? s.apl(s.events, event) : s.events;
+        if (domainMatches){
+            s._eventsObj.addEvent(event);
+        }
     });
 };
 
@@ -369,10 +371,18 @@ s._ICIDTracking = {
     }
 };
 
-s._setEventsProperty = function (s) {
-    s.events = s.events || '';
-    if (s._articleViewType) {
-        s.events = s.apl(s.events, s._articleViewType);
+s._eventsObj = {
+    events: [],
+    addEvent: function (eventName) {
+        this.events.push(eventName);
+    },
+    setEventsProperty: function (s) {
+        const eventsString = this.events.join(',');
+        if (eventsString){
+            s.events = s.events || '';
+            s.events = s.apl(s.events, eventsString);
+            this.events = [];
+        }
     }
 };
 
@@ -414,7 +424,7 @@ s._doPluginsGlobal = function (s) {
     s.eVar181 = new Date().getMinutes().toString();
     s.eVar185 = window.utag.data.myCW || '';
 
-    s._setEventsProperty(s);
+    s._eventsObj.setEventsProperty(s);
 };
 
 // Evaluate runtime environment

@@ -13,7 +13,7 @@ describe('s.doPlugins()', () => {
 
         // Provide a fresh copy of the s-object for each test.
         s = {...sObject};
-        setEventsPropertyMock = jest.spyOn(s, '_setEventsProperty');
+        setEventsPropertyMock = jest.spyOn(s._eventsObj, 'setEventsProperty');
     });
 
     afterEach(() => {

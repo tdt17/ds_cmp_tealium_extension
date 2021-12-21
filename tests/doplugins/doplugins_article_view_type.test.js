@@ -1,6 +1,5 @@
 const sObject = require('../../extensions/doPlugins_global');
 const {createWindowMock} = require('../mocks/browserMocks');
-const {add} = require("husky");
 
 describe('articleViewType()', () => {
     let s;

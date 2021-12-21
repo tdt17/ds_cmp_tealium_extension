@@ -155,6 +155,7 @@ s._articleViewTypeObj = {
         let referrerFromHash;
         if (window.location.hash.indexOf('wt_ref') !== -1) {
             referrerFromHash = window.location.hash.replace('###wt_ref=', '');
+            referrerFromHash = decodeURIComponent(referrerFromHash);
         }
         return this.isValidURL(referrerFromHash) ? referrerFromHash : '';
     },
@@ -196,18 +197,30 @@ s._articleViewTypeObj = {
         return articleViewType;
     },
 
+    setPageSourceAndAgeForCheckout: function (s) {
+        const pageAge = window.utag.data.page_age
+            || window.utag.data.page_datePublication_age
+            || window.utag.data.screen_agePublication
+            || '';
+
+        //Adding article view type and page age to cookies for checkout
+        window.utag.loader.SC('utag_main', {'articleview': s._articleViewType + ';exp-session'});
+        window.utag.data['cp.utag_main_articleview'] = s._articleViewType;
+        window.utag.loader.SC('utag_main', {'pa': pageAge + ';exp-session'});
+        window.utag.data['cp.utag_main_pa'] = pageAge;
+    },
+
     setViewType: function (s) {
         if (this.isArticlePage()) {
-            const articleViewType = window.document.referrer ? this.getViewTypeByReferrer() : this.getViewTypeByTrackingProperty();
-            // Expose view type to the s-object because it is needed by other functionalities.
-            s._articleViewType = articleViewType;
-            s.events = s.events || '';
-            s.events = s.apl(s.events, articleViewType);
+            s._articleViewType = window.document.referrer ? this.getViewTypeByReferrer() : this.getViewTypeByTrackingProperty();
+            s.eVar44 = s._articleViewType;
+            s._eventsObj.addEvent(s._articleViewType);
+            this.setPageSourceAndAgeForCheckout(s);
         }
     }
 };
 
-s._setExternalReferringDomainEvents = function(s) {
+s._setExternalReferringDomainEvents = function (s) {
     const domainsToEventMapping = [
         {
             domains: ['www.google.com', 'www.google.de'],
@@ -250,7 +263,9 @@ s._setExternalReferringDomainEvents = function(s) {
             }
 
         });
-        s.events = domainMatches ? s.apl(s.events, event) : s.events;
+        if (domainMatches){
+            s._eventsObj.addEvent(event);
+        }
     });
 };
 
@@ -341,16 +356,6 @@ s._campaignObj = {
     },
 };
 
-s._setPageSourceForCheckout = function (s) {
-    //Adding article view type and page age to cookies for checkout
-    if (s._articleViewType) {
-        s.eVar44 = s._articleViewType;
-        window.utag.loader.SC('utag_main', { 'articleview': s._articleViewType + ';exp-session' });
-        window.utag.data['cp.utag_main_articleview'] = s._articleViewType;
-        window.utag.loader.SC('utag_main', { 'pa': window.utag.data.page_datePublication_age + ';exp-session' });
-        window.utag.data['cp.utag_main_pa'] = window.utag.data.page_datePublication_age;
-    }
-};
 
 //internal Campaign
 s._ICIDTracking = {
@@ -367,6 +372,21 @@ s._ICIDTracking = {
     }
 };
 
+s._eventsObj = {
+    events: [],
+    addEvent: function (eventName) {
+        this.events.push(eventName);
+    },
+    setEventsProperty: function (s) {
+        const eventsString = this.events.join(',');
+        if (eventsString){
+            s.events = s.events || '';
+            s.events = s.apl(s.events, eventsString);
+            this.events = [];
+        }
+    }
+};
+
 s._init = function (s) {
     s.currencyCode = 'EUR';
     s.execdoplugins = 0;
@@ -375,6 +395,7 @@ s._init = function (s) {
     s.usePlugins = true;
 
     s.trackExternalLinks = true;
+    s.eVar61 = window.navigator.userAgent;
     s.eVar64 = s.visitor && s.visitor.version ? s.visitor.version : undefined;
 
     //no sdid for A4T
@@ -392,7 +413,6 @@ s._init = function (s) {
     s._articleViewTypeObj.setViewType();
     s._ICIDTracking.setVariables(s);
     s._campaignObj.setCampaignVariables(s);
-    s._setPageSourceForCheckout(s);
     s._setExternalReferringDomainEvents(s);
 };
 
@@ -404,11 +424,13 @@ s._doPluginsGlobal = function (s) {
     s.eVar184 = new Date().getHours().toString();
     s.eVar181 = new Date().getMinutes().toString();
     s.eVar185 = window.utag.data.myCW || '';
+
+    s._eventsObj.setEventsProperty(s);
 };
 
 // Evaluate runtime environment
 if (typeof exports === 'object') {
-    // Export s-object for unit testing
+    // Export s-object with all functions for unit testing
     module.exports = s;
 } else {
     s._init();

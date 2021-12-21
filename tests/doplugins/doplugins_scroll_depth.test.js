@@ -13,75 +13,6 @@ describe('_scrollDepthObj', () => {
         jest.restoreAllMocks();
     });
 
-    describe('isPagenameDefined', () => {
-        
-        it('should return false if pageName is not defined or empty', () => {
-            const sObject = {
-                ...doPlugins_global.s,
-            };
-            const result = sObject._scrollDepthObj.isPagenameDefined(sObject);
-
-            expect(result).toBe(false);
-        });
-
-        it('should return true if pageName is defined and not empty', () => {
-            const sObject = {
-                ...doPlugins_global.s,
-                pageName: 'testPageName',
-            };
-            const result = sObject._scrollDepthObj.isPagenameDefined(sObject);
-
-            expect(result).toBe(true);
-        });
-
-    });
-
-    describe('isPrevPageDefined', () => {
-
-        it('should return false if _prevPage is not defined or empty', () => {
-            const sObject = {
-                ...doPlugins_global.s,
-            };
-            const result = sObject._scrollDepthObj.isPrevPageDefined(sObject);
-
-            expect(result).toBe(false);
-        });
-
-        it('should return true if _prevPage is defined and not empty', () => {
-            const sObject = {
-                ...doPlugins_global.s,
-                _prevPage: 'testPrevPage',
-            };
-            const result = sObject._scrollDepthObj.isPrevPageDefined(sObject);
-
-            expect(result).toBe(true);
-        });
-
-    });
-
-    describe('isPpvPreviousPageDefined', () => {
-
-        it('should return false if _ppvPreviousPage is not defined or empty', () => {
-            const sObject = {
-                ...doPlugins_global.s,
-            };
-            const result = sObject._scrollDepthObj.isPpvPreviousPageDefined(sObject);
-
-            expect(result).toBe(false);
-        });
-
-        it('should return true if _ppvPreviousPage is defined and not empty', () => {
-            const sObject = {
-                ...doPlugins_global.s,
-                _ppvPreviousPage: 'testPpvPreviousPage',
-            };
-            const result = sObject._scrollDepthObj.isPpvPreviousPageDefined(sObject);
-
-            expect(result).toBe(true);
-        });
-
-    });
-
     describe('isDocTypeArticleOrVideo', () => {
 
         it('should return false if doc_type is not defined', () => {
@@ -324,7 +255,6 @@ describe('_scrollDepthObj', () => {
                 ...doPlugins_global.s,
                 pageName: 'test_pageName',
             };
-            jest.spyOn(sObject._scrollDepthObj, 'isPagenameDefined').mockReturnValue(true);
             jest.spyOn(sObject._scrollDepthObj, 'isDocTypeArticleOrVideo').mockReturnValue(false);
 
             sObject._scrollDepthObj.setPreviousPage(sObject);
@@ -335,8 +265,8 @@ describe('_scrollDepthObj', () => {
         it('should set the right _prevPage if pageName is defined, docType is article or video and page is premium', () => {
             const sObject = {
                 ...doPlugins_global.s,
+                pageName: 'test_pageName',
             };
-            jest.spyOn(sObject._scrollDepthObj, 'isPagenameDefined').mockReturnValue(true);
             jest.spyOn(sObject._scrollDepthObj, 'isDocTypeArticleOrVideo').mockReturnValue(true);
             jest.spyOn(sObject._scrollDepthObj, 'getDocType').mockReturnValue('test_docType');
             jest.spyOn(sObject._scrollDepthObj, 'getPageId').mockReturnValue('test_pageId');
@@ -351,8 +281,8 @@ describe('_scrollDepthObj', () => {
         it('should set the right _prevPage if pageName is defined, docType is article or video and page is not premium', () => {
             const sObject = {
                 ...doPlugins_global.s,
+                pageName: 'test_pageName',
             };
-            jest.spyOn(sObject._scrollDepthObj, 'isPagenameDefined').mockReturnValue(true);
             jest.spyOn(sObject._scrollDepthObj, 'isDocTypeArticleOrVideo').mockReturnValue(true);
             jest.spyOn(sObject._scrollDepthObj, 'getDocType').mockReturnValue('test_docType');
             jest.spyOn(sObject._scrollDepthObj, 'getPageId').mockReturnValue('test_pageId');
@@ -374,44 +304,56 @@ describe('_scrollDepthObj', () => {
             };
             const setPrevPage = jest.spyOn(sObject._scrollDepthObj, 'setPreviousPage');
 
-            sObject._scrollDepthObj.setScrollDepthData(sObject);
+            sObject._scrollDepthObj.setScrollDepthProperties(sObject);
 
             expect(setPrevPage).toHaveBeenCalledWith(sObject);
 
         });
         
-        it('should call getPercentPageViewed but set no data if only _prevPage is defined', () => {
+        it('should call getPercentPageViewed if _prevPage is defined', () => {
             const sObject = {
                 ...doPlugins_global.s,
                 _prevPage: 'test_prevPage',
             };
             jest.spyOn(sObject, 'getPercentPageViewed').mockImplementation(jest.fn());
-            jest.spyOn(sObject._scrollDepthObj, 'isPrevPageDefined').mockReturnValue(true);
-            jest.spyOn(sObject._scrollDepthObj, 'isPpvPreviousPageDefined').mockReturnValue(false);
 
-            sObject._scrollDepthObj.setScrollDepthData(sObject);
+            sObject._scrollDepthObj.setScrollDepthProperties(sObject);
 
             expect(sObject.getPercentPageViewed).toHaveBeenCalledWith(sObject._prevPage);
 
         });
 
-        it('should call getPercentPageViewed and set correct data if _prevPage and _ppvPreviousPage is defined', () => {
+        it('should call getPercentPageViewed and setData if _prevPage and _ppvPreviousPage is defined', () => {
             const sObject = {
                 ...doPlugins_global.s,
                 _prevPage: 'test_prevPage',
+                _ppvPreviousPage: 'test_ppvPreviousPage',
+            };
+
+            const getPercentPageViewed = jest.spyOn(sObject, 'getPercentPageViewed').mockImplementation(jest.fn());
+            const setData = jest.spyOn(sObject._scrollDepthObj, 'setData');
+
+            sObject._scrollDepthObj.setScrollDepthProperties(sObject);
+
+            expect(getPercentPageViewed).toHaveBeenCalled();
+            expect(setData).toHaveBeenCalledWith(sObject);
+            
+        });
+        
+    });
+
+    describe('setData', () => {
+        it('should set scroll depth data in s object when called', () => {
+            const sObject = {
+                ...doPlugins_global.s,
                 _ppvPreviousPage: 'test_ppvPreviousPage',
                 _ppvInitialPercentViewed: 'test_ppvInitialPercentViewed',
                 _ppvHighestPixelsSeen: 'test_ppvHighestPixelsSeen',
                 _ppvHighestPercentViewed: 'test_ppvHighestPercentViewed',
             };
 
-            jest.spyOn(sObject._scrollDepthObj, 'isPrevPageDefined').mockReturnValue(true);
-            const getPercentPageViewed = jest.spyOn(sObject, 'getPercentPageViewed').mockImplementation(jest.fn());
-            jest.spyOn(sObject._scrollDepthObj, 'isPpvPreviousPageDefined').mockReturnValue(true);
+            sObject._scrollDepthObj.setData(sObject);
 
-            sObject._scrollDepthObj.setScrollDepthData(sObject);
-
-            expect(getPercentPageViewed).toHaveBeenCalled();
             expect(sObject.eVar33).toBe(sObject._ppvPreviousPage);
             expect(sObject.prop61).toBe(sObject._ppvPreviousPage);
             expect(sObject.prop62).toBe(sObject._ppvInitialPercentViewed);
@@ -421,6 +363,6 @@ describe('_scrollDepthObj', () => {
             expect(sObject.events).toMatch('event45=' + sObject.prop64);
             expect(sObject.events).toMatch('event46=' + sObject.prop65);
         });
-        
     });
+    
 });

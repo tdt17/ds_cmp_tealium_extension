@@ -377,25 +377,13 @@ s._scrollDepthObj = {
         return status ? status + ' : ' : '';
     },
 
-    isPagenameDefined: function (s) {
-        return !!s.pageName && s.pageName !== '';
-    },
-
-    isPrevPageDefined: function (s) {
-        return !!s._prevPage && s._prevPage !== '';
-    },
-
-    isPpvPreviousPageDefined: function (s) {
-        return !!s._ppvPreviousPage && s._ppvPreviousPage !== '';
-    },
-
     isDocTypeArticleOrVideo: function () {
         const doc_type = this.getDocType();
         return !!doc_type && (doc_type === 'article' || doc_type === 'video');
     },
 
     setPreviousPage: function (s) {
-        if (this.isPagenameDefined(s)) {
+        if (s.pageName) {
             // Previous Page für article und video ==> document type : page_is_premium : page_id : page_channel
             if (this.isDocTypeArticleOrVideo()) {
                 const doc_type = this.getDocType();
@@ -409,22 +397,25 @@ s._scrollDepthObj = {
         }
     },
 
-    setScrollDepthData: function (s) {
-        this.setPreviousPage(s);
-        if (this.isPrevPageDefined(s)) {
-            s.getPercentPageViewed(s._prevPage);
+    setData: function (s) {
+        s.eVar33 = s._ppvPreviousPage;
+        s.prop61 = s._ppvPreviousPage;
+        s.prop62 = s._ppvInitialPercentViewed;
+        s.prop63 = s._ppvHighestPixelsSeen;
+        s.prop64 = Math.round(s._ppvInitialPercentViewed / 10) * 10;
+        s.prop65 = Math.round(s._ppvHighestPercentViewed / 10) * 10;
+        const event45 = 'event45=' + Math.round(s._ppvInitialPercentViewed / 10) * 10;
+        const event46 = 'event46=' + Math.round(s._ppvHighestPercentViewed / 10) * 10;
+        s.events = s.apl(s.events, event45, ',', 1);
+        s.events = s.apl(s.events, event46, ',', 1);
+    },
 
-            if (this.isPpvPreviousPageDefined()) {
-                s.eVar33 = s._ppvPreviousPage;
-                s.prop61 = s._ppvPreviousPage;
-                s.prop62 = s._ppvInitialPercentViewed;
-                s.prop63 = s._ppvHighestPixelsSeen;
-                s.prop64 = Math.round(s._ppvInitialPercentViewed / 10) * 10;
-                s.prop65 = Math.round(s._ppvHighestPercentViewed / 10) * 10;
-                const event45 = 'event45=' + Math.round(s._ppvInitialPercentViewed / 10) * 10;
-                const event46 = 'event46=' + Math.round(s._ppvHighestPercentViewed / 10) * 10;
-                s.events = s.apl(s.events, event45, ',', 1);
-                s.events = s.apl(s.events, event46, ',', 1);
+    setScrollDepthProperties: function (s) {
+        this.setPreviousPage(s);
+        if (s._prevPage) {
+            s.getPercentPageViewed(s._prevPage);
+            if (s._ppvPreviousPage) {
+                this.setData(s);
             }
         }
     },
@@ -483,7 +474,7 @@ s.doPluginsGlobal = function (s) {
     s.eVar184 = new Date().getHours().toString();
     s.eVar181 = new Date().getMinutes().toString();
     s.eVar185 = window.utag.data.myCW || '';
-    s._scrollDepthObj.setScrollDepthData(s);
+    s._scrollDepthObj.setScrollDepthProperties(s);
 };
 
 // Evaluate runtime environment

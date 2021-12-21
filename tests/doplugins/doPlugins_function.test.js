@@ -1,13 +1,16 @@
-const doPluginsGlobal = require('../../extensions/doPlugins_global');
+const sObject = require('../../extensions/doPlugins_global');
 const {createWindowMock} = require('../mocks/browserMocks');
 
 describe('s.doPlugins()', () => {
+    let s;
     beforeEach(() => {
         // Create a fresh window mock for each test.
         const windowMock = createWindowMock();
         jest.spyOn(global, 'window', 'get')
             .mockImplementation(() => (windowMock));
 
+        // Provide a fresh copy of the s-object for each test.
+        s = {...sObject};
     });
 
     afterEach(() => {
@@ -15,13 +18,10 @@ describe('s.doPlugins()', () => {
     });
 
     it('should set the configurations inside the s.doPlugins function', () => {
-        const s = {
-            ...doPluginsGlobal.s,
-            version: 'test',
-        };
+        s.version = 'test';
         window.utag.data.myCW = 'test_cw';
 
-        s.doPluginsGlobal(s);
+        s._doPluginsGlobal(s);
 
         expect(s.eVar63).toBe(s.version);
         expect(s.eVar184.length).toBeGreaterThanOrEqual(1);

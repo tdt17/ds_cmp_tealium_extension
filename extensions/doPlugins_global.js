@@ -1,5 +1,5 @@
 /* eslint-disable */
-const s = window.s || {};
+const s = window.s || window.cmp || {};
 
 // START: Pre-defined Adobe Plugins
 /* istanbul ignore next */
@@ -26,7 +26,7 @@ s.split = new Function("l","d",""
 // END: Pre-defined Adobe Plugins
 
 
-const utils = {
+s._utils = {
     getDomainFromURLString: function (urlString) {
         try {
             const urlObject = new URL(urlString);
@@ -40,7 +40,7 @@ const utils = {
 /**
  * Module sets the referring context of an article page view as an certain event to the events variable.
  */
-const articleViewType = {
+s._articleViewTypeObj = {
     getPageType: function () {
         return window.utag.data.page_type || window.utag.data.page_document_type || window.utag.data.page_mapped_doctype_for_pagename;
     },
@@ -155,13 +155,14 @@ const articleViewType = {
         let referrerFromHash;
         if (window.location.hash.indexOf('wt_ref') !== -1) {
             referrerFromHash = window.location.hash.replace('###wt_ref=', '');
+            referrerFromHash = decodeURIComponent(referrerFromHash);
         }
         return this.isValidURL(referrerFromHash) ? referrerFromHash : '';
     },
 
     getViewTypeByReferrer: function () {
         const referrer = this.getReferrerFromLocationHash() || window.document.referrer;
-        const referringDomain = utils.getDomainFromURLString(referrer);
+        const referringDomain = s._utils.getDomainFromURLString(referrer);
         const domain = window.document.domain;
         let articleViewType = 'event27'; //Other External
         if (this.isFromSearch(referringDomain)) {
@@ -196,18 +197,30 @@ const articleViewType = {
         return articleViewType;
     },
 
-    setViewType: function () {
+    setPageSourceAndAgeForCheckout: function (s) {
+        const pageAge = window.utag.data.page_age
+            || window.utag.data.page_datePublication_age
+            || window.utag.data.screen_agePublication
+            || '';
+
+        //Adding article view type and page age to cookies for checkout
+        window.utag.loader.SC('utag_main', {'articleview': s._articleViewType + ';exp-session'});
+        window.utag.data['cp.utag_main_articleview'] = s._articleViewType;
+        window.utag.loader.SC('utag_main', {'pa': pageAge + ';exp-session'});
+        window.utag.data['cp.utag_main_pa'] = pageAge;
+    },
+
+    setViewType: function (s) {
         if (this.isArticlePage()) {
-            const articleViewType = window.document.referrer ? this.getViewTypeByReferrer() : this.getViewTypeByTrackingProperty();
-            // Expose view type to the s-object because it is needed by other functionalities.
-            s._articleViewType = articleViewType;
-            s.events = s.events || '';
-            s.events = s.apl(s.events, articleViewType);
+            s._articleViewType = window.document.referrer ? this.getViewTypeByReferrer() : this.getViewTypeByTrackingProperty();
+            s.eVar44 = s._articleViewType;
+            s._eventsObj.addEvent(s._articleViewType);
+            this.setPageSourceAndAgeForCheckout(s);
         }
     }
 };
 
-function setExternalReferringDomainEvents(s) {
+s._setExternalReferringDomainEvents = function (s) {
     const domainsToEventMapping = [
         {
             domains: ['www.google.com', 'www.google.de'],
@@ -250,20 +263,22 @@ function setExternalReferringDomainEvents(s) {
             }
 
         });
-        s.events = domainMatches ? s.apl(s.events, event) : s.events;
+        if (domainMatches){
+            s._eventsObj.addEvent(event);
+        }
     });
-}
+};
 
-function setKameleoonTracking(s) {
+s._setKameleoonTracking = function (s) {
     if (s.linkName === 'Kameleoon Tracking') {
         if (window.Kameleoon) {
             window.Kameleoon.API.Tracking.processOmniture(s);
         }
         window.kameleoonOmnitureCallSent = true;
     }
-}
+};
 
-const bildPageName = {
+s._bildPageNameObj = {
     isDocTypeArticle: function () {
         return !!window.utag.data.adobe_doc_type
             && window.utag.data.adobe_doc_type === 'article';
@@ -316,7 +331,7 @@ const bildPageName = {
     },
 };
 
-const campaign = {
+s._campaignObj = {
     getAdobeCampaign: function () {
         if (typeof window.utag.data['qp.cid'] !== 'undefined') {
             return ('cid=' + window.utag.data['qp.cid']);
@@ -341,16 +356,6 @@ const campaign = {
     },
 };
 
-function setPageSourceForCheckout (s) {
-    //Adding article view type and page age to cookies for checkout
-    if (s._articleViewType) {
-        s.eVar44 = s._articleViewType;
-        window.utag.loader.SC('utag_main', { 'articleview': s._articleViewType + ';exp-session' });
-        window.utag.data['cp.utag_main_articleview'] = s._articleViewType;
-        window.utag.loader.SC('utag_main', { 'pa': window.utag.data.page_datePublication_age + ';exp-session' });
-        window.utag.data['cp.utag_main_pa'] = window.utag.data.page_datePublication_age;
-    }
-}
 
 /**
  * Scrolltiefe kommt aus dem Cookie vom letzten Aufruf, wenn wir kein Adobe Consent haben gibt es keine Cookies!
@@ -383,17 +388,15 @@ s._scrollDepthObj = {
     },
 
     setPreviousPage: function (s) {
-        if (s.pageName) {
-            // Previous Page für article und video ==> document type : page_is_premium : page_id : page_channel
-            if (this.isDocTypeArticleOrVideo()) {
-                const doc_type = this.getDocType();
-                const page_id = this.getPageId();
-                const page_channel = this.getPageChannel();
-                const page_is_premium = this.getPagePremiumStatus();
-                s._prevPage = doc_type + ' : ' + page_is_premium + page_id + ' : ' + page_channel;
-            } else {
-                s._prevPage = s.pageName;
-            }
+        // Previous Page für article und video ==> document type : page_is_premium : page_id : page_channel
+        if (this.isDocTypeArticleOrVideo()) {
+            const doc_type = this.getDocType();
+            const page_id = this.getPageId();
+            const page_channel = this.getPageChannel();
+            const page_is_premium = this.getPagePremiumStatus();
+            s._prevPage = doc_type + ' : ' + page_is_premium + page_id + ' : ' + page_channel;
+        } else {
+            s._prevPage = s.pageName;
         }
     },
 
@@ -411,18 +414,18 @@ s._scrollDepthObj = {
     },
 
     setScrollDepthProperties: function (s) {
-        this.setPreviousPage(s);
-        if (s._prevPage) {
+        if (s.pageName) {
+            this.setPreviousPage(s);
             s.getPercentPageViewed(s._prevPage);
             if (s._ppvPreviousPage) {
                 this.setData(s);
             }
-        }
+        }  
     },
 };
 
-// internal Campaign
-const ICIDTracking = {
+//internal Campaign
+s._ICIDTracking = {
     setVariables: function (s) {
         let icid = '';
         try {
@@ -436,7 +439,22 @@ const ICIDTracking = {
     }
 };
 
-function init() {
+s._eventsObj = {
+    events: [],
+    addEvent: function (eventName) {
+        this.events.push(eventName);
+    },
+    setEventsProperty: function (s) {
+        const eventsString = this.events.join(',');
+        if (eventsString){
+            s.events = s.events || '';
+            s.events = s.apl(s.events, eventsString);
+            this.events = [];
+        }
+    }
+};
+
+s._init = function (s) {
     s.currencyCode = 'EUR';
     s.execdoplugins = 0;
     s.expectSupplementalData = false;
@@ -444,6 +462,7 @@ function init() {
     s.usePlugins = true;
 
     s.trackExternalLinks = true;
+    s.eVar61 = window.navigator.userAgent;
     s.eVar64 = s.visitor && s.visitor.version ? s.visitor.version : undefined;
 
     //no sdid for A4T
@@ -451,22 +470,21 @@ function init() {
 
     //Referrer for link events
     s.referrer = window.document.referrer || '';
-    s._referringDomain = utils.getDomainFromURLString(window.document.referrer);
+    s._referringDomain = s._utils.getDomainFromURLString(window.document.referrer);
 
     //height & width for iPhones
     if (window.navigator.userAgent.indexOf('iPhone') > -1) {
         s.eVar94 = window.screen.width + 'x' + window.screen.height;
     }
 
-    setKameleoonTracking(s);
-    ICIDTracking.setVariables(s);
-    articleViewType.setViewType();
-    campaign.setCampaignVariables(s);
-    setPageSourceForCheckout(s);
-    setExternalReferringDomainEvents(s);
-}
+    s._setKameleoonTracking(s);
+    s._articleViewTypeObj.setViewType();
+    s._ICIDTracking.setVariables(s);
+    s._campaignObj.setCampaignVariables(s);
+    s._setExternalReferringDomainEvents(s);
+};
 
-s.doPluginsGlobal = function (s) {
+s._doPluginsGlobal = function (s) {
     //Config
     s.eVar63 = s.version;
 
@@ -475,23 +493,13 @@ s.doPluginsGlobal = function (s) {
     s.eVar181 = new Date().getMinutes().toString();
     s.eVar185 = window.utag.data.myCW || '';
     s._scrollDepthObj.setScrollDepthProperties(s);
+    s._eventsObj.setEventsProperty(s);
 };
 
 // Evaluate runtime environment
 if (typeof exports === 'object') {
-    // Expose reference to members for unit testing.
-    module.exports = {
-        s,
-        utils,
-        init,
-        campaign,
-        bildPageName,
-        articleViewType,
-        setPageSourceForCheckout,
-        setExternalReferringDomainEvents,
-        setKameleoonTracking,
-        ICIDTracking
-    };
+    // Export s-object with all functions for unit testing
+    module.exports = s;
 } else {
-    init();
+    s._init();
 }

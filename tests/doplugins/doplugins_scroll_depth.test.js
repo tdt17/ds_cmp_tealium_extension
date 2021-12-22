@@ -197,7 +197,7 @@ describe('_scrollDepthObj', () => {
             expect(s._prevPage).toBe(s.pageName);
         });
 
-        it('should set the right _prevPage if docType is article or video and page is premium', () => {
+        it('should set the right _prevPage if docType is article or video', () => {
             jest.spyOn(s._scrollDepthObj, 'isDocTypeArticleOrVideo').mockReturnValue(true);
             jest.spyOn(s._scrollDepthObj, 'getDocType').mockReturnValue('test_docType');
             jest.spyOn(s._scrollDepthObj, 'getPageId').mockReturnValue('test_pageId');
@@ -207,18 +207,6 @@ describe('_scrollDepthObj', () => {
             s._scrollDepthObj.setPreviousPage(s);
 
             expect(s._prevPage).toBe('test_docType : test_is_page_premium_yes : test_pageId : test_pageChannel');
-        });
-
-        it('should set the right _prevPage if docType is article or video and page is not premium', () => {
-            jest.spyOn(s._scrollDepthObj, 'isDocTypeArticleOrVideo').mockReturnValue(true);
-            jest.spyOn(s._scrollDepthObj, 'getDocType').mockReturnValue('test_docType');
-            jest.spyOn(s._scrollDepthObj, 'getPageId').mockReturnValue('test_pageId');
-            jest.spyOn(s._scrollDepthObj, 'getPageChannel').mockReturnValue('test_pageChannel');
-            jest.spyOn(s._scrollDepthObj, 'getPagePremiumStatus').mockReturnValue('');
-        
-            s._scrollDepthObj.setPreviousPage(s);
-
-            expect(s._prevPage).toBe('test_docType : test_pageId : test_pageChannel');
         });
 
     });

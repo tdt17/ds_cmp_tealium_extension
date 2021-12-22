@@ -77,14 +77,6 @@ s._articleViewTypeObj = {
         });
     },
 
-    isFromBild: function (referringDomain) {
-        return referringDomain === 'www.bild.de';
-    },
-
-    isFromBildMobile: function (referringDomain) {
-        return referringDomain === 'm.bild.de';
-    },
-
     /**
      * Same domain check including subdomains.
      */
@@ -123,6 +115,22 @@ s._articleViewTypeObj = {
         } catch (err) {
             return false;
         }
+    },
+
+    isFromBild: function (referringDomain) {
+        return referringDomain === 'www.bild.de';
+    },
+
+    isFromBildMobile: function (referringDomain) {
+        return referringDomain === 'm.bild.de';
+    },
+
+    isFromBildHomeWithTaboola: function (referrer, search) {
+        return referrer.indexOf('https://trc.taboola.com/bilddedt/') !== -1 && search.indexOf('wtmc=') !== -1;
+    },
+
+    isFromBildMobileHomeWithTaboola: function (referrer, search) {
+        return referrer.indexOf('https://trc.taboola.com/bilddemw/') !== -1 && search.indexOf('wtmc=') !== -1;
     },
 
     getTrackingValue: function () {
@@ -164,6 +172,7 @@ s._articleViewTypeObj = {
         const referrer = this.getReferrerFromLocationHash() || window.document.referrer;
         const referringDomain = s._utils.getDomainFromURLString(referrer);
         const domain = window.document.domain;
+        const search = window.location.search;
         let articleViewType = 'event27'; //Other External
         if (this.isFromSearch(referringDomain)) {
             articleViewType = 'event24'; //Search
@@ -175,10 +184,14 @@ s._articleViewTypeObj = {
             articleViewType = 'event22'; //Home
         } else if (this.isFromInternal(referringDomain)) {
             articleViewType = 'event23'; //Other Internal
-        } else if (this.isFromBild(referringDomain)) {
-            articleViewType = 'event76'; // Bild
-        } else if (this.isFromBildMobile(referringDomain)) {
-            articleViewType = 'event77'; // Bild mobile
+        } else if (this.isFromBild(referringDomain) && this.isFromHome(referrer)) {
+            articleViewType = 'event76'; // Bild home
+        } else if (this.isFromBildHomeWithTaboola(referrer, search)) {
+            articleViewType = 'event76'; // Bild home
+        } else if (this.isFromBildMobile(referringDomain) && this.isFromHome(referrer)) {
+            articleViewType = 'event77'; // Bild mobile home
+        }else if (this.isFromBildMobileHomeWithTaboola(referrer, search)) {
+            articleViewType = 'event77'; // Bild mobile home
         }
         return articleViewType;
     },
@@ -263,7 +276,7 @@ s._setExternalReferringDomainEvents = function (s) {
             }
 
         });
-        if (domainMatches){
+        if (domainMatches) {
             s._eventsObj.addEvent(event);
         }
     });
@@ -286,8 +299,8 @@ s._bildPageNameObj = {
 
     isHome: function () {
         return !!window.utag.data['page_id']
-            && (window.utag.data['page_id'] == '17410084'
-                || window.utag.data['page_id'] == '16237890');
+            && (window.utag.data['page_id'] === '17410084'
+                || window.utag.data['page_id'] === '16237890');
     },
 
     isAdWall: function (s) {
@@ -379,7 +392,7 @@ s._eventsObj = {
     },
     setEventsProperty: function (s) {
         const eventsString = this.events.join(',');
-        if (eventsString){
+        if (eventsString) {
             s.events = s.events || '';
             s.events = s.apl(s.events, eventsString);
             this.events = [];

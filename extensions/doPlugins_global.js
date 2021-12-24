@@ -357,6 +357,73 @@ s._campaignObj = {
 };
 
 
+/**
+ * Scrolltiefe kommt aus dem Cookie vom letzten Aufruf, wenn wir kein Adobe Consent haben gibt es keine Cookies!
+ */
+s._scrollDepthObj = {
+
+    getDocType: function () {
+        return window.utag.data.adobe_doc_type || window.utag.data.ad_page_document_type
+            || window.utag.data.page_type || window.utag.data.adobe_docType || '';
+    },
+
+    getPageId: function () {
+        return window.utag.data.page_id || window.utag.data.cid || window.utag.data.screen_escenicId || '';
+    },
+
+    getPageChannel: function () {
+        return window.utag.data._pathname1 || window.utag.data.page_channel1 || window.utag.data.nav1
+            || window.utag.data.screen_sectionPath_level1 || window.utag.data.page_sectionPath1 || '';
+    },
+
+    getPagePremiumStatus: function () {
+        const status = window.utag.data.is_status_premium || window.utag.data.page_isPremium
+            || window.utag.data.screen_isPremium;
+        return status ? status + ' : ' : '';
+    },
+
+    isDocTypeArticleOrVideo: function () {
+        const doc_type = this.getDocType();
+        return doc_type === 'article' || doc_type === 'video';
+    },
+
+    setPreviousPage: function (s) {
+        // Previous Page für article und video ==> document type : page_is_premium : page_id : page_channel
+        if (this.isDocTypeArticleOrVideo()) {
+            const doc_type = this.getDocType();
+            const page_id = this.getPageId();
+            const page_channel = this.getPageChannel();
+            const page_is_premium = this.getPagePremiumStatus();
+            s._prevPage = doc_type + ' : ' + page_is_premium + page_id + ' : ' + page_channel;
+        } else {
+            s._prevPage = s.pageName;
+        }
+    },
+
+    setData: function (s) {
+        s.eVar33 = s._ppvPreviousPage;
+        s.prop61 = s._ppvPreviousPage;
+        s.prop62 = s._ppvInitialPercentViewed;
+        s.prop63 = s._ppvHighestPixelsSeen;
+        s.prop64 = Math.round(s._ppvInitialPercentViewed / 10) * 10;
+        s.prop65 = Math.round(s._ppvHighestPercentViewed / 10) * 10;
+        const event45 = 'event45=' + Math.round(s._ppvInitialPercentViewed / 10) * 10;
+        const event46 = 'event46=' + Math.round(s._ppvHighestPercentViewed / 10) * 10;
+        s.events = s.apl(s.events, event45, ',', 1);
+        s.events = s.apl(s.events, event46, ',', 1);
+    },
+
+    setScrollDepthProperties: function (s) {
+        if (s.pageName) {
+            this.setPreviousPage(s);
+            s.getPercentPageViewed(s._prevPage);
+            if (s._ppvPreviousPage) {
+                this.setData(s);
+            }
+        }  
+    },
+};
+
 //internal Campaign
 s._ICIDTracking = {
     setVariables: function (s) {
@@ -410,6 +477,7 @@ s._init = function (s) {
         s.eVar94 = window.screen.width + 'x' + window.screen.height;
     }
 
+    s._setKameleoonTracking(s);
     s._articleViewTypeObj.setViewType();
     s._ICIDTracking.setVariables(s);
     s._campaignObj.setCampaignVariables(s);
@@ -424,7 +492,7 @@ s._doPluginsGlobal = function (s) {
     s.eVar184 = new Date().getHours().toString();
     s.eVar181 = new Date().getMinutes().toString();
     s.eVar185 = window.utag.data.myCW || '';
-
+    s._scrollDepthObj.setScrollDepthProperties(s);
     s._eventsObj.setEventsProperty(s);
 };
 

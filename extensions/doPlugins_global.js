@@ -384,7 +384,7 @@ s._scrollDepthObj = {
 
     isDocTypeArticleOrVideo: function () {
         const doc_type = this.getDocType();
-        return !!doc_type && (doc_type === 'article' || doc_type === 'video');
+        return doc_type === 'article' || doc_type === 'video';
     },
 
     setPreviousPage: function (s) {

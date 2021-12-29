@@ -491,7 +491,7 @@ s._init = function (s) {
     }
 
     s._setKameleoonTracking(s);
-    s._articleViewTypeObj.setViewType();
+    s._articleViewTypeObj.setViewType(s);
     s._ICIDTracking.setVariables(s);
     s._campaignObj.setCampaignVariables(s);
     s._setExternalReferringDomainEvents(s);
@@ -514,5 +514,5 @@ if (typeof exports === 'object') {
     // Export s-object with all functions for unit testing
     module.exports = s;
 } else {
-    s._init();
+    s._init(s);
 }

@@ -182,7 +182,7 @@ s._articleViewTypeObj = {
             articleViewType = 'event102'; //Taboola
         } else if (this.isFromInternal(referringDomain, domain) && this.isFromHome(referrer)) {
             articleViewType = 'event22'; //Home
-        } else if (this.isFromInternal(referringDomain)) {
+        } else if (this.isFromInternal(referringDomain, domain)) {
             articleViewType = 'event23'; //Other Internal
         } else if (this.isFromBild(referringDomain) && this.isFromHome(referrer)) {
             articleViewType = 'event76'; // Bild home

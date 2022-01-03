@@ -126,7 +126,9 @@
 
     function onMessage(event){
         if (event.data && event.data.cmpLayerMessage) {
+            window.utag.data['cmp_interactions_true'] = 'true';
             exportedFunctions.sendLinkEvent(event.data.payload);
+            window.utag.data['cmp_interactions_true'] = 'false';
         }
     }
 

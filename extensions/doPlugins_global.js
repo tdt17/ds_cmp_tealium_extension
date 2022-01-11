@@ -291,6 +291,21 @@ s._setKameleoonTracking = function (s) {
     }
 };
 
+s._setAmpPlatform = function (s) {
+    //Platform AMP setzen und Conversion AMP mitgeben in articleview
+    if (window.utag.data['dom.referrer'] 
+        && window.utag.data['dom.referrer'].indexOf('.ampproject.') !== -1
+        || window.utag.data['dom.query_string'] 
+        && window.utag.data['dom.query_string'].indexOf('atrid=amp.article.plus.button.paywall.testen') !== -1) {
+
+        window.utag.data.page_platform = 'amp';
+        s.eVar2 = 'amp';
+        s.prop2 = 'amp';
+        window.utag.loader.SC('utag_main', { 'page_platform': 'amp' + ';exp-session' });
+        window.utag.loader.SC('utag_main', { 'articleview': 'event24' + ';exp-session' });
+    }
+};
+
 s._bildPageNameObj = {
     isDocTypeArticle: function () {
         return !!window.utag.data.adobe_doc_type

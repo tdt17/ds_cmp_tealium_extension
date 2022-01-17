@@ -39,6 +39,10 @@ s._utils = {
         return window.utag.data.adobe_doc_type || window.utag.data.ad_page_document_type
             || window.utag.data.page_type || window.utag.data.adobe_docType || '';
     },
+    getPageType: function() {
+        return window.utag.data.page_type || window.utag.data.page_document_type
+            || window.utag.data.page_mapped_doctype_for_pagename;
+    },
 };
 
 /**
@@ -297,10 +301,8 @@ s._setKameleoonTracking = function (s) {
 
 s._setTeaserTrackingEvars = function (s) {
 
-    const pageType = window.utag.data.page_document_type 
-                    || window.utag.data.page_mapped_doctype_for_pagename 
-                    || window.utag.data.page_type;
-
+    const pageType = s._utils.getPageType();
+    
     // Home teaser tracking evars
     if (sessionStorage.getItem('home_teaser_info')
         && (pageType === 'article' || pageType === 'media')

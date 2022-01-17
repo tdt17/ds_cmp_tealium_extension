@@ -67,4 +67,31 @@ describe('s_utils', () => {
             expect(value).toBe(window.utag.data.adobe_docType);
         });
     });
+
+    describe('getPageType', () => {
+
+        it('should return page_type if it is present', function () {
+            window.utag.data.page_type = 'test_page_type';
+
+            const value = s._utils.getPageType();
+
+            expect(value).toBe(window.utag.data.page_type);
+        });
+
+        it('should return page_document_type if it is present', function () {
+            window.utag.data.page_document_type = 'test_page_document_type';
+
+            const value = s._utils.getPageType();
+
+            expect(value).toBe(window.utag.data.page_document_type);
+        });
+
+        it('should return page_mapped_doctype_for_pagename if it is present', function () {
+            window.utag.data.page_mapped_doctype_for_pagename = 'test_page_mapped_doctype_for_pagename';
+
+            const value = s._utils.getPageType();
+
+            expect(value).toBe(window.utag.data.page_mapped_doctype_for_pagename);
+        });
+    });
 });

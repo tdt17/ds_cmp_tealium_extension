@@ -34,7 +34,11 @@ s._utils = {
         } catch (err) {
             return '';
         }
-    }
+    },
+    getDocType: function () {
+        return window.utag.data.adobe_doc_type || window.utag.data.ad_page_document_type
+            || window.utag.data.page_type || window.utag.data.adobe_docType || '';
+    },
 };
 
 /**
@@ -190,7 +194,7 @@ s._articleViewTypeObj = {
             articleViewType = 'event76'; // Bild home
         } else if (this.isFromBildMobile(referringDomain) && this.isFromHome(referrer)) {
             articleViewType = 'event77'; // Bild mobile home
-        }else if (this.isFromBildMobileHomeWithTaboola(referrer, search)) {
+        } else if (this.isFromBildMobileHomeWithTaboola(referrer, search)) {
             articleViewType = 'event77'; // Bild mobile home
         }
         return articleViewType;
@@ -374,12 +378,6 @@ s._campaignObj = {
  * Scrolltiefe kommt aus dem Cookie vom letzten Aufruf, wenn wir kein Adobe Consent haben gibt es keine Cookies!
  */
 s._scrollDepthObj = {
-
-    getDocType: function () {
-        return window.utag.data.adobe_doc_type || window.utag.data.ad_page_document_type
-            || window.utag.data.page_type || window.utag.data.adobe_docType || '';
-    },
-
     getPageId: function () {
         return window.utag.data.page_id || window.utag.data.cid || window.utag.data.screen_escenicId || '';
     },
@@ -395,15 +393,15 @@ s._scrollDepthObj = {
         return status ? status + ' : ' : '';
     },
 
-    isDocTypeArticleOrVideo: function () {
-        const doc_type = this.getDocType();
+    isDocTypeArticleOrVideo: function (s) {
+        const doc_type = s._utils.getDocType();
         return doc_type === 'article' || doc_type === 'video';
     },
 
     setPreviousPage: function (s) {
         // Previous Page für article und video ==> document type : page_is_premium : page_id : page_channel
-        if (this.isDocTypeArticleOrVideo()) {
-            const doc_type = this.getDocType();
+        if (this.isDocTypeArticleOrVideo(s)) {
+            const doc_type = s._utils.getDocType();
             const page_id = this.getPageId();
             const page_channel = this.getPageChannel();
             const page_is_premium = this.getPagePremiumStatus();
@@ -433,7 +431,7 @@ s._scrollDepthObj = {
             if (s._ppvPreviousPage) {
                 this.setData(s);
             }
-        }  
+        }
     },
 };
 
@@ -467,6 +465,27 @@ s._eventsObj = {
     }
 };
 
+s._plusDensityObj = {
+    saveToCookie: (source) => {
+        window.utag.loader.SC('utag_main', {'source': source + ';exp-session'});
+    },
+    deleteFromCookie: () => {
+        window.utag.loader.SC('utag_main', {'source': '' + ';exp-session'});
+    },
+    setDensity: function (s) {
+        const documentType = s._utils.getDocType(s);
+        if (documentType === 'article') {
+            const source = window.utag.data.source;
+            if (source) {
+                s.eVar235 = source;
+                this.saveToCookie(source);
+            } else {
+                this.deleteFromCookie();
+            }
+        }
+    }
+};
+
 s._init = function (s) {
     s.currencyCode = 'EUR';
     s.execdoplugins = 0;
@@ -495,6 +514,7 @@ s._init = function (s) {
     s._ICIDTracking.setVariables(s);
     s._campaignObj.setCampaignVariables(s);
     s._setExternalReferringDomainEvents(s);
+    s._plusDensityObj.setDensity(s);
 };
 
 s._doPluginsGlobal = function (s) {

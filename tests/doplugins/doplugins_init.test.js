@@ -5,7 +5,8 @@ describe('init()', () => {
     let s;
     let setCampaignVariablesMock;
     let setViewTypeMock;
-    let setICIDTrackingVariables;
+    let setICIDTrackingVariablesMock;
+    let setDensityMock;
 
     beforeEach(() => {
         // Create a fresh window mock for each test.
@@ -18,7 +19,8 @@ describe('init()', () => {
 
         setCampaignVariablesMock = jest.spyOn(s._campaignObj, 'setCampaignVariables').mockImplementation();
         setViewTypeMock = jest.spyOn(s._articleViewTypeObj, 'setViewType').mockImplementation();
-        setICIDTrackingVariables = jest.spyOn(s._ICIDTracking, 'setVariables').mockImplementation();
+        setICIDTrackingVariablesMock = jest.spyOn(s._ICIDTracking, 'setVariables').mockImplementation();
+        setDensityMock = jest.spyOn(s._plusDensityObj, 'setDensity').mockImplementation();
 
     });
 
@@ -73,6 +75,11 @@ describe('init()', () => {
 
     it('should call articleViewType.setViewType()', () => {
         s._init(s);
-        expect(setICIDTrackingVariables).toHaveBeenCalledWith(s);
+        expect(setICIDTrackingVariablesMock).toHaveBeenCalledWith(s);
+    });
+
+    it('should call s._plusDensityObj.setDensity(s)', () => {
+        s._init(s);
+        expect(setDensityMock).toHaveBeenCalledWith(s);
     });
 });

@@ -20,61 +20,23 @@ describe('_scrollDepthObj', () => {
     describe('isDocTypeArticleOrVideo', () => {
 
         it('should return false if doc_type is not defined', () => {
-            const result = s._scrollDepthObj.isDocTypeArticleOrVideo();
+            const result = s._scrollDepthObj.isDocTypeArticleOrVideo(s);
 
             expect(result).toBe(false);
         });
 
         it('should return true if doc_type is article', () => {
             window.utag.data.adobe_doc_type = 'article';
-            const result = s._scrollDepthObj.isDocTypeArticleOrVideo();
+            const result = s._scrollDepthObj.isDocTypeArticleOrVideo(s);
 
             expect(result).toBe(true);
         });
 
         it('should return true if doc_type is video', () => {
             window.utag.data.adobe_doc_type = 'video';
-            const result = s._scrollDepthObj.isDocTypeArticleOrVideo();
+            const result = s._scrollDepthObj.isDocTypeArticleOrVideo(s);
 
             expect(result).toBe(true);
-        });
-
-    });
-
-    describe('getDocType', () => {
-        
-        it('should return empty string if no document type is present', () => {
-            const value = s._scrollDepthObj.getDocType();
-
-            expect(value).toBe('');
-        });
-
-        it('should return adobe_doc_type if it is present', () => {
-            window.utag.data.adobe_doc_type = 'test_doc_type';
-            const value = s._scrollDepthObj.getDocType();
-
-            expect(value).toBe(window.utag.data.adobe_doc_type);
-        });
-
-        it('should return ad_page_document_type if it is present', () => {
-            window.utag.data.ad_page_document_type = 'test_ad_page_document_type';
-            const value = s._scrollDepthObj.getDocType();
-
-            expect(value).toBe(window.utag.data.ad_page_document_type);
-        });
-
-        it('should return page_type if it is present', () => {
-            window.utag.data.page_type = 'test_page_type';
-            const value = s._scrollDepthObj.getDocType();
-
-            expect(value).toBe(window.utag.data.page_type);
-        });
-
-        it('should return adobe_docType if it is present', () => {
-            window.utag.data.adobe_docType = 'test_adobe_docType';
-            const value = s._scrollDepthObj.getDocType();
-
-            expect(value).toBe(window.utag.data.adobe_docType);
         });
 
     });
@@ -199,7 +161,7 @@ describe('_scrollDepthObj', () => {
 
         it('should set the right _prevPage if docType is article or video', () => {
             jest.spyOn(s._scrollDepthObj, 'isDocTypeArticleOrVideo').mockReturnValue(true);
-            jest.spyOn(s._scrollDepthObj, 'getDocType').mockReturnValue('test_docType');
+            jest.spyOn(s._utils, 'getDocType').mockReturnValue('test_docType');
             jest.spyOn(s._scrollDepthObj, 'getPageId').mockReturnValue('test_pageId');
             jest.spyOn(s._scrollDepthObj, 'getPageChannel').mockReturnValue('test_pageChannel');
             jest.spyOn(s._scrollDepthObj, 'getPagePremiumStatus').mockReturnValue('test_is_page_premium_yes : ');

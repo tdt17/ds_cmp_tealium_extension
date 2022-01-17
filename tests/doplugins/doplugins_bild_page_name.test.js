@@ -43,14 +43,14 @@ describe('_bildPageNameObj', () => {
         });
 
         it('should be true if page_id is 17410084', () => {
-            window.utag.data.page_id = 17410084;
+            window.utag.data.page_id = '17410084';
 
             const returnValue = s._bildPageNameObj.isHome();
             expect(returnValue).toBe(true);
         });
 
         it('should be true if page_id is 16237890', () => {
-            window.utag.data.page_id = 16237890;
+            window.utag.data.page_id = '16237890';
 
             const returnValue = s._bildPageNameObj.isHome();
             expect(returnValue).toBe(true);

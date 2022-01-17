@@ -34,7 +34,11 @@ s._utils = {
         } catch (err) {
             return '';
         }
-    }
+    },
+    getDocType: function () {
+        return window.utag.data.adobe_doc_type || window.utag.data.ad_page_document_type
+            || window.utag.data.page_type || window.utag.data.adobe_docType || '';
+    },
 };
 
 /**
@@ -77,14 +81,6 @@ s._articleViewTypeObj = {
         });
     },
 
-    isFromBild: function (referringDomain) {
-        return referringDomain === 'www.bild.de';
-    },
-
-    isFromBildMobile: function (referringDomain) {
-        return referringDomain === 'm.bild.de';
-    },
-
     /**
      * Same domain check including subdomains.
      */
@@ -123,6 +119,22 @@ s._articleViewTypeObj = {
         } catch (err) {
             return false;
         }
+    },
+
+    isFromBild: function (referringDomain) {
+        return referringDomain === 'www.bild.de';
+    },
+
+    isFromBildMobile: function (referringDomain) {
+        return referringDomain === 'm.bild.de';
+    },
+
+    isFromBildHomeWithTaboola: function (referrer, search) {
+        return referrer.indexOf('https://trc.taboola.com/bilddedt/') !== -1 && search.indexOf('wtmc=') !== -1;
+    },
+
+    isFromBildMobileHomeWithTaboola: function (referrer, search) {
+        return referrer.indexOf('https://trc.taboola.com/bilddemw/') !== -1 && search.indexOf('wtmc=') !== -1;
     },
 
     getTrackingValue: function () {
@@ -164,6 +176,7 @@ s._articleViewTypeObj = {
         const referrer = this.getReferrerFromLocationHash() || window.document.referrer;
         const referringDomain = s._utils.getDomainFromURLString(referrer);
         const domain = window.document.domain;
+        const search = window.location.search;
         let articleViewType = 'event27'; //Other External
         if (this.isFromSearch(referringDomain)) {
             articleViewType = 'event24'; //Search
@@ -173,12 +186,16 @@ s._articleViewTypeObj = {
             articleViewType = 'event102'; //Taboola
         } else if (this.isFromInternal(referringDomain, domain) && this.isFromHome(referrer)) {
             articleViewType = 'event22'; //Home
-        } else if (this.isFromInternal(referringDomain)) {
+        } else if (this.isFromInternal(referringDomain, domain)) {
             articleViewType = 'event23'; //Other Internal
-        } else if (this.isFromBild(referringDomain)) {
-            articleViewType = 'event76'; // Bild
-        } else if (this.isFromBildMobile(referringDomain)) {
-            articleViewType = 'event77'; // Bild mobile
+        } else if (this.isFromBild(referringDomain) && this.isFromHome(referrer)) {
+            articleViewType = 'event76'; // Bild home
+        } else if (this.isFromBildHomeWithTaboola(referrer, search)) {
+            articleViewType = 'event76'; // Bild home
+        } else if (this.isFromBildMobile(referringDomain) && this.isFromHome(referrer)) {
+            articleViewType = 'event77'; // Bild mobile home
+        } else if (this.isFromBildMobileHomeWithTaboola(referrer, search)) {
+            articleViewType = 'event77'; // Bild mobile home
         }
         return articleViewType;
     },
@@ -263,7 +280,7 @@ s._setExternalReferringDomainEvents = function (s) {
             }
 
         });
-        if (domainMatches){
+        if (domainMatches) {
             s._eventsObj.addEvent(event);
         }
     });
@@ -307,8 +324,8 @@ s._bildPageNameObj = {
 
     isHome: function () {
         return !!window.utag.data['page_id']
-            && (window.utag.data['page_id'] == '17410084'
-                || window.utag.data['page_id'] == '16237890');
+            && (window.utag.data['page_id'] === '17410084'
+                || window.utag.data['page_id'] === '16237890');
     },
 
     isAdWall: function (s) {
@@ -381,12 +398,6 @@ s._campaignObj = {
  * Scrolltiefe kommt aus dem Cookie vom letzten Aufruf, wenn wir kein Adobe Consent haben gibt es keine Cookies!
  */
 s._scrollDepthObj = {
-
-    getDocType: function () {
-        return window.utag.data.adobe_doc_type || window.utag.data.ad_page_document_type
-            || window.utag.data.page_type || window.utag.data.adobe_docType || '';
-    },
-
     getPageId: function () {
         return window.utag.data.page_id || window.utag.data.cid || window.utag.data.screen_escenicId || '';
     },
@@ -402,15 +413,15 @@ s._scrollDepthObj = {
         return status ? status + ' : ' : '';
     },
 
-    isDocTypeArticleOrVideo: function () {
-        const doc_type = this.getDocType();
+    isDocTypeArticleOrVideo: function (s) {
+        const doc_type = s._utils.getDocType();
         return doc_type === 'article' || doc_type === 'video';
     },
 
     setPreviousPage: function (s) {
         // Previous Page für article und video ==> document type : page_is_premium : page_id : page_channel
-        if (this.isDocTypeArticleOrVideo()) {
-            const doc_type = this.getDocType();
+        if (this.isDocTypeArticleOrVideo(s)) {
+            const doc_type = s._utils.getDocType();
             const page_id = this.getPageId();
             const page_channel = this.getPageChannel();
             const page_is_premium = this.getPagePremiumStatus();
@@ -440,7 +451,7 @@ s._scrollDepthObj = {
             if (s._ppvPreviousPage) {
                 this.setData(s);
             }
-        }  
+        }
     },
 };
 
@@ -466,10 +477,31 @@ s._eventsObj = {
     },
     setEventsProperty: function (s) {
         const eventsString = this.events.join(',');
-        if (eventsString){
+        if (eventsString) {
             s.events = s.events || '';
             s.events = s.apl(s.events, eventsString);
             this.events = [];
+        }
+    }
+};
+
+s._plusDensityObj = {
+    saveToCookie: (source) => {
+        window.utag.loader.SC('utag_main', {'source': source + ';exp-session'});
+    },
+    deleteFromCookie: () => {
+        window.utag.loader.SC('utag_main', {'source': '' + ';exp-session'});
+    },
+    setDensity: function (s) {
+        const documentType = s._utils.getDocType(s);
+        if (documentType === 'article') {
+            const source = window.utag.data.source;
+            if (source) {
+                s.eVar235 = source;
+                this.saveToCookie(source);
+            } else {
+                this.deleteFromCookie();
+            }
         }
     }
 };
@@ -498,10 +530,11 @@ s._init = function (s) {
     }
 
     s._setKameleoonTracking(s);
-    s._articleViewTypeObj.setViewType();
+    s._articleViewTypeObj.setViewType(s);
     s._ICIDTracking.setVariables(s);
     s._campaignObj.setCampaignVariables(s);
     s._setExternalReferringDomainEvents(s);
+    s._plusDensityObj.setDensity(s);
 };
 
 s._doPluginsGlobal = function (s) {
@@ -521,5 +554,5 @@ if (typeof exports === 'object') {
     // Export s-object with all functions for unit testing
     module.exports = s;
 } else {
-    s._init();
+    s._init(s);
 }

@@ -30,8 +30,8 @@ describe('plusDensityObj', () => {
 
     describe('deleteFromCookie()', function () {
         it('should delete the source value in utag_main cookie', function () {
-            s._plusDensityObj.saveToCookie();
-            expect(window.utag.loader.SC).toHaveBeenCalledWith('utag_main', {'source': 'undefined;exp-session'});
+            s._plusDensityObj.deleteFromCookie();
+            expect(window.utag.loader.SC).toHaveBeenCalledWith('utag_main', {'source': ';exp-session'});
         });
     });
 

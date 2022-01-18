@@ -18,6 +18,7 @@
         'abo-autobild.de': 23,
         'ac-autobild': 10,
         'ac-computerbild': 9,
+        'ac-wieistmeineip': 4,
         'asmb-metal-hammer.de': 22,
         'asmb-musikexpress.de': 14,
         'asmb-rollingstone.de': 16,

@@ -18,20 +18,25 @@ describe('_bildPageNameObj', () => {
     });
 
     describe('isDocTypeArticle', () => {
+        let getDocTypeMock;
+
+        beforeEach(() => {
+            getDocTypeMock = jest.spyOn(s._utils, 'getDocType').mockImplementation();
+        });
+
         it('should be false if adobe_doc_type is not article', () => {
-            window.utag.data.adobe_doc_type = 'home';
+            getDocTypeMock.mockReturnValue('any-non-article-type');
 
             const returnValue = s._bildPageNameObj.isDocTypeArticle();
             expect(returnValue).toBe(false);
         });
 
         it('should be true if adobe_doc_type is article', () => {
-            window.utag.data.adobe_doc_type = 'article';
+            getDocTypeMock.mockReturnValue('article');
 
             const returnValue = s._bildPageNameObj.isDocTypeArticle();
             expect(returnValue).toBe(true);
         });
-
     });
 
     describe('isHome', () => {

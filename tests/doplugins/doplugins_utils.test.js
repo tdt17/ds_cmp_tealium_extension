@@ -39,32 +39,23 @@ describe('s_utils', () => {
             expect(value).toBe('');
         });
 
-        it('should return adobe_doc_type if it is present', () => {
-            window.utag.data.adobe_doc_type = 'test_doc_type';
-            const value = s._utils.getDocType();
+        it('should return the document type from various sources', () => {
 
-            expect(value).toBe(window.utag.data.adobe_doc_type);
-        });
+            const PROPERTY_NAMES = [
+                'page_type',
+                'page_document_type',
+                'adobe_docType',
+                'adobe_doc_type',
+                'ad_page_document_type',
+                'page_mapped_doctype_for_pagename'];
 
-        it('should return ad_page_document_type if it is present', () => {
-            window.utag.data.ad_page_document_type = 'test_ad_page_document_type';
-            const value = s._utils.getDocType();
+            PROPERTY_NAMES.forEach(propertyName => {
+                window.utag.data[propertyName] = 'any-' + propertyName;
+                const result = s._utils.getDocType();
+                expect(result).toBe('any-' + propertyName);
+                delete window.utag.data[propertyName];
+            });
 
-            expect(value).toBe(window.utag.data.ad_page_document_type);
-        });
-
-        it('should return page_type if it is present', () => {
-            window.utag.data.page_type = 'test_page_type';
-            const value = s._utils.getDocType();
-
-            expect(value).toBe(window.utag.data.page_type);
-        });
-
-        it('should return adobe_docType if it is present', () => {
-            window.utag.data.adobe_docType = 'test_adobe_docType';
-            const value = s._utils.getDocType();
-
-            expect(value).toBe(window.utag.data.adobe_docType);
         });
     });
 });

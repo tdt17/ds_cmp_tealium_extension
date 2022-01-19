@@ -17,64 +17,35 @@ describe('articleViewType()', () => {
         jest.restoreAllMocks();
     });
 
-    describe('getPageType', () => {
-        const pageType = 'any-page-type';
-        it('should get the page type from the data layer: page_type', function () {
-            window.utag.data = {
-                page_type: pageType
-            };
-            const result = s._articleViewTypeObj.getPageType();
-
-            expect(result).toBe(pageType);
-        });
-
-        it('should get the page type from the data layer: page_document_type', function () {
-            window.utag.data = {
-                page_document_type: pageType
-            };
-            const result = s._articleViewTypeObj.getPageType();
-
-            expect(result).toBe(pageType);
-        });
-
-        it('should get the page type from the data layer: page_mapped_doctype_for_pagename', function () {
-            window.utag.data = {
-                page_mapped_doctype_for_pagename: pageType
-            };
-            const result = s._articleViewTypeObj.getPageType();
-
-            expect(result).toBe(pageType);
-        });
-    });
-
     describe('isArticlePage()', () => {
-        const ARTICLE_TYPES = [
-            'article',
-            'artikel',
-            'live',
-            'gallery',
-            'video',
-            'post',
-            'media'
-        ];
+        let getDocTypeMock;
+
+        beforeEach(() => {
+            getDocTypeMock = jest.spyOn(s._utils, 'getDocType').mockImplementation();
+        });
 
         it('should be false when page is NOT of type article', () => {
+            getDocTypeMock.mockReturnValue('any-non-article-type');
             const result = s._articleViewTypeObj.isArticlePage();
             expect(result).toBe(false);
         });
 
         it('should be true when page is of type article', () => {
-            const PROPERTY_NAMES = ['page_type', 'page_document_type', 'page_mapped_doctype_for_pagename'];
+            const ARTICLE_TYPES = [
+                'article',
+                'artikel',
+                'live',
+                'gallery',
+                'video',
+                'post',
+                'media'
+            ];
 
-            PROPERTY_NAMES.forEach(propertyName => {
-                ARTICLE_TYPES.forEach(articleType => {
-                    window.utag.data[propertyName] = articleType;
-                    const result = s._articleViewTypeObj.isArticlePage();
-                    expect(result).toBe(true);
-                });
-                delete window.utag.data[propertyName];
+            ARTICLE_TYPES.forEach(articleType => {
+                getDocTypeMock.mockReturnValue(articleType);
+                const result = s._articleViewTypeObj.isArticlePage();
+                expect(result).toBe(true);
             });
-
         });
     });
 
@@ -500,7 +471,7 @@ describe('articleViewType()', () => {
         });
     });
 
-    describe('setPageSourceForCheckout', ()=>{
+    describe('setPageSourceForCheckout', () => {
         beforeEach(() => {
             window.utag.loader.SC = jest.fn();
         });
@@ -513,7 +484,7 @@ describe('articleViewType()', () => {
             s._articleViewType = 'any-view-type';
             s._articleViewTypeObj.setPageSourceAndAgeForCheckout(s);
 
-            expect(window.utag.loader.SC).toHaveBeenCalledWith('utag_main', { 'articleview': s._articleViewType + ';exp-session' });
+            expect(window.utag.loader.SC).toHaveBeenCalledWith('utag_main', {'articleview': s._articleViewType + ';exp-session'});
             expect(window.utag.data['cp.utag_main_articleview']).toBe(s._articleViewType);
         });
 
@@ -521,7 +492,7 @@ describe('articleViewType()', () => {
             window.utag.data.page_age = 'any-publication-age';
             s._articleViewTypeObj.setPageSourceAndAgeForCheckout(s);
 
-            expect(window.utag.loader.SC).toHaveBeenCalledWith('utag_main', { 'pa': window.utag.data.page_age + ';exp-session' });
+            expect(window.utag.loader.SC).toHaveBeenCalledWith('utag_main', {'pa': window.utag.data.page_age + ';exp-session'});
             expect(window.utag.data['cp.utag_main_pa']).toBe(window.utag.data.page_age);
         });
 
@@ -529,7 +500,7 @@ describe('articleViewType()', () => {
             window.utag.data.page_datePublication_age = 'any-publication-age';
             s._articleViewTypeObj.setPageSourceAndAgeForCheckout(s);
 
-            expect(window.utag.loader.SC).toHaveBeenCalledWith('utag_main', { 'pa': window.utag.data.page_datePublication_age + ';exp-session' });
+            expect(window.utag.loader.SC).toHaveBeenCalledWith('utag_main', {'pa': window.utag.data.page_datePublication_age + ';exp-session'});
             expect(window.utag.data['cp.utag_main_pa']).toBe(window.utag.data.page_datePublication_age);
         });
 
@@ -537,7 +508,7 @@ describe('articleViewType()', () => {
             window.utag.data.screen_agePublication = 'any-publication-age';
             s._articleViewTypeObj.setPageSourceAndAgeForCheckout(s);
 
-            expect(window.utag.loader.SC).toHaveBeenCalledWith('utag_main', { 'pa': window.utag.data.screen_agePublication + ';exp-session' });
+            expect(window.utag.loader.SC).toHaveBeenCalledWith('utag_main', {'pa': window.utag.data.screen_agePublication + ';exp-session'});
             expect(window.utag.data['cp.utag_main_pa']).toBe(window.utag.data.screen_agePublication);
         });
     });

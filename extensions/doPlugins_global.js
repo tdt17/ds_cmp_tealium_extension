@@ -322,8 +322,8 @@ s._bildPageNameObj = {
 
     isHome: function () {
         return !!window.utag.data['page_id']
-            && (window.utag.data['page_id'] === '17410084'
-                || window.utag.data['page_id'] === '16237890');
+            && (window.utag.data['page_id'] === '22P2NufXQ03Ny17A6vwi'
+                || window.utag.data['page_id'] === 'wDmWJyqHFeqhJHmeuqfN');
     },
 
     isAdWall: function (s) {

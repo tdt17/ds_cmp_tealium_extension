@@ -36,8 +36,13 @@ s._utils = {
         }
     },
     getDocType: function () {
-        return window.utag.data.adobe_doc_type || window.utag.data.ad_page_document_type
-            || window.utag.data.page_type || window.utag.data.adobe_docType || '';
+        return window.utag.data.page_type
+            || window.utag.data.page_document_type
+            || window.utag.data.adobe_doc_type
+            || window.utag.data.adobe_docType
+            || window.utag.data.ad_page_document_type
+            || window.utag.data.page_mapped_doctype_for_pagename
+            || '';
     },
     getPageType: function() {
         return window.utag.data.page_type || window.utag.data.page_document_type
@@ -49,10 +54,6 @@ s._utils = {
  * Module sets the referring context of an article page view as an certain event to the events variable.
  */
 s._articleViewTypeObj = {
-    getPageType: function () {
-        return window.utag.data.page_type || window.utag.data.page_document_type || window.utag.data.page_mapped_doctype_for_pagename;
-    },
-
     isArticlePage: function () {
         const ARTICLE_TYPES = [
             'article',
@@ -64,7 +65,7 @@ s._articleViewTypeObj = {
             'media',
             'single'
         ];
-        const pageType = this.getPageType();
+        const pageType = s._utils.getDocType();
 
         return ARTICLE_TYPES.indexOf(pageType) !== -1;
     },
@@ -320,8 +321,7 @@ s._setTeaserTrackingEvars = function (s) {
 
 s._bildPageNameObj = {
     isDocTypeArticle: function () {
-        return !!window.utag.data.adobe_doc_type
-            && window.utag.data.adobe_doc_type === 'article';
+        return s._utils.getDocType() === 'article';
     },
 
     isHome: function () {

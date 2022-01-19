@@ -315,6 +315,10 @@ s._setTeaserTrackingEvars = function (s) {
     }
 };
 
+/**
+ * Modifying the page name only for Bild.
+ * setPageName(s) needs to get explicitly called from inside the s.doPlugins() callback function of the Bild profile.
+ */
 s._bildPageNameObj = {
     isDocTypeArticle: function () {
         return s._utils.getDocType() === 'article';
@@ -392,9 +396,7 @@ s._campaignObj = {
     },
 };
 
-/**
- * Scrolltiefe kommt aus dem Cookie vom letzten Aufruf, wenn wir kein Adobe Consent haben gibt es keine Cookies!
- */
+
 s._scrollDepthObj = {
     getPageId: function () {
         return window.utag.data.page_id || window.utag.data.cid || window.utag.data.screen_escenicId || '';
@@ -419,7 +421,7 @@ s._scrollDepthObj = {
     setPreviousPage: function (s) {
         // Previous Page für article und video ==> document type : page_is_premium : page_id : page_channel
         if (this.isDocTypeArticleOrVideo(s)) {
-            const doc_type = s._utils.getDocType();
+            const doc_type = s._utils.getDocType(); // Fixme: getDocType is called a second time here (already called in isDocTypeArticleOrVideo).
             const page_id = this.getPageId();
             const page_channel = this.getPageChannel();
             const page_is_premium = this.getPagePremiumStatus();

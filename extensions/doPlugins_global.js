@@ -44,10 +44,6 @@ s._utils = {
             || window.utag.data.page_mapped_doctype_for_pagename
             || '';
     },
-    getPageType: function() {
-        return window.utag.data.page_type || window.utag.data.page_document_type
-            || window.utag.data.page_mapped_doctype_for_pagename;
-    },
 };
 
 /**
@@ -302,7 +298,7 @@ s._setKameleoonTracking = function (s) {
 
 s._setTeaserTrackingEvars = function (s) {
 
-    const pageType = s._utils.getPageType();
+    const pageType = s._utils.getDocType();
     
     // Home teaser tracking evars
     if (sessionStorage.getItem('home_teaser_info')

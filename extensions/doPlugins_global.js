@@ -296,6 +296,25 @@ s._setKameleoonTracking = function (s) {
     }
 };
 
+s._setTeaserTrackingEvars = function (s) {
+
+    const pageType = s._utils.getDocType();
+    
+    // Home teaser tracking evars
+    if (sessionStorage.getItem('home_teaser_info')
+        && (pageType === 'article' || pageType === 'media')
+        && s._ppvPreviousPage.indexOf('home') === 0) {
+
+        s.eVar66 = sessionStorage.getItem('home_teaser_info');
+        s.eVar92 = sessionStorage.getItem('home_teaser_info') + '|' + s.eVar1;
+    }
+
+    // All inline elements tracking
+    if (sessionStorage.getItem('home_teaser_info') !== null) {
+        s.eVar77 = sessionStorage.getItem('home_teaser_info');
+    }
+};
+
 s._bildPageNameObj = {
     isDocTypeArticle: function () {
         return s._utils.getDocType() === 'article';
@@ -372,7 +391,6 @@ s._campaignObj = {
         s.eVar88 = window.utag.data['adobe_campaign'] || window.utag.data['campaign_value'] || '';
     },
 };
-
 
 /**
  * Scrolltiefe kommt aus dem Cookie vom letzten Aufruf, wenn wir kein Adobe Consent haben gibt es keine Cookies!

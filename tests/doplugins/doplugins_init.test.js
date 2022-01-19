@@ -7,6 +7,9 @@ describe('init()', () => {
     let setViewTypeMock;
     let setICIDTrackingVariablesMock;
     let setDensityMock;
+    let setKameleoonTrackingMock;
+    let setExternalReferringDomainEventsMock;
+    let setTeaserTrackingEvarsMock;
 
     beforeEach(() => {
         // Create a fresh window mock for each test.
@@ -21,6 +24,9 @@ describe('init()', () => {
         setViewTypeMock = jest.spyOn(s._articleViewTypeObj, 'setViewType').mockImplementation();
         setICIDTrackingVariablesMock = jest.spyOn(s._ICIDTracking, 'setVariables').mockImplementation();
         setDensityMock = jest.spyOn(s._plusDensityObj, 'setDensity').mockImplementation();
+        setKameleoonTrackingMock = jest.spyOn(s, '_setKameleoonTracking').mockImplementation();
+        setExternalReferringDomainEventsMock = jest.spyOn(s, '_setExternalReferringDomainEvents').mockImplementation();
+        setTeaserTrackingEvarsMock = jest.spyOn(s, '_setTeaserTrackingEvars').mockImplementation();
 
     });
 
@@ -45,7 +51,6 @@ describe('init()', () => {
         expect(s.eVar64).toBe(s.visitor.version);
         expect(s.expectSupplementalData).toBe(false);
         expect(s.referrer).toBe(window.document.referrer);
-        expect(setCampaignVariablesMock).toHaveBeenCalledWith(s);
     });
 
     it('should set eVar94 to the iPhone screen size', () => {
@@ -63,17 +68,17 @@ describe('init()', () => {
         expect(s.eVar94).toBeUndefined();
     });
 
-    it('should call campaign.setCampaignVariables(s)', () => {
+    it('should call s._campaignObj.setCampaignVariables(s)', () => {
         s._init(s);
         expect(setCampaignVariablesMock).toHaveBeenCalledWith(s);
     });
 
-    it('should call articleViewType.setViewType()', () => {
+    it('should call s._articleViewTypeObj.setViewType(s)', () => {
         s._init(s);
-        expect(setViewTypeMock).toHaveBeenCalled();
+        expect(setViewTypeMock).toHaveBeenCalledWith(s);
     });
 
-    it('should call articleViewType.setViewType()', () => {
+    it('should call s._ICIDTracking.setVariables(s)', () => {
         s._init(s);
         expect(setICIDTrackingVariablesMock).toHaveBeenCalledWith(s);
     });
@@ -82,4 +87,20 @@ describe('init()', () => {
         s._init(s);
         expect(setDensityMock).toHaveBeenCalledWith(s);
     });
+
+    it('should call s._setKameleoonTracking(s)', () => {
+        s._init(s);
+        expect(setKameleoonTrackingMock).toHaveBeenCalledWith(s);
+    });
+
+    it('should call s._setExternalReferringDomainEvents(s)', () => {
+        s._init(s);
+        expect(setExternalReferringDomainEventsMock).toHaveBeenCalledWith(s);
+    });
+
+    it('should call s._setTeaserTrackingEvars(s)', () => {
+        s._init(s);
+        expect(setTeaserTrackingEvarsMock).toHaveBeenCalledWith(s);
+    });
+
 });

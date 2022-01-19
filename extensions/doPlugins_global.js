@@ -533,6 +533,7 @@ s._init = function (s) {
     s._campaignObj.setCampaignVariables(s);
     s._setExternalReferringDomainEvents(s);
     s._plusDensityObj.setDensity(s);
+    s._setTeaserTrackingEvars(s);
 };
 
 s._doPluginsGlobal = function (s) {

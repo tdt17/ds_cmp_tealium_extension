@@ -517,7 +517,6 @@ s._init = function (s) {
 
     s.trackExternalLinks = true;
     s.eVar61 = window.navigator.userAgent;
-    s.eVar64 = s.visitor && s.visitor.version ? s.visitor.version : undefined;
 
     //no sdid for A4T
     s.expectSupplementalData = false; // Force to false;
@@ -543,6 +542,7 @@ s._init = function (s) {
 s._doPluginsGlobal = function (s) {
     //Config
     s.eVar63 = s.version;
+    s.eVar64 = s.visitor && s.visitor.version ? s.visitor.version : undefined;
 
     //Time & Timeparting
     s.eVar184 = new Date().getHours().toString();

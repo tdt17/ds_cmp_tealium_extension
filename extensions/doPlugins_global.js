@@ -356,6 +356,8 @@ s._bildPageNameObj = {
             window.utag.data.page_mapped_doctype_for_pagename = 'home';
             s.eVar3 = 'home';
             s.prop3 = 'home';
+            s.eVar4 = '/';
+            s.eVar5 = 'home';
             s.pageName = 'home : ' + window.utag.data['page_id'];
         } else if (this.isLive()) {
             window.utag.data.adobe_doc_type = 'live';
@@ -448,7 +450,7 @@ s._scrollDepthObj = {
         if (s.pageName) {
             this.setPreviousPage(s);
             s.getPercentPageViewed(s._prevPage);
-            if (s._ppvPreviousPage) {
+            if (s._ppvPreviousPage && s._ppvPreviousPage !== 'undefined') {
                 this.setData(s);
             }
         }

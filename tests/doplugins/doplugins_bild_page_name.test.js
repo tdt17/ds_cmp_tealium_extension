@@ -193,6 +193,8 @@ describe('_bildPageNameObj', () => {
             expect(window.utag.data.page_mapped_doctype_for_pagename).toBe('home');
             expect(s.eVar3).toBe('home');
             expect(s.prop3).toBe('home');
+            expect(s.eVar4).toBe('/');
+            expect(s.eVar5).toBe('home');
             expect(s.pageName).toBe('home : ' + window.utag.data.page_id);
         });
 

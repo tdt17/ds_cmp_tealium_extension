@@ -311,7 +311,7 @@ s._setTeaserTrackingEvars = function (s) {
 
     // All inline elements tracking
     if (sessionStorage.getItem('home_teaser_info') !== null) {
-        s.eVar77 = sessionStorage.getItem('home_teaser_info');
+        s.eVar66 = sessionStorage.getItem('home_teaser_info');
     }
 };
 

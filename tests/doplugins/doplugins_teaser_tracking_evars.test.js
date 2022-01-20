@@ -38,18 +38,18 @@ describe('_setTeaserTrackingEvars', () => {
     });
 
     
-    it('should set eVar77 if home_teaser_info is present in sessionStorage', () => {
+    it('should set eVar66 if home_teaser_info is present in sessionStorage', () => {
         sessionStorage.setItem('home_teaser_info', 'test_home_teaser_info');
 
         s._setTeaserTrackingEvars(s);
 
-        expect(s.eVar77).toBe('test_home_teaser_info');
+        expect(s.eVar66).toBe('test_home_teaser_info');
     });
 
-    it('should not set eVar77 if home_teaser_info is not present in sessionStorage', () => {
+    it('should not set eVar66 if home_teaser_info is not present in sessionStorage', () => {
         s._setTeaserTrackingEvars(s);
 
-        expect(s.eVar77).toBeUndefined();
+        expect(s.eVar66).toBeUndefined();
     });
     
 });

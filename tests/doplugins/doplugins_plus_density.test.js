@@ -51,16 +51,16 @@ describe('plusDensityObj', () => {
 
         it('should assign source value of data layer to eVar235 on article pages', function () {
             s._utils.getDocType.mockReturnValue('article');
-            window.utag.data.source = 'any-source';
+            window.utag.data['qp.source'] = 'any-source';
             s._plusDensityObj.setDensity(s);
-            expect(s.eVar235).toEqual(window.utag.data.source);
+            expect(s.eVar235).toEqual(window.utag.data['qp.source']);
         });
 
         it('should store source in utag_main cookie on article pages', function () {
             s._utils.getDocType.mockReturnValue('article');
-            window.utag.data.source = 'any-source';
+            window.utag.data['qp.source'] = 'any-source';
             s._plusDensityObj.setDensity(s);
-            expect(saveToCookieMock).toHaveBeenCalledWith(window.utag.data.source);
+            expect(saveToCookieMock).toHaveBeenCalledWith(window.utag.data['qp.source']);
         });
 
         it('should NOT assign a value to eVar235 on NON article pages', function () {
@@ -71,14 +71,14 @@ describe('plusDensityObj', () => {
 
         it('should NOT store source in utag_main cookie on NON article pages', function () {
             s._utils.getDocType.mockReturnValue('any-type');
-            window.utag.data.source = 'any-source';
+            window.utag.data['qp.source'] = 'any-source';
             s._plusDensityObj.setDensity(s);
             expect(saveToCookieMock).not.toHaveBeenCalled();
         });
 
         it('should delete source in utag_main cookie if source is undefined on article pages', function () {
             s._utils.getDocType.mockReturnValue('article');
-            window.utag.data.source = '';
+            window.utag.data['qp.source'] = '';
             s._plusDensityObj.setDensity(s);
             expect(deleteFromCookieMock).toHaveBeenCalledWith();
             expect(s.eVar235).toBeUndefined();

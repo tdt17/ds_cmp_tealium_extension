@@ -497,7 +497,7 @@ s._plusDensityObj = {
     setDensity: function (s) {
         const documentType = s._utils.getDocType(s);
         if (documentType === 'article') {
-            const source = window.utag.data.source;
+            const source = window.utag.data['qp.source'];
             if (source) {
                 s.eVar235 = source;
                 this.saveToCookie(source);

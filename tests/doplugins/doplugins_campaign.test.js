@@ -73,16 +73,30 @@ describe('campaign', () => {
             jest.restoreAllMocks();
         });
 
-        it('should get adobe campaign and set correct data if s.campaign is not present', () => {
+        it('should get adobe campaign and set correct data', () => {
             jest.spyOn(s._campaignObj, 'getAdobeCampaign').mockReturnValue('cid=cid.test');
             getValOnceMock.mockReturnValue('cid=cid.test');
 
             s._campaignObj.setCampaignVariables(s);
 
             expect(window.utag.data.adobe_campaign).toBe('cid=cid.test');
-            expect(s.getValOnce).toHaveBeenCalledWith('cid=cid.test', 's_ev0', 0, 'm');
             expect(s.campaign).toBe('cid=cid.test');
             expect(s.eVar88).toBe(window.utag.data.adobe_campaign);
+            expect(s.getValOnce).toHaveBeenCalledWith('cid=cid.test', 's_ev0', 0, 'm');
+        });
+
+        it('should NOT use plugin getValOnce in first page view context (before consent)', () => {
+            jest.spyOn(s._campaignObj, 'getAdobeCampaign').mockReturnValue('cid=cid.test');
+            jest.spyOn(s._utils, 'isFirstPageView').mockReturnValue(true);
+            getValOnceMock.mockReturnValue('cid=cid.test');
+
+
+            s._campaignObj.setCampaignVariables(s);
+
+            expect(window.utag.data.adobe_campaign).toBe('cid=cid.test');
+            expect(s.campaign).toBe('cid=cid.test');
+            expect(s.eVar88).toBe(window.utag.data.adobe_campaign);
+            expect(s.getValOnce).not.toHaveBeenCalled();
         });
 
     });

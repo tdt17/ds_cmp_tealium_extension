@@ -10,6 +10,8 @@ describe('init()', () => {
     let setKameleoonTrackingMock;
     let setExternalReferringDomainEventsMock;
     let setTeaserTrackingEvarsMock;
+    let setScrollDepthPropertiesMock;
+    let firstPageViewMock;
 
     beforeEach(() => {
         // Create a fresh window mock for each test.
@@ -27,7 +29,8 @@ describe('init()', () => {
         setKameleoonTrackingMock = jest.spyOn(s, '_setKameleoonTracking').mockImplementation();
         setExternalReferringDomainEventsMock = jest.spyOn(s, '_setExternalReferringDomainEvents').mockImplementation();
         setTeaserTrackingEvarsMock = jest.spyOn(s, '_setTeaserTrackingEvars').mockImplementation();
-
+        setScrollDepthPropertiesMock = jest.spyOn(s._scrollDepthObj, 'setScrollDepthProperties');
+        firstPageViewMock = jest.spyOn(s._utils, 'isFirstPageView').mockImplementation().mockReturnValue(false);
     });
 
     afterEach(() => {
@@ -99,6 +102,19 @@ describe('init()', () => {
     it('should call s._setTeaserTrackingEvars(s)', () => {
         s._init(s);
         expect(setTeaserTrackingEvarsMock).toHaveBeenCalledWith(s);
+    });
+
+    it('should call s._scrollDepthObj.setScrollDepthProperties(s)', () => {
+        s._init(s);
+
+        expect(setScrollDepthPropertiesMock).toHaveBeenCalled();
+    });
+
+    it('should NOT call s._scrollDepthObj.setScrollDepthProperties(s) if it is first page view context (before consent)', () => {
+        firstPageViewMock.mockReturnValue(true);
+        s._init(s);
+
+        expect(setScrollDepthPropertiesMock).not.toHaveBeenCalled();
     });
 
 });

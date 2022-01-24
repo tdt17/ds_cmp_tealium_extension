@@ -211,6 +211,7 @@ describe('_scrollDepthObj', () => {
 
     describe('setData', () => {
         it('should set scroll depth data in s object when called', () => {
+            const addEventMock = jest.spyOn(s._eventsObj, 'addEvent').mockImplementation();
             s._ppvPreviousPage = 'test_ppvPreviousPage';
             s._ppvInitialPercentViewed = 'test_ppvInitialPercentViewed';
             s._ppvHighestPixelsSeen = 'test_ppvHighestPixelsSeen';
@@ -224,8 +225,8 @@ describe('_scrollDepthObj', () => {
             expect(s.prop63).toBe(s._ppvHighestPixelsSeen);
             expect(s.prop64).toBe(Math.round(s._ppvInitialPercentViewed / 10) * 10);
             expect(s.prop65).toBe(Math.round(s._ppvHighestPercentViewed / 10) * 10);
-            expect(s.events).toMatch('event45=' + s.prop64);
-            expect(s.events).toMatch('event46=' + s.prop65);
+            expect(addEventMock).toHaveBeenCalledWith('event45=' + s.prop64);
+            expect(addEventMock).toHaveBeenCalledWith('event46=' + s.prop65);
         });
     });
     

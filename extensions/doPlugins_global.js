@@ -297,21 +297,14 @@ s._setKameleoonTracking = function (s) {
 };
 
 s._setTeaserTrackingEvars = function (s) {
-
     const pageType = s._utils.getDocType();
-    
+
     // Home teaser tracking evars
     if (sessionStorage.getItem('home_teaser_info')
         && (pageType === 'article' || pageType === 'media')
-        && s._ppvPreviousPage.indexOf('home') === 0) {
-
+        && (s._ppvPreviousPage.indexOf('home') === 0 || s._ppvPreviousPage.indexOf('section') === 0)) {
         s.eVar66 = sessionStorage.getItem('home_teaser_info');
         s.eVar92 = sessionStorage.getItem('home_teaser_info') + '|' + s.eVar1;
-    }
-
-    // All inline elements tracking
-    if (sessionStorage.getItem('home_teaser_info') !== null) {
-        s.eVar77 = sessionStorage.getItem('home_teaser_info');
     }
 };
 
@@ -356,6 +349,8 @@ s._bildPageNameObj = {
             window.utag.data.page_mapped_doctype_for_pagename = 'home';
             s.eVar3 = 'home';
             s.prop3 = 'home';
+            s.eVar4 = '/';
+            s.eVar5 = 'home';
             s.pageName = 'home : ' + window.utag.data['page_id'];
         } else if (this.isLive()) {
             window.utag.data.adobe_doc_type = 'live';
@@ -448,7 +443,7 @@ s._scrollDepthObj = {
         if (s.pageName) {
             this.setPreviousPage(s);
             s.getPercentPageViewed(s._prevPage);
-            if (s._ppvPreviousPage) {
+            if (s._ppvPreviousPage && s._ppvPreviousPage !== 'undefined') {
                 this.setData(s);
             }
         }
@@ -495,7 +490,7 @@ s._plusDensityObj = {
     setDensity: function (s) {
         const documentType = s._utils.getDocType(s);
         if (documentType === 'article') {
-            const source = window.utag.data.source;
+            const source = window.utag.data['qp.source'];
             if (source) {
                 s.eVar235 = source;
                 this.saveToCookie(source);
@@ -515,7 +510,6 @@ s._init = function (s) {
 
     s.trackExternalLinks = true;
     s.eVar61 = window.navigator.userAgent;
-    s.eVar64 = s.visitor && s.visitor.version ? s.visitor.version : undefined;
 
     //no sdid for A4T
     s.expectSupplementalData = false; // Force to false;
@@ -541,6 +535,7 @@ s._init = function (s) {
 s._doPluginsGlobal = function (s) {
     //Config
     s.eVar63 = s.version;
+    s.eVar64 = s.visitor && s.visitor.version ? s.visitor.version : undefined;
 
     //Time & Timeparting
     s.eVar184 = new Date().getHours().toString();

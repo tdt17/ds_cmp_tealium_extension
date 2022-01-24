@@ -22,11 +22,14 @@ describe('s.doPlugins()', () => {
 
     it('should assign values to some eVars', () => {
         s.version = 'test';
+        s.visitor = {version: 'test'};
+
         window.utag.data.myCW = 'test_cw';
 
         s._doPluginsGlobal(s);
 
         expect(s.eVar63).toBe(s.version);
+        expect(s.eVar64).toBe(s.visitor.version);
         expect(s.eVar184.length).toBeGreaterThanOrEqual(1);
         expect(s.eVar181.length).toBeGreaterThanOrEqual(1);
         expect(s.eVar185).toBe(window.utag.data.myCW);

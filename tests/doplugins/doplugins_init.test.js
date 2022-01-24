@@ -36,7 +36,6 @@ describe('init()', () => {
     });
 
     it('should set global configuration properties of the Adobe s-object', () => {
-        s.visitor = {version: 'test'};
         window.document.referrer = 'any_referrer';
         window.navigator.userAgent = 'any-user-agent';
         s._init(s);
@@ -48,7 +47,6 @@ describe('init()', () => {
         expect(s.usePlugins).toBe(true);
         expect(s.trackExternalLinks).toBe(true);
         expect(s.eVar61).toBe(window.navigator.userAgent);
-        expect(s.eVar64).toBe(s.visitor.version);
         expect(s.expectSupplementalData).toBe(false);
         expect(s.referrer).toBe(window.document.referrer);
     });

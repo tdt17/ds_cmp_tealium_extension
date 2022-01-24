@@ -32,7 +32,7 @@ const ABTestingProperties = {
 
 // Utility function for conveniently setting AP-testing properties
 function setABTestingProperties() {
-    cmpInteractionTracking.onMessageReceiveData(ABTestingProperties);
+    cmpInteractionTracking.setABTestingProperties(ABTestingProperties);
 }
 
 function createWindowMock() {
@@ -178,6 +178,21 @@ describe('CMP Interaction Tracking', () => {
             const utagLinkCallArguments = window.utag.link.mock.calls[0][0];
 
             expect(utagLinkCallArguments.event_data).toEqual(`${ABTestingProperties.messageId} ${ABTestingProperties.msgDescription} ${ABTestingProperties.bucket}`);
+        });
+    });
+
+    describe('getABTestingProperties', () => {
+        it('should return a string with concatenated testing properties', function () {
+            setABTestingProperties();
+            const expectedResult = ABTestingProperties.messageId + ' ' + ABTestingProperties.msgDescription + ' ' + ABTestingProperties.bucket;
+            const result = cmpInteractionTracking.getABTestingProperties();
+            expect(result).toBe(expectedResult);
+        });
+
+        it('should return null when there are no testing properties', function () {
+            cmpInteractionTracking.setABTestingProperties({});
+            const result = cmpInteractionTracking.getABTestingProperties();
+            expect(result).toBe(null);
         });
     });
 

@@ -57,19 +57,28 @@
         onCmpuishown,
         initABTestingProperties,
         sendLinkEvent,
-        onMessage
+        onMessage,
+        setABTestingProperties,
+        getABTestingProperties
     };
 
     function getABTestingProperties() {
-        return cmp_ab_id + ' '
-            + cmp_ab_desc + ' '
-            + cmp_ab_bucket;
+        if (cmp_ab_id || cmp_ab_desc || cmp_ab_bucket) {
+            return cmp_ab_id + ' '
+                + cmp_ab_desc + ' '
+                + cmp_ab_bucket;
+        } else {
+            return null;
+        }
+
     }
 
     function setABTestingProperties(data) {
-        cmp_ab_desc = data.msgDescription;
-        cmp_ab_id = data.messageId;
-        cmp_ab_bucket = data.bucket;
+        if (data) {
+            cmp_ab_desc = data.msgDescription;
+            cmp_ab_id = data.messageId;
+            cmp_ab_bucket = data.bucket;
+        }
     }
 
     // Alternative way of setting AB-Testing properties through global letiable.

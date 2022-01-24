@@ -408,15 +408,15 @@ s._scrollDepthObj = {
         return status ? status + ' : ' : '';
     },
 
-    isDocTypeArticleOrVideo: function (s) {
+    isValidDocType: function (s) {
         const doc_type = s._utils.getDocType();
-        return doc_type === 'article' || doc_type === 'video';
+        return doc_type === 'article' || doc_type === 'video' || doc_type === 'single';
     },
 
     setPreviousPage: function (s) {
         // Previous Page für article und video ==> document type : page_is_premium : page_id : page_channel
-        if (this.isDocTypeArticleOrVideo(s)) {
-            const doc_type = s._utils.getDocType(); // Fixme: getDocType is called a second time here (already called in isDocTypeArticleOrVideo).
+        if (this.isValidDocType(s)) {
+            const doc_type = s._utils.getDocType(); // Fixme: getDocType is called a second time here (already called in isValidDocType).
             const page_id = this.getPageId();
             const page_channel = this.getPageChannel();
             const page_is_premium = this.getPagePremiumStatus();

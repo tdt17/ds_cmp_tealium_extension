@@ -447,8 +447,8 @@ s._scrollDepthObj = {
         s.prop65 = Math.round(s._ppvHighestPercentViewed / 10) * 10;
         const event45 = 'event45=' + Math.round(s._ppvInitialPercentViewed / 10) * 10;
         const event46 = 'event46=' + Math.round(s._ppvHighestPercentViewed / 10) * 10;
-        s.events = s.apl(s.events, event45, ',', 1);
-        s.events = s.apl(s.events, event46, ',', 1);
+        s._eventsObj.addEvent(event45);
+        s._eventsObj.addEvent(event46);
     },
 
     setScrollDepthProperties: function (s) {
@@ -542,6 +542,11 @@ s._init = function (s) {
     s._setExternalReferringDomainEvents(s);
     s._plusDensityObj.setDensity(s);
     s._setTeaserTrackingEvars(s);
+
+    // Some functions are not allowed on the first page view (before consent is given).
+    if (!s._utils.isFirstPageView()) {
+        s._scrollDepthObj.setScrollDepthProperties(s);
+    }
 };
 
 s._doPluginsGlobal = function (s) {
@@ -553,13 +558,8 @@ s._doPluginsGlobal = function (s) {
     s.eVar184 = new Date().getHours().toString();
     s.eVar181 = new Date().getMinutes().toString();
     s.eVar185 = window.utag.data.myCW || '';
+
     s._eventsObj.setEventsProperty(s);
-
-    // Some functions are not allowed on the first page view (before consent is given).
-    if (!s._utils.isFirstPageView()) {
-        s._scrollDepthObj.setScrollDepthProperties(s);
-    }
-
 };
 
 // Evaluate runtime environment

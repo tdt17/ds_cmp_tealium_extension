@@ -44,6 +44,9 @@ s._utils = {
             || window.utag.data.page_mapped_doctype_for_pagename
             || '';
     },
+    isFirstPageView: function () {
+        return !!window.cmp;
+    }
 };
 
 /**
@@ -385,9 +388,18 @@ s._campaignObj = {
     setCampaignVariables: function (s) {
         window.utag.data.adobe_campaign = this.getAdobeCampaign();
         //To be updated to a single assignment option after it is unified in tealium
-        const adobe_campaign = s.campaign || window.utag.data['adobe_campaign'] || '';
-        s.campaign = s.getValOnce(adobe_campaign, 's_ev0', 0, 'm');
-        s.eVar88 = window.utag.data['adobe_campaign'] || window.utag.data['campaign_value'] || '';
+        const adobeCampaign = s.campaign
+            || window.utag.data['adobe_campaign']
+            || window.utag.data['campaign_value']
+            || '';
+
+        s.eVar88 = adobeCampaign;
+        if (s._utils.isFirstPageView()) {
+            s.campaign = adobeCampaign;
+        } else {
+            // getValOnce() uses cookies and therefore is not allowed before consent.
+            s.campaign = s.getValOnce(adobeCampaign, 's_ev0', 0, 'm');
+        }
     },
 };
 
@@ -541,8 +553,13 @@ s._doPluginsGlobal = function (s) {
     s.eVar184 = new Date().getHours().toString();
     s.eVar181 = new Date().getMinutes().toString();
     s.eVar185 = window.utag.data.myCW || '';
-    s._scrollDepthObj.setScrollDepthProperties(s);
     s._eventsObj.setEventsProperty(s);
+
+    // Some functions are not allowed on the first page view (before consent is given).
+    if (!s._utils.isFirstPageView()) {
+        s._scrollDepthObj.setScrollDepthProperties(s);
+    }
+
 };
 
 // Evaluate runtime environment

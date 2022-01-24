@@ -58,4 +58,19 @@ describe('s_utils', () => {
 
         });
     });
+
+    describe('isFirstPageView', () => {
+        it('should return true if an global object with name cmp exists', () => {
+            window.cmp = {};
+            const result = s._utils.isFirstPageView();
+
+            expect(result).toBe(true);
+        });
+
+        it('should return false if there is no global object with the name cmp', () => {
+            const result = s._utils.isFirstPageView();
+
+            expect(result).toBe(false);
+        });
+    });
 });

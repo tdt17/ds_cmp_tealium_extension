@@ -542,11 +542,6 @@ s._init = function (s) {
     s._setExternalReferringDomainEvents(s);
     s._plusDensityObj.setDensity(s);
     s._setTeaserTrackingEvars(s);
-
-    // Some functions are not allowed on the first page view (before consent is given).
-    if (!s._utils.isFirstPageView()) {
-        s._scrollDepthObj.setScrollDepthProperties(s);
-    }
 };
 
 s._doPluginsGlobal = function (s) {
@@ -558,8 +553,13 @@ s._doPluginsGlobal = function (s) {
     s.eVar184 = new Date().getHours().toString();
     s.eVar181 = new Date().getMinutes().toString();
     s.eVar185 = window.utag.data.myCW || '';
-
     s._eventsObj.setEventsProperty(s);
+
+    // Some functions are not allowed on the first page view (before consent is given).
+    if (!s._utils.isFirstPageView()) {
+        s._scrollDepthObj.setScrollDepthProperties(s);
+    }
+
 };
 
 // Evaluate runtime environment

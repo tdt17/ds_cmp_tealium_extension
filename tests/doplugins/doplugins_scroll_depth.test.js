@@ -17,24 +17,31 @@ describe('_scrollDepthObj', () => {
         jest.restoreAllMocks();
     });
 
-    describe('isDocTypeArticleOrVideo', () => {
+    describe('isValidDocType', () => {
 
         it('should return false if doc_type is not defined', () => {
-            const result = s._scrollDepthObj.isDocTypeArticleOrVideo(s);
+            const result = s._scrollDepthObj.isValidDocType(s);
 
             expect(result).toBe(false);
         });
 
         it('should return true if doc_type is article', () => {
             window.utag.data.adobe_doc_type = 'article';
-            const result = s._scrollDepthObj.isDocTypeArticleOrVideo(s);
+            const result = s._scrollDepthObj.isValidDocType(s);
 
             expect(result).toBe(true);
         });
 
         it('should return true if doc_type is video', () => {
             window.utag.data.adobe_doc_type = 'video';
-            const result = s._scrollDepthObj.isDocTypeArticleOrVideo(s);
+            const result = s._scrollDepthObj.isValidDocType(s);
+
+            expect(result).toBe(true);
+        });
+
+        it('should return true if doc_type is single', () => {
+            window.utag.data.adobe_doc_type = 'single';
+            const result = s._scrollDepthObj.isValidDocType(s);
 
             expect(result).toBe(true);
         });
@@ -152,7 +159,7 @@ describe('_scrollDepthObj', () => {
 
         it('should set the right _prevPage if docType is not article or video', () => {
             s.pageName = 'test_pageName';
-            jest.spyOn(s._scrollDepthObj, 'isDocTypeArticleOrVideo').mockReturnValue(false);
+            jest.spyOn(s._scrollDepthObj, 'isValidDocType').mockReturnValue(false);
 
             s._scrollDepthObj.setPreviousPage(s);
 
@@ -160,7 +167,7 @@ describe('_scrollDepthObj', () => {
         });
 
         it('should set the right _prevPage if docType is article or video', () => {
-            jest.spyOn(s._scrollDepthObj, 'isDocTypeArticleOrVideo').mockReturnValue(true);
+            jest.spyOn(s._scrollDepthObj, 'isValidDocType').mockReturnValue(true);
             jest.spyOn(s._utils, 'getDocType').mockReturnValue('test_docType');
             jest.spyOn(s._scrollDepthObj, 'getPageId').mockReturnValue('test_pageId');
             jest.spyOn(s._scrollDepthObj, 'getPageChannel').mockReturnValue('test_pageChannel');

@@ -77,6 +77,13 @@ describe('_scrollDepthObj', () => {
             expect(value).toBe(window.utag.data.screen_escenicId);
         });
 
+        it('should return page_escenicId if it is present', () => {
+            window.utag.data.page_escenicId = 'test_page_escenicId';
+            const value = s._scrollDepthObj.getPageId();
+
+            expect(value).toBe(window.utag.data.page_escenicId);
+        });
+
     });
 
     describe('getPageChannel', () => {
@@ -182,6 +189,10 @@ describe('_scrollDepthObj', () => {
 
     describe('setScrollDepthProperties', () => {
 
+        afterEach( ()=>{
+            s._scrollDepthObj.isFirstRun = true;
+        });
+
         it('should call setPreviousPage and getPercentPageViewed if pageName is defined', () => {
             s.pageName = 'test_pageName';
             const setPrevPage = jest.spyOn(s._scrollDepthObj, 'setPreviousPage');
@@ -191,7 +202,6 @@ describe('_scrollDepthObj', () => {
 
             expect(setPrevPage).toHaveBeenCalledWith(s);
             expect(s.getPercentPageViewed).toHaveBeenCalledWith(s._prevPage);
-
         });
         
         it('should call setData if pageName and _ppvPreviousPage is defined', () => {
@@ -204,7 +214,19 @@ describe('_scrollDepthObj', () => {
             s._scrollDepthObj.setScrollDepthProperties(s);
 
             expect(setData).toHaveBeenCalledWith(s);
-            
+        });
+
+        it('should run only once', () => {
+            s.pageName = 'test_pageName';
+            s._ppvPreviousPage = 'test_ppvPreviousPage';
+
+            jest.spyOn(s, 'getPercentPageViewed').mockImplementation(jest.fn());
+            const setData = jest.spyOn(s._scrollDepthObj, 'setData');
+
+            s._scrollDepthObj.setScrollDepthProperties(s);
+            s._scrollDepthObj.setScrollDepthProperties(s);
+
+            expect(setData).toHaveBeenCalledTimes(1);
         });
         
     });

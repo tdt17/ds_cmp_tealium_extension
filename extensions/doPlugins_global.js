@@ -405,8 +405,14 @@ s._campaignObj = {
 
 
 s._scrollDepthObj = {
+    isFirstRun: true,
+
     getPageId: function () {
-        return window.utag.data.page_id || window.utag.data.cid || window.utag.data.screen_escenicId || '';
+        return window.utag.data.page_id
+            || window.utag.data.cid
+            || window.utag.data.page_escenicId
+            || window.utag.data.screen_escenicId
+            || '';
     },
 
     getPageChannel: function () {
@@ -452,7 +458,9 @@ s._scrollDepthObj = {
     },
 
     setScrollDepthProperties: function (s) {
-        if (s.pageName) {
+        if (s.pageName && this.isFirstRun) {
+            // Should be executed only once.
+            this.isFirstRun = false;
             this.setPreviousPage(s);
             s.getPercentPageViewed(s._prevPage);
             if (s._ppvPreviousPage && s._ppvPreviousPage !== 'undefined') {

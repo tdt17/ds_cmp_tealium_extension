@@ -37,11 +37,11 @@ s._utils = {
     },
     getDocType: function () {
         return window.utag.data.page_type
+            || window.utag.data.page_mapped_doctype_for_pagename
             || window.utag.data.page_document_type
             || window.utag.data.adobe_doc_type
             || window.utag.data.adobe_docType
             || window.utag.data.ad_page_document_type
-            || window.utag.data.page_mapped_doctype_for_pagename
             || '';
     },
     isFirstPageView: function () {

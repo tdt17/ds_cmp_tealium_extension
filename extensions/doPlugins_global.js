@@ -529,6 +529,10 @@ s._init = function (s) {
     s.myChannels = 0;
     s.usePlugins = true;
 
+    //Activity Map
+    s.trackInlineStats = true;
+    s.linkLeaveQueryString = true;
+
     s.trackExternalLinks = true;
     s.eVar61 = window.navigator.userAgent;
 

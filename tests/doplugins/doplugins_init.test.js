@@ -45,6 +45,8 @@ describe('init()', () => {
         expect(s.expectSupplementalData).toBe(false);
         expect(s.myChannels).toBe(0);
         expect(s.usePlugins).toBe(true);
+        expect(s.trackInlineStats).toBe(true);
+        expect(s.linkLeaveQueryString).toBe(true);
         expect(s.trackExternalLinks).toBe(true);
         expect(s.eVar61).toBe(window.navigator.userAgent);
         expect(s.expectSupplementalData).toBe(false);

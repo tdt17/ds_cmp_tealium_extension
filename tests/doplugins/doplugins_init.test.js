@@ -9,7 +9,6 @@ describe('init()', () => {
     let setDensityMock;
     let setKameleoonTrackingMock;
     let setExternalReferringDomainEventsMock;
-    let setTeaserTrackingEvarsMock;
 
     beforeEach(() => {
         // Create a fresh window mock for each test.
@@ -26,8 +25,6 @@ describe('init()', () => {
         setDensityMock = jest.spyOn(s._plusDensityObj, 'setDensity').mockImplementation();
         setKameleoonTrackingMock = jest.spyOn(s, '_setKameleoonTracking').mockImplementation();
         setExternalReferringDomainEventsMock = jest.spyOn(s, '_setExternalReferringDomainEvents').mockImplementation();
-        setTeaserTrackingEvarsMock = jest.spyOn(s, '_setTeaserTrackingEvars').mockImplementation();
-
     });
 
     afterEach(() => {
@@ -98,9 +95,5 @@ describe('init()', () => {
         expect(setExternalReferringDomainEventsMock).toHaveBeenCalledWith(s);
     });
 
-    it('should call s._setTeaserTrackingEvars(s)', () => {
-        s._init(s);
-        expect(setTeaserTrackingEvarsMock).toHaveBeenCalledWith(s);
-    });
 
 });

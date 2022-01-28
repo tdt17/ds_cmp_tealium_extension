@@ -554,7 +554,6 @@ s._init = function (s) {
     s._campaignObj.setCampaignVariables(s);
     s._setExternalReferringDomainEvents(s);
     s._plusDensityObj.setDensity(s);
-    s._setTeaserTrackingEvars(s);
 };
 
 s._doPluginsGlobal = function (s) {
@@ -570,6 +569,7 @@ s._doPluginsGlobal = function (s) {
     // Some functions are not allowed on the first page view (before consent is given).
     if (!s._utils.isFirstPageView()) {
         s._scrollDepthObj.setScrollDepthProperties(s);
+        s._setTeaserTrackingEvars(s);
     }
 
     s._eventsObj.setEventsProperty(s);

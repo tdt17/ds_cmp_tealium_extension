@@ -49,6 +49,14 @@ s._utils = {
     isFirstPageView: function () {
         return !!window.cmp;
     },
+    isValidURL: function (urlString) {
+        try {
+            new URL(urlString);
+        } catch (err) {
+            return false;
+        }
+        return true;
+    },
     getReferrerFromLocationHash: function () {
         let referrerFromHash;
         if (window.location.hash.indexOf('wt_ref') !== -1) {

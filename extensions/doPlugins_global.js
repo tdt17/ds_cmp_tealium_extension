@@ -298,6 +298,7 @@ s._setExternalReferringDomainEvents = function (s) {
     ];
 
     const referringDomain = s._utils.getReferringDomain();
+    const referringURL = s._utils.getReferrer();
 
     domainsToEventMapping.forEach(domainEventMap => {
         const {domains, event, matchExact} = domainEventMap;
@@ -305,7 +306,7 @@ s._setExternalReferringDomainEvents = function (s) {
             if (matchExact) {
                 return referringDomain && referringDomain === domain;
             } else {
-                return referringDomain && referringDomain.includes(domain);
+                return referringURL && referringURL.includes(domain);
             }
 
         });

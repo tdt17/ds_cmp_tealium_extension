@@ -184,7 +184,7 @@ s._articleViewTypeObj = {
             articleViewType = 'event24'; //Search
         } else if (this.isFromSocial(referrer)) {
             articleViewType = 'event25'; //Social
-        } else if (this.isFromInternal(referringDomain, domain) && this.isFromTaboola()) {
+        } else if (this.isFromTaboola()) {
             articleViewType = 'event102'; //Taboola
         } else if (this.isFromInternal(referringDomain, domain) && this.isFromHome(referrer)) {
             articleViewType = 'event22'; //Home

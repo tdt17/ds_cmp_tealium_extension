@@ -335,17 +335,10 @@ describe('articleViewType()', () => {
         });
 
         it('should return the right event name if referrer is of type: Taboola', () => {
-            isFromInternalMock.mockReturnValue(true);
             isFromTaboolaMock.mockReturnValue(true);
             let result = s._articleViewTypeObj.getViewTypeByReferrer();
             expect(result).toBe('event102');
 
-            isFromInternalMock.mockReturnValue(false);
-            isFromTaboolaMock.mockReturnValue(true);
-            result = s._articleViewTypeObj.getViewTypeByReferrer();
-            expect(result).not.toBe('event102');
-
-            isFromInternalMock.mockReturnValue(true);
             isFromTaboolaMock.mockReturnValue(false);
             result = s._articleViewTypeObj.getViewTypeByReferrer();
             expect(result).not.toBe('event102');

@@ -48,6 +48,20 @@ s._utils = {
     },
     isFirstPageView: function () {
         return !!window.cmp;
+    },
+    getReferrerFromLocationHash: function () {
+        let referrerFromHash;
+        if (window.location.hash.indexOf('wt_ref') !== -1) {
+            referrerFromHash = window.location.hash.replace('###wt_ref=', '');
+            referrerFromHash = decodeURIComponent(referrerFromHash);
+        }
+        return this.isValidURL(referrerFromHash) ? referrerFromHash : '';
+    },
+    getReferrer: function () {
+        return this.getReferrerFromLocationHash() || window.document.referrer;
+    },
+    getReferringDomain: function () {
+        return this.getDomainFromURLString(this.getReferrer());
     }
 };
 
@@ -275,13 +289,15 @@ s._setExternalReferringDomainEvents = function (s) {
         },
     ];
 
+    const referringDomain = s._utils.getReferringDomain();
+
     domainsToEventMapping.forEach(domainEventMap => {
         const {domains, event, matchExact} = domainEventMap;
         const domainMatches = domains.some(domain => {
             if (matchExact) {
-                return s._referringDomain && s._referringDomain === domain;
+                return referringDomain && referringDomain === domain;
             } else {
-                return s._referringDomain && s._referringDomain.includes(domain);
+                return referringDomain && referringDomain.includes(domain);
             }
 
         });

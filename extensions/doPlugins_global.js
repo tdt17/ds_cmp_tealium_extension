@@ -55,7 +55,8 @@ s._utils = {
             'video',
             'post',
             'media',
-            'single'
+            'single',
+            'sportdaten'
         ];
         const pageType = this.getDocType();
 

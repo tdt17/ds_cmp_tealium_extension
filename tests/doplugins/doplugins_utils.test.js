@@ -80,7 +80,8 @@ describe('s_utils', () => {
                 'gallery',
                 'video',
                 'post',
-                'media'
+                'media',
+                'sportdaten'
             ];
 
             ARTICLE_TYPES.forEach(articleType => {

@@ -59,6 +59,38 @@ describe('s_utils', () => {
         });
     });
 
+    describe('isArticlePage()', () => {
+        let getDocTypeMock;
+
+        beforeEach(() => {
+            getDocTypeMock = jest.spyOn(s._utils, 'getDocType').mockImplementation();
+        });
+
+        it('should be false when page is NOT of type article', () => {
+            getDocTypeMock.mockReturnValue('any-non-article-type');
+            const result = s._utils.isArticlePage();
+            expect(result).toBe(false);
+        });
+
+        it('should be true when page is of type article', () => {
+            const ARTICLE_TYPES = [
+                'article',
+                'artikel',
+                'live',
+                'gallery',
+                'video',
+                'post',
+                'media'
+            ];
+
+            ARTICLE_TYPES.forEach(articleType => {
+                getDocTypeMock.mockReturnValue(articleType);
+                const result = s._utils.isArticlePage();
+                expect(result).toBe(true);
+            });
+        });
+    });
+
     describe('isFirstPageView', () => {
         it('should return true if an global object with name cmp exists', () => {
             window.cmp = {};

@@ -17,38 +17,6 @@ describe('articleViewType()', () => {
         jest.restoreAllMocks();
     });
 
-    describe('isArticlePage()', () => {
-        let getDocTypeMock;
-
-        beforeEach(() => {
-            getDocTypeMock = jest.spyOn(s._utils, 'getDocType').mockImplementation();
-        });
-
-        it('should be false when page is NOT of type article', () => {
-            getDocTypeMock.mockReturnValue('any-non-article-type');
-            const result = s._articleViewTypeObj.isArticlePage();
-            expect(result).toBe(false);
-        });
-
-        it('should be true when page is of type article', () => {
-            const ARTICLE_TYPES = [
-                'article',
-                'artikel',
-                'live',
-                'gallery',
-                'video',
-                'post',
-                'media'
-            ];
-
-            ARTICLE_TYPES.forEach(articleType => {
-                getDocTypeMock.mockReturnValue(articleType);
-                const result = s._articleViewTypeObj.isArticlePage();
-                expect(result).toBe(true);
-            });
-        });
-    });
-
     describe('isFromSearch()', () => {
         it('should return TRUE if referrer is a search engine', function () {
             const searchDomains = ['google.', 'bing.com', 'ecosia.org', 'duckduckgo.com', 'amp-welt-de.cdn.ampproject.org', 'qwant.com', 'suche.t-online.de', '.yandex.', 'yahoo.com', 'googleapis.com', 'nortonsafe.search.ask.com', 'wikipedia.org', 'googleadservices.com', 'search.myway.com', 'lycos.de'];
@@ -514,7 +482,7 @@ describe('articleViewType()', () => {
         let addEventMock;
 
         beforeEach(() => {
-            isArticlePageMock = jest.spyOn(s._articleViewTypeObj, 'isArticlePage');
+            isArticlePageMock = jest.spyOn(s._utils, 'isArticlePage');
             getViewTypeByReferrerMock = jest.spyOn(s._articleViewTypeObj, 'getViewTypeByReferrer').mockImplementation();
             getViewTypeByTrackingPropertyMock = jest.spyOn(s._articleViewTypeObj, 'getViewTypeByTrackingProperty').mockImplementation();
             setPageSourceAndAgeForCheckoutMock = jest.spyOn(s._articleViewTypeObj, 'setPageSourceAndAgeForCheckout').mockImplementation();

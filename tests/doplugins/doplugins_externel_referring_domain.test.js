@@ -5,6 +5,7 @@ describe('External referring domains', () => {
     let addEventMock;
     let getReferringDomainMock;
     let getReferrerMock;
+    let isArticlePageMock;
 
     beforeEach(() => {
         // Provide a fresh copy of the s-object for each test.
@@ -12,11 +13,21 @@ describe('External referring domains', () => {
         addEventMock = jest.spyOn(s._eventsObj, 'addEvent').mockImplementation();
         getReferringDomainMock = jest.spyOn(s._utils, 'getReferringDomain').mockImplementation();
         getReferrerMock = jest.spyOn(s._utils, 'getReferrer').mockImplementation();
+        isArticlePageMock = jest.spyOn(s._utils, 'isArticlePage').mockImplementation().mockReturnValue(true);
     });
 
     afterEach(() => {
         jest.restoreAllMocks();
     });
+
+    it('should run only on article pages', function () {
+        isArticlePageMock.mockReturnValue(false);
+
+        s._setExternalReferringDomainEvents(s);
+        expect(getReferringDomainMock).not.toBeCalled();
+        expect(getReferrerMock).not.toBeCalled();
+    });
+
     it('should set event49 if the referring domain is www.google.com', () => {
         getReferringDomainMock.mockReturnValue('www.google.com');
 
@@ -49,7 +60,7 @@ describe('External referring domains', () => {
     });
 
     it('should set event49 if the referring domain includes googlequicksearch/', () => {
-        getReferrerMock.mockReturnValue('googlequicksearch/test');
+        getReferrerMock.mockReturnValue('googlequicksearchbox/test');
 
         s._setExternalReferringDomainEvents(s);
         expect(addEventMock).toHaveBeenCalledWith('event49');

@@ -46,6 +46,21 @@ s._utils = {
             || window.utag.data.ad_page_document_type
             || '';
     },
+    isArticlePage: function () {
+        const ARTICLE_TYPES = [
+            'article',
+            'artikel',
+            'live',
+            'gallery',
+            'video',
+            'post',
+            'media',
+            'single'
+        ];
+        const pageType = this.getDocType();
+
+        return ARTICLE_TYPES.indexOf(pageType) !== -1;
+    },
     isFirstPageView: function () {
         return !!window.cmp;
     },
@@ -77,22 +92,6 @@ s._utils = {
  * Module sets the referring context of an article page view as a certain event to the events variable.
  */
 s._articleViewTypeObj = {
-    isArticlePage: function () {
-        const ARTICLE_TYPES = [
-            'article',
-            'artikel',
-            'live',
-            'gallery',
-            'video',
-            'post',
-            'media',
-            'single'
-        ];
-        const pageType = s._utils.getDocType();
-
-        return ARTICLE_TYPES.indexOf(pageType) !== -1;
-    },
-
     isFromSearch: function (referringDomain) {
         const searchEngines = ['google.', 'bing.com', 'ecosia.org', 'duckduckgo.com', 'amp-welt-de.cdn.ampproject.org', 'qwant.com', 'suche.t-online.de', '.yandex.', 'yahoo.com', 'googleapis.com', 'nortonsafe.search.ask.com', 'wikipedia.org', 'googleadservices.com', 'search.myway.com', 'lycos.de'];
 
@@ -252,7 +251,7 @@ s._articleViewTypeObj = {
     },
 
     setViewType: function (s) {
-        if (this.isArticlePage()) {
+        if (s._utils.isArticlePage()) {
             s._articleViewType = window.document.referrer ? this.getViewTypeByReferrer() : this.getViewTypeByTrackingProperty();
             s.eVar44 = s._articleViewType;
             s._eventsObj.addEvent(s._articleViewType);
@@ -272,7 +271,7 @@ s._setExternalReferringDomainEvents = function (s) {
             matchExact: 'true',
         },
         {
-            domains: ['googlequicksearch/'],
+            domains: ['googlequicksearchbox/'],
             event: 'event49',
         },
         {
@@ -297,23 +296,25 @@ s._setExternalReferringDomainEvents = function (s) {
         },
     ];
 
-    const referringDomain = s._utils.getReferringDomain();
-    const referringURL = s._utils.getReferrer();
+    if (s._utils.isArticlePage()) {
+        const referringDomain = s._utils.getReferringDomain();
+        const referringURL = s._utils.getReferrer();
 
-    domainsToEventMapping.forEach(domainEventMap => {
-        const {domains, event, matchExact} = domainEventMap;
-        const domainMatches = domains.some(domain => {
-            if (matchExact) {
-                return referringDomain && referringDomain === domain;
-            } else {
-                return referringURL && referringURL.includes(domain);
+        domainsToEventMapping.forEach(domainEventMap => {
+            const {domains, event, matchExact} = domainEventMap;
+            const domainMatches = domains.some(domain => {
+                if (matchExact) {
+                    return referringDomain && referringDomain === domain;
+                } else {
+                    return referringURL && referringURL.includes(domain);
+                }
+
+            });
+            if (domainMatches) {
+                s._eventsObj.addEvent(event);
             }
-
         });
-        if (domainMatches) {
-            s._eventsObj.addEvent(event);
-        }
-    });
+    }
 };
 
 /**

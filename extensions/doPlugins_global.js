@@ -25,7 +25,9 @@ s.split = new Function("l","d",""
 /* eslint-enable */
 // END: Pre-defined Adobe Plugins
 
-
+/**
+ * Utility functions which get used by various features.
+ */
 s._utils = {
     getDomainFromURLString: function (urlString) {
         try {
@@ -50,7 +52,7 @@ s._utils = {
 };
 
 /**
- * Module sets the referring context of an article page view as an certain event to the events variable.
+ * Module sets the referring context of an article page view as a certain event to the events variable.
  */
 s._articleViewTypeObj = {
     isArticlePage: function () {
@@ -85,9 +87,7 @@ s._articleViewTypeObj = {
         });
     },
 
-    /**
-     * Same domain check including subdomains.
-     */
+    // Same domain check including subdomains.
     isFromInternal: function (referringDomain, domain) {
         const referringDomainSegments = referringDomain.split('.');
         const documentDomainSegments = domain.split('.');
@@ -101,10 +101,8 @@ s._articleViewTypeObj = {
         return referringDomainSegments[referringDomainSegments.length - 2] === documentDomainSegments[documentDomainSegments.length - 2];
     },
 
-    /**
-     * Only certain subdomains are considered as homepages: eg. www.bild.de, m.bild.de, sportbild.bild.de
-     * Other special subdomains should not be considered: eg. sport.bild.de, online.welt.de
-     */
+    //Only certain subdomains are considered as homepages: eg. www.bild.de, m.bild.de, sportbild.bild.de
+    //Other special subdomains should not be considered: eg. sport.bild.de, online.welt.de
     isHomepageSubdomain: function (domain) {
         const subdomainsWithHomepages = ['www', 'm', 'sportbild'];
         const domainSegments = domain.split('.');
@@ -241,6 +239,9 @@ s._articleViewTypeObj = {
     }
 };
 
+/**
+ * Set additional events with referrer context.
+ */
 s._setExternalReferringDomainEvents = function (s) {
     const domainsToEventMapping = [
         {
@@ -290,6 +291,9 @@ s._setExternalReferringDomainEvents = function (s) {
     });
 };
 
+/**
+ *  Kameleoon tracking
+ */
 s._setKameleoonTracking = function (s) {
     if (s.linkName === 'Kameleoon Tracking') {
         if (window.Kameleoon) {
@@ -299,6 +303,9 @@ s._setKameleoonTracking = function (s) {
     }
 };
 
+/**
+ * Homepage teaser tracking
+ */
 s._setTeaserTrackingEvars = function (s) {
     const pageType = s._utils.getDocType();
 
@@ -313,7 +320,7 @@ s._setTeaserTrackingEvars = function (s) {
 };
 
 /**
- * Modifying the page name only for Bild.
+ * Modifying the page name (only for Bild).
  * setPageName(s) needs to get explicitly called from inside the s.doPlugins() callback function of the Bild profile.
  */
 s._bildPageNameObj = {
@@ -370,6 +377,9 @@ s._bildPageNameObj = {
     },
 };
 
+/**
+ * Adobe campaign tracking
+ */
 s._campaignObj = {
     getAdobeCampaign: function () {
         if (typeof window.utag.data['qp.cid'] !== 'undefined') {
@@ -404,7 +414,9 @@ s._campaignObj = {
     },
 };
 
-
+/**
+ * Page scroll depth tracking.
+ */
 s._scrollDepthObj = {
     isFirstRun: true,
 
@@ -471,7 +483,9 @@ s._scrollDepthObj = {
     },
 };
 
-//internal Campaign
+/**
+ * Internal campaign tracking.
+ */
 s._ICIDTracking = {
     setVariables: function (s) {
         let icid = '';
@@ -486,6 +500,9 @@ s._ICIDTracking = {
     }
 };
 
+/**
+ * Configuration of events property
+ */
 s._eventsObj = {
     events: [],
     addEvent: function (eventName) {
@@ -501,6 +518,9 @@ s._eventsObj = {
     }
 };
 
+/**
+ * Plus density (Plusdichte) tracking
+ */
 s._plusDensityObj = {
     saveToCookie: (source) => {
         window.utag.loader.SC('utag_main', {'source': source + ';exp-session'});
@@ -522,6 +542,9 @@ s._plusDensityObj = {
     }
 };
 
+/**
+ * Starting point of extension
+ */
 s._init = function (s) {
     s.currencyCode = 'EUR';
     s.execdoplugins = 0;
@@ -556,6 +579,9 @@ s._init = function (s) {
     s._plusDensityObj.setDensity(s);
 };
 
+/**
+ * Global doPlugins callback function
+ */
 s._doPluginsGlobal = function (s) {
     //Config
     s.eVar63 = s.version;
@@ -580,5 +606,6 @@ if (typeof exports === 'object') {
     // Export s-object with all functions for unit testing
     module.exports = s;
 } else {
+    // Initialize extension
     s._init(s);
 }

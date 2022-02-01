@@ -469,7 +469,7 @@ s._scrollDepthObj = {
 
     isValidDocType: function (s) {
         const doc_type = s._utils.getDocType();
-        return doc_type === 'article' || doc_type === 'video' || doc_type === 'single';
+        return doc_type === 'article' || doc_type === 'video' || doc_type === 'single' || doc_type === 'post';
     },
 
     setPreviousPage: function (s) {

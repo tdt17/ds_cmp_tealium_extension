@@ -67,11 +67,11 @@ s._utils = {
     },
     isValidURL: function (urlString) {
         try {
-            new URL(urlString);
+            const urlObject = new URL(urlString);
+            return !!urlObject.hostname;
         } catch (err) {
             return false;
         }
-        return true;
     },
     getReferrerFromLocationHash: function () {
         let referrerFromHash;
@@ -298,14 +298,15 @@ s._setExternalReferringDomainEvents = function (s) {
     ];
 
     if (s._utils.isArticlePage()) {
-        const referringDomain = s._utils.getReferringDomain();
         const referringURL = s._utils.getReferrer();
 
         domainsToEventMapping.forEach(domainEventMap => {
             const {domains, event, matchExact} = domainEventMap;
             const domainMatches = domains.some(domain => {
                 if (matchExact) {
-                    return referringDomain && referringDomain === domain;
+                    // Exclude URLs with domains which have trailing slashes.
+                    // This is needed to distinguish Google Discover from Google Search referrer.
+                    return referringURL && referringURL.includes(domain) && !referringURL.includes(domain + '/');
                 } else {
                     return referringURL && referringURL.includes(domain);
                 }
@@ -590,8 +591,8 @@ s._init = function (s) {
     s.expectSupplementalData = false; // Force to false;
 
     //Referrer for link events
-    s.referrer = window.document.referrer || '';
-    s._referringDomain = s._utils.getDomainFromURLString(window.document.referrer);
+    s.referrer = s._utils.getReferrer();
+    s._referringDomain = s._utils.getReferringDomain();
 
     //height & width for iPhones
     if (window.navigator.userAgent.indexOf('iPhone') > -1) {

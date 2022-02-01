@@ -3,7 +3,6 @@ const sObject = require('../../extensions/doPlugins_global');
 describe('External referring domains', () => {
     let s;
     let addEventMock;
-    let getReferringDomainMock;
     let getReferrerMock;
     let isArticlePageMock;
 
@@ -11,7 +10,6 @@ describe('External referring domains', () => {
         // Provide a fresh copy of the s-object for each test.
         s = {...sObject};
         addEventMock = jest.spyOn(s._eventsObj, 'addEvent').mockImplementation();
-        getReferringDomainMock = jest.spyOn(s._utils, 'getReferringDomain').mockImplementation();
         getReferrerMock = jest.spyOn(s._utils, 'getReferrer').mockImplementation();
         isArticlePageMock = jest.spyOn(s._utils, 'isArticlePage').mockImplementation().mockReturnValue(true);
     });
@@ -24,12 +22,11 @@ describe('External referring domains', () => {
         isArticlePageMock.mockReturnValue(false);
 
         s._setExternalReferringDomainEvents(s);
-        expect(getReferringDomainMock).not.toBeCalled();
         expect(getReferrerMock).not.toBeCalled();
     });
 
     it('should set event49 if the referring domain is www.google.com', () => {
-        getReferringDomainMock.mockReturnValue('www.google.com');
+        getReferrerMock.mockReturnValue('www.google.com');
 
         s._setExternalReferringDomainEvents(s);
         expect(addEventMock).toHaveBeenCalledWith('event49');
@@ -37,14 +34,14 @@ describe('External referring domains', () => {
     });
 
     it('should set event49 if the referring domain is www.google.de', () => {
-        getReferringDomainMock.mockReturnValue('www.google.com');
+        getReferrerMock.mockReturnValue('www.google.com');
 
         s._setExternalReferringDomainEvents(s);
         expect(addEventMock).toHaveBeenCalledWith('event49');
     });
 
     it('should not set event49 if the referring domain is not www.google.com', () => {
-        getReferringDomainMock.mockReturnValue('www.google.com/');
+        getReferrerMock.mockReturnValue('www.google.com/');
 
         s._setExternalReferringDomainEvents(s);
 
@@ -52,7 +49,7 @@ describe('External referring domains', () => {
     });
 
     it('should not set event49 if the referring domain is not www.google.de', () => {
-        getReferringDomainMock.mockReturnValue('www.google.de/');
+        getReferrerMock.mockReturnValue('www.google.de/');
 
         s._setExternalReferringDomainEvents(s);
 

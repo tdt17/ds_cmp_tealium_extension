@@ -46,6 +46,13 @@ describe('_scrollDepthObj', () => {
             expect(result).toBe(true);
         });
 
+        it('should return true if doc_type is post', () => {
+            window.utag.data.adobe_doc_type = 'post';
+            const result = s._scrollDepthObj.isValidDocType(s);
+
+            expect(result).toBe(true);
+        });
+
     });
 
     describe('getPageId', () => {

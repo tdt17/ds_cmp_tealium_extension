@@ -7,6 +7,7 @@ describe('s.doPlugins()', () => {
     let setScrollDepthPropertiesMock;
     let firstPageViewMock;
     let setTeaserTrackingEvarsMock;
+    let setKameleoonTrackingMock;
 
     beforeEach(() => {
         // Create a fresh window mock for each test.
@@ -20,6 +21,7 @@ describe('s.doPlugins()', () => {
         setScrollDepthPropertiesMock = jest.spyOn(s._scrollDepthObj, 'setScrollDepthProperties');
         firstPageViewMock = jest.spyOn(s._utils, 'isFirstPageView').mockImplementation().mockReturnValue(false);
         setTeaserTrackingEvarsMock = jest.spyOn(s, '_setTeaserTrackingEvars').mockImplementation();
+        setKameleoonTrackingMock = jest.spyOn(s, '_setKameleoonTracking').mockImplementation();
     });
 
     afterEach(() => {
@@ -69,6 +71,11 @@ describe('s.doPlugins()', () => {
         firstPageViewMock.mockReturnValue(true);
         s._doPluginsGlobal(s);
         expect(setTeaserTrackingEvarsMock).not.toHaveBeenCalledWith(s);
+    });
+
+    it('should call s._setKameleoonTracking(s)', () => {
+        s._doPluginsGlobal(s);
+        expect(setKameleoonTrackingMock).toHaveBeenCalledWith(s);
     });
 
 });

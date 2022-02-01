@@ -7,7 +7,6 @@ describe('init()', () => {
     let setViewTypeMock;
     let setICIDTrackingVariablesMock;
     let setDensityMock;
-    let setKameleoonTrackingMock;
     let setExternalReferringDomainEventsMock;
 
     beforeEach(() => {
@@ -23,7 +22,6 @@ describe('init()', () => {
         setViewTypeMock = jest.spyOn(s._articleViewTypeObj, 'setViewType').mockImplementation();
         setICIDTrackingVariablesMock = jest.spyOn(s._ICIDTracking, 'setVariables').mockImplementation();
         setDensityMock = jest.spyOn(s._plusDensityObj, 'setDensity').mockImplementation();
-        setKameleoonTrackingMock = jest.spyOn(s, '_setKameleoonTracking').mockImplementation();
         setExternalReferringDomainEventsMock = jest.spyOn(s, '_setExternalReferringDomainEvents').mockImplementation();
     });
 
@@ -83,11 +81,6 @@ describe('init()', () => {
     it('should call s._plusDensityObj.setDensity(s)', () => {
         s._init(s);
         expect(setDensityMock).toHaveBeenCalledWith(s);
-    });
-
-    it('should call s._setKameleoonTracking(s)', () => {
-        s._init(s);
-        expect(setKameleoonTrackingMock).toHaveBeenCalledWith(s);
     });
 
     it('should call s._setExternalReferringDomainEvents(s)', () => {

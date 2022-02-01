@@ -599,7 +599,6 @@ s._init = function (s) {
         s.eVar94 = window.screen.width + 'x' + window.screen.height;
     }
 
-    s._setKameleoonTracking(s);
     s._articleViewTypeObj.setViewType(s);
     s._ICIDTracking.setVariables(s);
     s._campaignObj.setCampaignVariables(s);
@@ -627,6 +626,7 @@ s._doPluginsGlobal = function (s) {
     }
 
     s._eventsObj.setEventsProperty(s);
+    s._setKameleoonTracking(s);
 };
 
 // Evaluate runtime environment

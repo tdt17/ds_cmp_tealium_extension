@@ -19,12 +19,11 @@ describe('s_utils', () => {
 
     describe('getAdobeObject', () => {
         const validAdobeObject = {
-            account: 'any-account',
             version: 'any-version'
         };
 
         const invalidAdobeObject = {
-            account: 'any-account'
+            anyProperty: 'any-property'
         };
 
         it('should return the Adobe object when it has the name \'s\'', () => {

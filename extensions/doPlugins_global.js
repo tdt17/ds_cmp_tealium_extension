@@ -2,9 +2,9 @@ function _getAdobeObject() {
     let adobeObject = {};
 
     // Check if global variables contain the Adobe object or something else.
-    if (window.s && window.s.account && window.s.version) {
+    if (window.s && window.s.version) {
         adobeObject = window.s;
-    } else if (window.cmp && window.cmp.account && window.cmp.version) {
+    } else if (window.cmp && window.cmp.version) {
         adobeObject = window.cmp;
     }
     return adobeObject;

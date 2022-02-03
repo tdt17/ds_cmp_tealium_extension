@@ -10,8 +10,7 @@ function _getAdobeObject() {
     return adobeObject;
 }
 
-// const s = _getAdobeObject();
-const s = window.s || window.cmp || {};
+const s = _getAdobeObject();
 
 // START: Pre-defined Adobe Plugins
 /* eslint-disable */

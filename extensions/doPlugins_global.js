@@ -1,5 +1,18 @@
+function _getAdobeObject() {
+    let adobeObject = {};
+
+    // Check if global variables contain the Adobe object or something else.
+    if (window.s && window.s.account && window.s.version) {
+        adobeObject = window.s;
+    } else if (window.cmp && window.cmp.account && window.cmp.version) {
+        adobeObject = window.cmp;
+    }
+    return adobeObject;
+}
+
 /* eslint-disable */
-const s = window.s || window.cmp || {};
+const s = _getAdobeObject();
+
 
 // START: Pre-defined Adobe Plugins
 /* istanbul ignore next */
@@ -29,6 +42,7 @@ s.split = new Function("l","d",""
  * Utility functions which get used by various features.
  */
 s._utils = {
+    getAdobeObject: _getAdobeObject,
     getDomainFromURLString: function (urlString) {
         try {
             const urlObject = new URL(urlString);
@@ -575,7 +589,6 @@ s._plusDensityObj = {
  */
 s._init = function (s) {
     s.currencyCode = 'EUR';
-    s.execdoplugins = 0;
     s.expectSupplementalData = false;
     s.myChannels = 0;
     s.usePlugins = true;

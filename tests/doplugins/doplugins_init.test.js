@@ -36,7 +36,6 @@ describe('init()', () => {
         s._init(s);
 
         expect(s.currencyCode).toBe('EUR');
-        expect(s.execdoplugins).toBe(0);
         expect(s.expectSupplementalData).toBe(false);
         expect(s.myChannels).toBe(0);
         expect(s.usePlugins).toBe(true);

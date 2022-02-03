@@ -17,6 +17,48 @@ describe('s_utils', () => {
         jest.restoreAllMocks();
     });
 
+    describe('getAdobeObject', () => {
+        const validAdobeObject = {
+            account: 'any-account',
+            version: 'any-version'
+        };
+
+        const invalidAdobeObject = {
+            account: 'any-account'
+        };
+
+        it('should return the Adobe object when it has the name \'s\'', () => {
+            window.s = validAdobeObject;
+            const result = s._utils.getAdobeObject();
+            expect(result).toBe(validAdobeObject);
+        });
+
+        it('should return an empty object when something else is assigned to the global variable with name \'s\'', () => {
+            window.s = invalidAdobeObject;
+            const result = s._utils.getAdobeObject();
+            expect(result).toEqual({});
+        });
+
+        it('should return the Adobe object when it has the name \'cmp\'', () => {
+            window.cmp = validAdobeObject;
+            const result = s._utils.getAdobeObject();
+            expect(result).toBe(validAdobeObject);
+        });
+
+        it('should return an empty object when something else is assigned to the global variable with name \'cmp\'', () => {
+            window.cmp = invalidAdobeObject;
+            const result = s._utils.getAdobeObject();
+            expect(result).toEqual({});
+        });
+
+        it('should return an empty object when something else is assigned to the global variables \'s\' and \'cmp\' ', () => {
+            window.s = invalidAdobeObject;
+            window.cmp = invalidAdobeObject;
+            const result = s._utils.getAdobeObject();
+            expect(result).toEqual({});
+        });
+    });
+
     describe('getDomainFromURLString(URLString)', () => {
         it('should return domain from URL string', () => {
             const domain = 'www.bild.de';

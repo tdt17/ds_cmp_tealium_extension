@@ -17,6 +17,21 @@ describe('articleViewType()', () => {
         jest.restoreAllMocks();
     });
 
+    describe('cleanUpReferrer', () => {
+        it('should remove the wt_t parameter', function () {
+            const anyBaseURL = 'https://www.any-domain.com/';
+            const anyWTParam = '&wt_t=any-value';
+            const result = s._articleViewTypeObj.cleanUpReferrer(anyBaseURL + anyWTParam);
+            expect(result).toBe(anyBaseURL);
+        });
+
+        it('should return the untouched referrer if there is no wt_t parameter', function () {
+            const anyURL = 'https://www.any-domain.com/any-path?any-query=any-value';
+            const result = s._articleViewTypeObj.cleanUpReferrer(anyURL);
+            expect(result).toBe(anyURL);
+        });
+    });
+
     describe('isFromSearch()', () => {
         it('should return TRUE if referrer is a search engine', function () {
             const searchDomains = ['google.', 'bing.com', 'ecosia.org', 'duckduckgo.com', 'amp-welt-de.cdn.ampproject.org', 'qwant.com', 'suche.t-online.de', '.yandex.', 'yahoo.com', 'googleapis.com', 'nortonsafe.search.ask.com', 'wikipedia.org', 'googleadservices.com', 'search.myway.com', 'lycos.de'];
@@ -180,9 +195,15 @@ describe('articleViewType()', () => {
     });
 
     describe('isFromHome', () => {
+        let cleanUpReferrerMock;
+        beforeEach(() => {
+            cleanUpReferrerMock = jest.spyOn(s._articleViewTypeObj, 'cleanUpReferrer').mockImplementation();
+        });
+
         it('should return TRUE if referrer is from homepage (no location.pathname)', function () {
             const anyDomain = 'www.any-domain.de';
             const referrer = `https://${anyDomain}`;
+            cleanUpReferrerMock.mockReturnValue(referrer);
             window.document.domain = anyDomain;
             const result = s._articleViewTypeObj.isFromHome(referrer);
             expect(result).toBe(true);
@@ -191,6 +212,7 @@ describe('articleViewType()', () => {
         it('should return FALSE if referrer is from a sub page (with location.pathname)', function () {
             const anyDomain = 'www.any-domain.de';
             const referrer = `https://${anyDomain}/any-path`;
+            cleanUpReferrerMock.mockReturnValue(referrer);
             window.document.domain = anyDomain;
             const result = s._articleViewTypeObj.isFromHome(referrer);
             expect(result).toBe(false);

@@ -69,7 +69,8 @@ s._utils = {
             'post',
             'media',
             'single',
-            'sportdaten'
+            'sportdaten',
+            'live-sport'
         ];
         const pageType = this.getDocType();
 
@@ -106,6 +107,11 @@ s._utils = {
  * Module sets the referring context of an article page view as a certain event to the events variable.
  */
 s._articleViewTypeObj = {
+    cleanUpReferrer: function (referrer) {
+        // remove malformed query param (TRAC-1229)
+        return referrer.split('&wt_t')[0];
+    },
+
     isFromSearch: function (referringDomain) {
         const searchEngines = ['google.', 'bing.com', 'ecosia.org', 'duckduckgo.com', 'amp-welt-de.cdn.ampproject.org', 'qwant.com', 'suche.t-online.de', '.yandex.', 'yahoo.com', 'googleapis.com', 'nortonsafe.search.ask.com', 'wikipedia.org', 'googleadservices.com', 'search.myway.com', 'lycos.de'];
 
@@ -150,8 +156,9 @@ s._articleViewTypeObj = {
     },
 
     isFromHome: function (referrer) {
+        const cleanedReferrer = this.cleanUpReferrer(referrer);
         try {
-            const urlObject = new URL(referrer);
+            const urlObject = new URL(cleanedReferrer);
             return urlObject.pathname === '/' && this.isHomepageSubdomain(urlObject.hostname);
         } catch (err) {
             return false;

@@ -122,7 +122,8 @@ describe('s_utils', () => {
                 'video',
                 'post',
                 'media',
-                'sportdaten'
+                'sportdaten',
+                'live-sport'
             ];
 
             ARTICLE_TYPES.forEach(articleType => {

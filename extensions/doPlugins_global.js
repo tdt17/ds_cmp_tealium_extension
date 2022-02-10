@@ -69,7 +69,8 @@ s._utils = {
             'post',
             'media',
             'single',
-            'sportdaten'
+            'sportdaten',
+            'live-sport'
         ];
         const pageType = this.getDocType();
 

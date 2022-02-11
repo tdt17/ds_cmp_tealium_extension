@@ -107,7 +107,7 @@
             window.utag.data['cmp_interactions_true'] = 'true';
             exportedFunctions.sendLinkEvent(CONSENT_MESSAGE_EVENTS[eventType]);
             window.utag.data['cmp_interactions_true'] = 'false';
-            window.utag.loader.SC('utag_main', {'after_cmp': 'true' + ';exp-session'});
+            window.utag.loader.SC('utag_main', {'cmp_after': 'true' + ';exp-session'});
         }
     }
 
@@ -122,7 +122,7 @@
 
     function onCmpuishown(tcData) {
         if (tcData && tcData.eventStatus === 'cmpuishown') {
-            window.utag.loader.SC('utag_main', {'after_cmp': 'false' + ';exp-session'});
+            window.utag.loader.SC('utag_main', {'cmp_after': 'false' + ';exp-session'});
             window.utag.data.cmp_events = 'cm_layer_shown';
             window.utag.data['cmp_events'] = TCFAPI_COMMON_EVENTS.CMP_UI_SHOWN;
             window.utag.data['cmp_interactions_true'] = 'true';

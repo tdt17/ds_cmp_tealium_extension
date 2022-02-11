@@ -38,7 +38,7 @@
         'welt-shop.welt.de': 28
     };
 
-    let adobeTagId;
+    // let adobeTagId;
 
     let cmp_ab_id = '';
     let cmp_ab_desc = '';
@@ -107,6 +107,7 @@
             window.utag.data['cmp_interactions_true'] = 'true';
             exportedFunctions.sendLinkEvent(CONSENT_MESSAGE_EVENTS[eventType]);
             window.utag.data['cmp_interactions_true'] = 'false';
+            window.utag.loader.SC('utag_main', {'after_cmp': 'true' + ';exp-session'});
         }
     }
 
@@ -121,11 +122,12 @@
 
     function onCmpuishown(tcData) {
         if (tcData && tcData.eventStatus === 'cmpuishown') {
+            window.utag.loader.SC('utag_main', {'after_cmp': 'false' + ';exp-session'});
             window.utag.data.cmp_events = 'cm_layer_shown';
             window.utag.data['cmp_events'] = TCFAPI_COMMON_EVENTS.CMP_UI_SHOWN;
             window.utag.data['cmp_interactions_true'] = 'true';
-            window.utag.data['first_pv'] = 'true';
-            window.utag.view(window.utag.data, null, [adobeTagId]);
+            // window.utag.data['first_pv'] = 'true';
+            // window.utag.view(window.utag.data, null, [adobeTagId]);
             // Ensure that view event gets processed before link event by adding a delay.
             setTimeout(() => {
                 exportedFunctions.sendLinkEvent(TCFAPI_COMMON_EVENTS.CMP_UI_SHOWN);
@@ -172,7 +174,7 @@
     }
 
     function run() {
-        adobeTagId = exportedFunctions.getAdobeTagId(window.utag.data['ut.profile']);
+        // adobeTagId = exportedFunctions.getAdobeTagId(window.utag.data['ut.profile']);
         exportedFunctions.configSourcepoint();
         exportedFunctions.initABTestingProperties();
         exportedFunctions.registerEventHandler();

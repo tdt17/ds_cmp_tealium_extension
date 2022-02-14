@@ -314,18 +314,6 @@ describe('CMP Interaction Tracking', () => {
     });
 
     describe('onCmpuishown()', () => {
-        beforeEach(() => {
-            jest.useFakeTimers();
-        });
-        afterEach(() => {
-            jest.useRealTimers();
-        });
-
-        it('should set cmp_after value to FALSE in utag_main cookie', () => {
-            cmpInteractionTracking.onCmpuishown({eventStatus: 'cmpuishown'});
-            expect(window.utag.loader.SC).toHaveBeenCalledWith('utag_main', {'cmp_after': 'false' + ';exp-session'});
-        });
-
         it('should set correct utag.data properties', () => {
             cmpInteractionTracking.onCmpuishown({eventStatus: 'cmpuishown'});
             expect(window.utag.data).toEqual({
@@ -337,11 +325,6 @@ describe('CMP Interaction Tracking', () => {
             jest.spyOn(cmpInteractionTracking, 'sendLinkEvent').mockImplementation();
             cmpInteractionTracking.onCmpuishown({eventStatus: 'cmpuishown'});
             expect(cmpInteractionTracking.sendLinkEvent).toHaveBeenCalledWith('cm_layer_shown');
-        });
-
-        it('should NOT set cmp_after in utag_main cookie when called with invalid event status', () => {
-            cmpInteractionTracking.onCmpuishown({eventStatus: 'any-invalid-status'});
-            expect(window.utag.loader.SC).not.toHaveBeenCalledWith('utag_main', {'cmp_after': 'false' + ';exp-session'});
         });
 
         it('should NOT set utag.data properties when called with invalid event status', () => {

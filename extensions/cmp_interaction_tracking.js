@@ -90,7 +90,6 @@
 
     function onCmpuishown(tcData) {
         if (tcData && tcData.eventStatus === 'cmpuishown') {
-            window.utag.loader.SC('utag_main', {'cmp_after': 'false' + ';exp-session'});
             window.utag.data.cmp_events = TCFAPI_COMMON_EVENTS.CMP_UI_SHOWN;
             exportedFunctions.sendLinkEvent(TCFAPI_COMMON_EVENTS.CMP_UI_SHOWN);
         }

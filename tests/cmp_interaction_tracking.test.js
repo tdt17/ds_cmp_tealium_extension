@@ -174,7 +174,7 @@ describe('CMP Interaction Tracking', () => {
             const anyLabel = 'any-label';
             setABTestingProperties();
             cmpInteractionTracking.sendLinkEvent(anyLabel);
-            expect(cmpInteractionTracking.sendLinkEvent).toHaveBeenLastCalledWith(anyLabel)
+            expect(cmpInteractionTracking.sendLinkEvent).toHaveBeenLastCalledWith(anyLabel);
         });
     });
 
@@ -191,8 +191,8 @@ describe('CMP Interaction Tracking', () => {
         });
 
         it('should call sendLinkEvent with correct argument when eventType === 11', () => {
-            cmpInteractionTracking.onMessageChoiceSelect('test', '11');
-            expect(cmpInteractionTracking.sendLinkEvent).toHaveBeenLastCalledWith('cm_accept_all')
+            cmpInteractionTracking.onMessageChoiceSelect('test', 11);
+            expect(cmpInteractionTracking.sendLinkEvent).toHaveBeenLastCalledWith('cm_accept_all');
         });
 
         it('should set correct utag.data properties when eventType === 12', () => {
@@ -203,8 +203,8 @@ describe('CMP Interaction Tracking', () => {
         });
 
         it('should call sendLinkEvent with correct argument when eventType === 12', () => {
-            cmpInteractionTracking.onMessageChoiceSelect('test', '12');
-            expect(cmpInteractionTracking.sendLinkEvent).toHaveBeenLastCalledWith('cm_show_privacy_manager')
+            cmpInteractionTracking.onMessageChoiceSelect('test', 12);
+            expect(cmpInteractionTracking.sendLinkEvent).toHaveBeenLastCalledWith('cm_show_privacy_manager');
         });
 
         it('should set correct utag.data properties when eventType === 13', () => {
@@ -215,27 +215,27 @@ describe('CMP Interaction Tracking', () => {
         });
 
         it('should call sendLinkEvent with correct argument when eventType === 13', () => {
-            cmpInteractionTracking.onMessageChoiceSelect('test', '13');
-            expect(cmpInteractionTracking.sendLinkEvent).toHaveBeenLastCalledWith('cm_reject_all')
+            cmpInteractionTracking.onMessageChoiceSelect('test', 13);
+            expect(cmpInteractionTracking.sendLinkEvent).toHaveBeenLastCalledWith('cm_reject_all');
         });
 
         it('should NOT call sendLinkEvent when called with wrong event type', () => {
-            cmpInteractionTracking.onMessageChoiceSelect('test', '999');
+            cmpInteractionTracking.onMessageChoiceSelect('test', 999);
             expect(cmpInteractionTracking.sendLinkEvent).not.toHaveBeenCalled();
         });
 
         it('should set utag_main_cmp_after cookie to true when user gives consent', () => {
-            cmpInteractionTracking.onMessageChoiceSelect('test', '11');
+            cmpInteractionTracking.onMessageChoiceSelect('test', 11);
             expect(window.utag.loader.SC).toHaveBeenCalledWith('utag_main', {'cmp_after': 'true;exp-session'});
         });
 
         it('should set utag_main_cmp_after cookie to true when user declines consent', () => {
-            cmpInteractionTracking.onMessageChoiceSelect('test', '13');
+            cmpInteractionTracking.onMessageChoiceSelect('test', 13);
             expect(window.utag.loader.SC).toHaveBeenCalledWith('utag_main', {'cmp_after': 'true;exp-session'});
         });
 
         it('should NOT set utag_main_cmp_after cookie when user opens privacy manager', () => {
-            cmpInteractionTracking.onMessageChoiceSelect('test', '12');
+            cmpInteractionTracking.onMessageChoiceSelect('test', 12);
             expect(window.utag.loader.SC).not.toHaveBeenCalledWith('utag_main', {'cmp_after': 'true;exp-session'});
         });
     });
@@ -256,7 +256,7 @@ describe('CMP Interaction Tracking', () => {
 
         it('should call sendLinkEvent() with correct event label as argument when eventType === SAVE_AND_EXIT', () => {
             cmpInteractionTracking.onPrivacyManagerAction('SAVE_AND_EXIT');
-            expect(cmpInteractionTracking.sendLinkEvent).toHaveBeenLastCalledWith('pm_save_and_exit')
+            expect(cmpInteractionTracking.sendLinkEvent).toHaveBeenLastCalledWith('pm_save_and_exit');
         });
 
         it('should set correct utag.data properties when eventType === ACCEPT_ALL', () => {

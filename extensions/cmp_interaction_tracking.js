@@ -78,7 +78,7 @@
             window.utag.data['cmp_events'] = CONSENT_MESSAGE_EVENTS[eventType];
             exportedFunctions.sendLinkEvent(CONSENT_MESSAGE_EVENTS[eventType]);
 
-            if (eventType === '11' || eventType === '13') {
+            if (eventType === 11 || eventType === 13) {
                 window.utag.loader.SC('utag_main', {'cmp_after': 'true' + ';exp-session'});
             }
         }

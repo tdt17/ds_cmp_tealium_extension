@@ -62,7 +62,7 @@
     }
 
     function onMessageReceiveData(data) {
-        setABTestingProperties(data);
+        exportedFunctions.setABTestingProperties(data);
     }
 
     function sendLinkEvent(label) {
@@ -85,7 +85,11 @@
         if (CONSENT_MESSAGE_EVENTS[eventType]) {
             window.utag.data['cmp_events'] = CONSENT_MESSAGE_EVENTS[eventType];
             exportedFunctions.sendLinkEvent(CONSENT_MESSAGE_EVENTS[eventType]);
-            window.utag.loader.SC('utag_main', {'cmp_after': 'true' + ';exp-session'});
+
+            if (eventType === 11 || eventType === 13) {
+                window.utag.loader.SC('utag_main', {'cmp_after': 'true' + ';exp-session'});
+            }
+
             if (eventType === 11) {
                 exportedFunctions.onConsent();
             }
@@ -96,6 +100,7 @@
         if (PRIVACY_MANAGER_EVENTS[eventType] || eventType.purposeConsent) {
             window.utag.data['cmp_events'] = eventType.purposeConsent ? (eventType.purposeConsent === 'all' ? PRIVACY_MANAGER_EVENTS.ACCEPT_ALL : PRIVACY_MANAGER_EVENTS.SAVE_AND_EXIT) : PRIVACY_MANAGER_EVENTS[eventType];
             exportedFunctions.sendLinkEvent(window.utag.data['cmp_events']);
+            window.utag.loader.SC('utag_main', {'cmp_after': 'true' + ';exp-session'});
         }
     }
 

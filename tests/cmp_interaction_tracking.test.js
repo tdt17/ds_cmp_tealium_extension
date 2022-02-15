@@ -180,9 +180,22 @@ describe('CMP Interaction Tracking', () => {
         });
     });
 
+    describe('onConsent()', () => {
+        it('should call the scroll-depth feature of the doPlugins extension', function () {
+            window.cmp = {
+                _scrollDepthObj: {
+                    setScrollDepthProperties: jest.fn()
+                }
+            };
+            cmpInteractionTracking.onConsent();
+            expect(window.cmp._scrollDepthObj.setScrollDepthProperties).toHaveBeenCalled()
+        });
+    });
+
     describe('onMessageChoiceSelect(id, eventType)', () => {
         beforeEach(() => {
             jest.spyOn(cmpInteractionTracking, 'sendLinkEvent').mockImplementation();
+            jest.spyOn(cmpInteractionTracking, 'onConsent').mockImplementation();
         });
 
         it('should set correct utag.data properties when eventType === 11', () => {
@@ -224,6 +237,16 @@ describe('CMP Interaction Tracking', () => {
         it('should NOT call sendLinkEvent when called with wrong event type', () => {
             cmpInteractionTracking.onMessageChoiceSelect('test', '999');
             expect(window.utag.link).not.toHaveBeenCalled();
+        });
+
+        it('should call onConsent() when user has given consent', function () {
+            cmpInteractionTracking.onMessageChoiceSelect('any-id', 11);
+            expect(cmpInteractionTracking.onConsent).toHaveBeenCalled();
+        });
+
+        it('should not call onConsent() when user has NOT given consent', function () {
+            cmpInteractionTracking.onMessageChoiceSelect('any-id', 12);
+            expect(cmpInteractionTracking.onConsent).not.toHaveBeenCalled();
         });
     });
 

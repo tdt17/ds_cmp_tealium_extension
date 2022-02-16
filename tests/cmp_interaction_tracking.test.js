@@ -186,7 +186,7 @@ describe('CMP Interaction Tracking', () => {
                 }
             };
             cmpInteractionTracking.onUserConsent();
-            expect(window.cmp._scrollDepthObj.setScrollDepthProperties).toHaveBeenCalled()
+            expect(window.cmp._scrollDepthObj.setScrollDepthProperties).toHaveBeenCalled();
         });
     });
 

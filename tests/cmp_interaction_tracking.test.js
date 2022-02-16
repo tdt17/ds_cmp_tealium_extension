@@ -196,38 +196,38 @@ describe('CMP Interaction Tracking', () => {
             jest.spyOn(cmpInteractionTracking, 'onConsent').mockImplementation();
         });
 
-        it('should set correct utag.data properties when eventType === 11', () => {
+        it('should set correct utag.data properties when user gives consent', () => {
             cmpInteractionTracking.onMessageChoiceSelect('any-id', 11);
             expect(window.utag.data).toEqual({
                 'cmp_events': 'cm_accept_all'
             });
         });
 
-        it('should call sendLinkEvent with correct argument when eventType === 11', () => {
+        it('should call sendLinkEvent with correct argument when user gives consent', () => {
             cmpInteractionTracking.onMessageChoiceSelect('test', 11);
             expect(cmpInteractionTracking.sendLinkEvent).toHaveBeenLastCalledWith('cm_accept_all');
         });
 
-        it('should set correct utag.data properties when eventType === 12', () => {
+        it('should set correct utag.data properties when user opens privacy manager', () => {
             cmpInteractionTracking.onMessageChoiceSelect('any-id', 12);
             expect(window.utag.data).toEqual({
                 'cmp_events': 'cm_show_privacy_manager'
             });
         });
 
-        it('should call sendLinkEvent with correct argument when eventType === 12', () => {
+        it('should call sendLinkEvent with correct argument when user opens privacy manager', () => {
             cmpInteractionTracking.onMessageChoiceSelect('test', 12);
             expect(cmpInteractionTracking.sendLinkEvent).toHaveBeenLastCalledWith('cm_show_privacy_manager');
         });
 
-        it('should set correct utag.data properties when eventType === 13', () => {
+        it('should set correct utag.data properties when user declines consent', () => {
             cmpInteractionTracking.onMessageChoiceSelect('any-id', 13);
             expect(window.utag.data).toEqual({
                 'cmp_events': 'cm_reject_all'
             });
         });
 
-        it('should call sendLinkEvent with correct argument when eventType === 13', () => {
+        it('should call sendLinkEvent with correct argument when user declines consent', () => {
             cmpInteractionTracking.onMessageChoiceSelect('test', 13);
             expect(cmpInteractionTracking.sendLinkEvent).toHaveBeenLastCalledWith('cm_reject_all');
         });
@@ -269,7 +269,7 @@ describe('CMP Interaction Tracking', () => {
             jest.spyOn(cmpInteractionTracking, 'sendLinkEvent').mockImplementation();
         });
 
-        it('should set correct utag.data properties when eventType === SAVE_AND_EXIT', () => {
+        it('should set correct utag.data properties when user saves privacy settings', () => {
             cmpInteractionTracking.onPrivacyManagerAction('SAVE_AND_EXIT');
 
             expect(window.utag.data).toEqual({
@@ -277,19 +277,19 @@ describe('CMP Interaction Tracking', () => {
             });
         });
 
-        it('should call sendLinkEvent() with correct event label as argument when eventType === SAVE_AND_EXIT', () => {
+        it('should call sendLinkEvent() with correct event label as argument when user saves privacy settings', () => {
             cmpInteractionTracking.onPrivacyManagerAction('SAVE_AND_EXIT');
             expect(cmpInteractionTracking.sendLinkEvent).toHaveBeenLastCalledWith('pm_save_and_exit');
         });
 
-        it('should set correct utag.data properties when eventType === ACCEPT_ALL', () => {
+        it('should set correct utag.data properties when user gives consent', () => {
             cmpInteractionTracking.onPrivacyManagerAction('ACCEPT_ALL');
             expect(window.utag.data).toEqual({
                 'cmp_events': 'pm_accept_all'
             });
         });
 
-        it('should call sendLinkEvent() with correct event label as argument when eventType === ACCEPT_ALL', () => {
+        it('should call sendLinkEvent() with correct event label as argument when user gives consent', () => {
             cmpInteractionTracking.onPrivacyManagerAction('ACCEPT_ALL');
             expect(cmpInteractionTracking.sendLinkEvent).toHaveBeenLastCalledWith('pm_accept_all');
         });

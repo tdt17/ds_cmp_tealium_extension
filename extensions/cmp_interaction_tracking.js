@@ -13,33 +13,6 @@
         CMP_UI_SHOWN: 'cm_layer_shown',
     };
 
-    // Tealium profile to Adobe TagId mapping.
-    const TEALIUM_PROFILES = {
-        'abo-autobild.de': 23,
-        'ac-autobild': 10,
-        'ac-computerbild': 9,
-        'ac-wieistmeineip': 4,
-        'asmb-metal-hammer.de': 22,
-        'asmb-musikexpress.de': 14,
-        'asmb-rollingstone.de': 16,
-        'bild-bild.de': 12,
-        'bild-fitbook.de': 40,
-        'bild-myhomebook.de': 37,
-        'bild-sportbild.de': 16,
-        'bild-stylebook.de': 30,
-        'bild-techbook.de': 82,
-        'bild-travelbook.de': 42,
-        'bild-offer': 24,
-        'bild': 386,
-        'bz-bz-berlin.de': 9,
-        'cbo-computerbild.de': 25,
-        'shop.bild': 181,
-        'welt': 233,
-        'welt-shop.welt.de': 28
-    };
-
-    let adobeTagId;
-
     let cmp_ab_id = '';
     let cmp_ab_desc = '';
     let cmp_ab_bucket = '';
@@ -49,7 +22,6 @@
         init,
         run,
         configSourcepoint,
-        getAdobeTagId,
         registerEventHandler,
         onMessageReceiveData,
         onMessageChoiceSelect,
@@ -84,12 +56,12 @@
     // Alternative way of setting AB-Testing properties through global letiable.
     function initABTestingProperties() {
         if (window.__cmp_interaction_data && window.__cmp_interaction_data.onMessageReceiveData) {
-            setABTestingProperties(window.__cmp_interaction_data.onMessageReceiveData);
+            exportedFunctions.setABTestingProperties(window.__cmp_interaction_data.onMessageReceiveData);
         }
     }
 
     function onMessageReceiveData(data) {
-        setABTestingProperties(data);
+        exportedFunctions.setABTestingProperties(data);
     }
 
     function sendLinkEvent(label) {
@@ -104,50 +76,33 @@
     function onMessageChoiceSelect(id, eventType) {
         if (CONSENT_MESSAGE_EVENTS[eventType]) {
             window.utag.data['cmp_events'] = CONSENT_MESSAGE_EVENTS[eventType];
-            window.utag.data['cmp_interactions_true'] = 'true';
             exportedFunctions.sendLinkEvent(CONSENT_MESSAGE_EVENTS[eventType]);
-            window.utag.data['cmp_interactions_true'] = 'false';
+
+            if (eventType === 11 || eventType === 13) {
+                window.utag.loader.SC('utag_main', {'cmp_after': 'true' + ';exp-session'});
+            }
         }
     }
 
     function onPrivacyManagerAction(eventType) {
         if (PRIVACY_MANAGER_EVENTS[eventType] || eventType.purposeConsent) {
             window.utag.data['cmp_events'] = eventType.purposeConsent ? (eventType.purposeConsent === 'all' ? PRIVACY_MANAGER_EVENTS.ACCEPT_ALL : PRIVACY_MANAGER_EVENTS.SAVE_AND_EXIT) : PRIVACY_MANAGER_EVENTS[eventType];
-            window.utag.data['cmp_interactions_true'] = 'true';
             exportedFunctions.sendLinkEvent(window.utag.data['cmp_events']);
-            window.utag.data['cmp_interactions_true'] = 'false';
+            window.utag.loader.SC('utag_main', {'cmp_after': 'true' + ';exp-session'});
         }
     }
 
     function onCmpuishown(tcData) {
         if (tcData && tcData.eventStatus === 'cmpuishown') {
-            window.utag.data.cmp_events = 'cm_layer_shown';
-            window.utag.data['cmp_events'] = TCFAPI_COMMON_EVENTS.CMP_UI_SHOWN;
-            window.utag.data['cmp_interactions_true'] = 'true';
-            window.utag.data['first_pv'] = 'true';
-            window.utag.view(window.utag.data, null, [adobeTagId]);
-            // Ensure that view event gets processed before link event by adding a delay.
-            setTimeout(() => {
-                exportedFunctions.sendLinkEvent(TCFAPI_COMMON_EVENTS.CMP_UI_SHOWN);
-                window.utag.data['cmp_interactions_true'] = 'false';
-            }, 500);
+            window.utag.data.cmp_events = TCFAPI_COMMON_EVENTS.CMP_UI_SHOWN;
+            exportedFunctions.sendLinkEvent(TCFAPI_COMMON_EVENTS.CMP_UI_SHOWN);
         }
     }
 
-    function onMessage(event){
+    function onMessage(event) {
         if (event.data && event.data.cmpLayerMessage) {
-            window.utag.data['cmp_interactions_true'] = 'true';
             exportedFunctions.sendLinkEvent(event.data.payload);
-            window.utag.data['cmp_interactions_true'] = 'false';
         }
-    }
-
-    function getAdobeTagId(tealiumProfileName) {
-        const adobeTagId = TEALIUM_PROFILES[tealiumProfileName];
-        if (!adobeTagId) {
-            throw new Error('Cannot find Adobe Tag ID for profile: ' + tealiumProfileName);
-        }
-        return adobeTagId;
     }
 
     function registerEventHandler() {
@@ -172,7 +127,6 @@
     }
 
     function run() {
-        adobeTagId = exportedFunctions.getAdobeTagId(window.utag.data['ut.profile']);
         exportedFunctions.configSourcepoint();
         exportedFunctions.initABTestingProperties();
         exportedFunctions.registerEventHandler();

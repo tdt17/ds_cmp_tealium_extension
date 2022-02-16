@@ -32,7 +32,7 @@
         onMessage,
         setABTestingProperties,
         getABTestingProperties,
-        onConsent: onUserConsent
+        onUserConsent
     };
 
     function getABTestingProperties() {
@@ -91,7 +91,7 @@
             }
 
             if (eventType === 11) {
-                exportedFunctions.onConsent();
+                exportedFunctions.onUserConsent();
             }
         }
     }

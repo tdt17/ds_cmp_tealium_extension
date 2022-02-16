@@ -178,14 +178,14 @@ describe('CMP Interaction Tracking', () => {
         });
     });
 
-    describe('onConsent()', () => {
+    describe('onUserConsent()', () => {
         it('should call the scroll-depth feature of the doPlugins extension', function () {
             window.cmp = {
                 _scrollDepthObj: {
                     setScrollDepthProperties: jest.fn()
                 }
             };
-            cmpInteractionTracking.onConsent();
+            cmpInteractionTracking.onUserConsent();
             expect(window.cmp._scrollDepthObj.setScrollDepthProperties).toHaveBeenCalled()
         });
     });
@@ -193,7 +193,7 @@ describe('CMP Interaction Tracking', () => {
     describe('onMessageChoiceSelect(id, eventType)', () => {
         beforeEach(() => {
             jest.spyOn(cmpInteractionTracking, 'sendLinkEvent').mockImplementation();
-            jest.spyOn(cmpInteractionTracking, 'onConsent').mockImplementation();
+            jest.spyOn(cmpInteractionTracking, 'onUserConsent').mockImplementation();
         });
 
         it('should set correct utag.data properties when user gives consent', () => {
@@ -252,14 +252,14 @@ describe('CMP Interaction Tracking', () => {
             expect(window.utag.loader.SC).not.toHaveBeenCalledWith('utag_main', {'cmp_after': 'true;exp-session'});
         });
 
-        it('should call onConsent() when user has given consent', function () {
+        it('should call onUserConsent() when user has given consent', function () {
             cmpInteractionTracking.onMessageChoiceSelect('any-id', 11);
-            expect(cmpInteractionTracking.onConsent).toHaveBeenCalled();
+            expect(cmpInteractionTracking.onUserConsent).toHaveBeenCalled();
         });
 
-        it('should not call onConsent() when user has NOT given consent', function () {
+        it('should not call onUserConsent() when user has NOT given consent', function () {
             cmpInteractionTracking.onMessageChoiceSelect('any-id', 12);
-            expect(cmpInteractionTracking.onConsent).not.toHaveBeenCalled();
+            expect(cmpInteractionTracking.onUserConsent).not.toHaveBeenCalled();
         });
     });
 

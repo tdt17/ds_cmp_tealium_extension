@@ -178,9 +178,22 @@ describe('CMP Interaction Tracking', () => {
         });
     });
 
+    describe('onUserConsent()', () => {
+        it('should call the scroll-depth feature of the doPlugins extension', function () {
+            window.cmp = {
+                _scrollDepthObj: {
+                    setScrollDepthProperties: jest.fn()
+                }
+            };
+            cmpInteractionTracking.onUserConsent();
+            expect(window.cmp._scrollDepthObj.setScrollDepthProperties).toHaveBeenCalled();
+        });
+    });
+
     describe('onMessageChoiceSelect(id, eventType)', () => {
         beforeEach(() => {
             jest.spyOn(cmpInteractionTracking, 'sendLinkEvent').mockImplementation();
+            jest.spyOn(cmpInteractionTracking, 'onUserConsent').mockImplementation();
         });
 
         it('should set correct utag.data properties when user gives consent', () => {
@@ -237,6 +250,16 @@ describe('CMP Interaction Tracking', () => {
         it('should NOT set utag_main_cmp_after cookie when user opens privacy manager', () => {
             cmpInteractionTracking.onMessageChoiceSelect('test', 12);
             expect(window.utag.loader.SC).not.toHaveBeenCalledWith('utag_main', {'cmp_after': 'true;exp-session'});
+        });
+
+        it('should call onUserConsent() when user has given consent', function () {
+            cmpInteractionTracking.onMessageChoiceSelect('any-id', 11);
+            expect(cmpInteractionTracking.onUserConsent).toHaveBeenCalled();
+        });
+
+        it('should not call onUserConsent() when user has NOT given consent', function () {
+            cmpInteractionTracking.onMessageChoiceSelect('any-id', 12);
+            expect(cmpInteractionTracking.onUserConsent).not.toHaveBeenCalled();
         });
     });
 

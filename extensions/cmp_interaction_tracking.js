@@ -31,7 +31,8 @@
         sendLinkEvent,
         onMessage,
         setABTestingProperties,
-        getABTestingProperties
+        getABTestingProperties,
+        onUserConsent
     };
 
     function getABTestingProperties() {
@@ -73,6 +74,13 @@
         });
     }
 
+    function onUserConsent() {
+        if (window.cmp && window.cmp._scrollDepthObj) {
+            // Calling setScrollDepthProperties() will make the current page trackable as the _ppvPreviousPage of the next page view.
+            window.cmp._scrollDepthObj.setScrollDepthProperties(window.cmp);
+        }
+    }
+
     function onMessageChoiceSelect(id, eventType) {
         if (CONSENT_MESSAGE_EVENTS[eventType]) {
             window.utag.data['cmp_events'] = CONSENT_MESSAGE_EVENTS[eventType];
@@ -80,6 +88,10 @@
 
             if (eventType === 11 || eventType === 13) {
                 window.utag.loader.SC('utag_main', {'cmp_after': 'true' + ';exp-session'});
+            }
+
+            if (eventType === 11) {
+                exportedFunctions.onUserConsent();
             }
         }
     }

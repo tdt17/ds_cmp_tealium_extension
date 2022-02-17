@@ -54,7 +54,7 @@
         }
     }
 
-    // Alternative way of setting AB-Testing properties through global letiable.
+    // Alternative way of setting AB-Testing properties through global variable.
     function initABTestingProperties() {
         if (window.__cmp_interaction_data && window.__cmp_interaction_data.onMessageReceiveData) {
             exportedFunctions.setABTestingProperties(window.__cmp_interaction_data.onMessageReceiveData);
@@ -87,6 +87,7 @@
             exportedFunctions.sendLinkEvent(CONSENT_MESSAGE_EVENTS[eventType]);
 
             if (eventType === 11 || eventType === 13) {
+                // Set cookie for first page view tracking.
                 window.utag.loader.SC('utag_main', {'cmp_after': 'true' + ';exp-session'});
             }
 
@@ -100,6 +101,7 @@
         if (PRIVACY_MANAGER_EVENTS[eventType] || eventType.purposeConsent) {
             window.utag.data['cmp_events'] = eventType.purposeConsent ? (eventType.purposeConsent === 'all' ? PRIVACY_MANAGER_EVENTS.ACCEPT_ALL : PRIVACY_MANAGER_EVENTS.SAVE_AND_EXIT) : PRIVACY_MANAGER_EVENTS[eventType];
             exportedFunctions.sendLinkEvent(window.utag.data['cmp_events']);
+            // Set cookie for first page view tracking.
             window.utag.loader.SC('utag_main', {'cmp_after': 'true' + ';exp-session'});
         }
     }

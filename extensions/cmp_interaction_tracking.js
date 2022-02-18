@@ -95,8 +95,8 @@
 
     function hasUserDeclinedConsent() {
         return window.utag.data['cp.utag_main_cmp_after']
-            && window.utag.data.consentedVendors
-            && !window.utag.data.consentedVendors.includes('adobe_analytics');
+            && (!window.utag.data.consentedVendors ||
+                window.utag.data.consentedVendors && !window.utag.data.consentedVendors.includes('adobe_analytics'));
     }
 
     function sendLinkEvent(label) {

@@ -58,7 +58,8 @@
         onMessage,
         setABTestingProperties,
         getABTestingProperties,
-        onUserConsent
+        onUserConsent,
+        sendFirstPageViewEvent
     };
 
     function getABTestingProperties() {
@@ -107,6 +108,14 @@
         }
     }
 
+    function sendFirstPageViewEvent() {
+        // Check if user has already given/declined consent
+        if (!window.utag.data['cp.utag_main_cmp_after']) {
+            const adobeTagId = exportedFunctions.getAdobeTagId(window.utag.data['ut.profile']);
+            window.utag.view(window.utag.data, null, [adobeTagId]);
+        }
+    }
+
     function onMessageChoiceSelect(id, eventType) {
         if (CONSENT_MESSAGE_EVENTS[eventType]) {
             window.utag.data['cmp_events'] = CONSENT_MESSAGE_EVENTS[eventType];
@@ -134,9 +143,8 @@
 
     function onCmpuishown(tcData) {
         if (tcData && tcData.eventStatus === 'cmpuishown') {
-            const adobeTagId = exportedFunctions.getAdobeTagId(window.utag.data['ut.profile']);
             window.utag.data.cmp_events = TCFAPI_COMMON_EVENTS.CMP_UI_SHOWN;
-            window.utag.view(window.utag.data, null, [adobeTagId]);
+            exportedFunctions.sendFirstPageViewEvent();
             // Ensure that view event gets processed before link event by adding a delay.
             setTimeout(() => {
                 exportedFunctions.sendLinkEvent(TCFAPI_COMMON_EVENTS.CMP_UI_SHOWN);

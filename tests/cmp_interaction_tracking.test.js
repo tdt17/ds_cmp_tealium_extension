@@ -374,12 +374,46 @@ describe('CMP Interaction Tracking', () => {
         });
     });
 
-    describe('onCmpuishown()', () => {
+    describe('sendFirstPageViewEvent()', () => {
         const anyAdobeTagID = 'any-tag-id';
 
         beforeEach(() => {
-            jest.useFakeTimers();
             jest.spyOn(cmpInteractionTracking, 'getAdobeTagId').mockImplementation().mockReturnValue(anyAdobeTagID);
+        });
+
+        it('should get the tag ID of the first-page-view tag if user has NOT already given/declined consent', function () {
+            cmpInteractionTracking.sendFirstPageViewEvent();
+            expect(cmpInteractionTracking.getAdobeTagId).toBeCalledTimes(1);
+        });
+
+        it('should send first-page-view tracking event if user has NOT already given/declined consent', function () {
+            window.utag.data = {
+                anyDataLayerProperty: 'any-property'
+            };
+            cmpInteractionTracking.sendFirstPageViewEvent();
+            expect(window.utag.view).toHaveBeenNthCalledWith(1,
+                window.utag.data,
+                null,
+                [anyAdobeTagID]);
+        });
+
+        it('should NOT get the tag ID of the first-page-view tag if user has already given/declined consent', function () {
+            window.utag.data['cp.utag_main_cmp_after'] = true;
+            cmpInteractionTracking.sendFirstPageViewEvent();
+            expect(cmpInteractionTracking.getAdobeTagId).not.toHaveBeenCalled();
+        });
+
+        it('should NOT send first-page-view tracking event if user has already given/declined consent', function () {
+            window.utag.data['cp.utag_main_cmp_after'] = true;
+            cmpInteractionTracking.sendFirstPageViewEvent();
+            expect(window.utag.view).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('onCmpuishown()', () => {
+        beforeEach(() => {
+            jest.useFakeTimers();
+            jest.spyOn(cmpInteractionTracking, 'sendFirstPageViewEvent').mockImplementation();
             jest.spyOn(cmpInteractionTracking, 'sendLinkEvent').mockImplementation();
         });
 
@@ -387,25 +421,12 @@ describe('CMP Interaction Tracking', () => {
             jest.useRealTimers();
         });
 
-        it('should get the tag ID of the Adobe first-page-view tracking tag', function () {
-            cmpInteractionTracking.onCmpuishown({eventStatus: 'cmpuishown'});
-            expect(cmpInteractionTracking.getAdobeTagId).toBeCalledTimes(1);
-        });
 
         it('should set correct utag.data properties', () => {
             cmpInteractionTracking.onCmpuishown({eventStatus: 'cmpuishown'});
             expect(window.utag.data).toEqual({
                 'cmp_events': 'cm_layer_shown'
             });
-        });
-
-        it('should call utag.view with correct values', () => {
-            cmpInteractionTracking.onCmpuishown({eventStatus: 'cmpuishown'});
-            jest.runAllTimers();
-            expect(window.utag.view).toHaveBeenNthCalledWith(1,
-                {
-                    'cmp_events': 'cm_layer_shown',
-                }, null, [anyAdobeTagID]);
         });
 
         it('should call sendLinkEvent function', () => {
@@ -417,12 +438,6 @@ describe('CMP Interaction Tracking', () => {
         it('should NOT set utag.data properties when called with invalid event status', () => {
             cmpInteractionTracking.onCmpuishown({eventStatus: 'any-invalid-status'});
             expect(window.utag.data).toEqual({});
-        });
-
-        it('should NOT call utag.view function when called with invalid event status', () => {
-            cmpInteractionTracking.onCmpuishown({eventStatus: 'any-invalid-status'});
-            jest.runAllTimers();
-            expect(window.utag.view).not.toHaveBeenCalled();
         });
 
         it('should NOT call sendLinkEvent function when called with invalid event status', () => {

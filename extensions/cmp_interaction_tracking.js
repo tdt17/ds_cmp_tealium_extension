@@ -13,6 +13,31 @@
         CMP_UI_SHOWN: 'cm_layer_shown',
     };
 
+    // Tealium profile to Adobe TagId mapping.
+    const TEALIUM_PROFILES = {
+        'abo-autobild.de': 23,
+        'ac-autobild': 10,
+        'ac-computerbild': 9,
+        'ac-wieistmeineip': 4,
+        'asmb-metal-hammer.de': 22,
+        'asmb-musikexpress.de': 14,
+        'asmb-rollingstone.de': 16,
+        'bild-bild.de': 12,
+        'bild-fitbook.de': 40,
+        'bild-myhomebook.de': 37,
+        'bild-sportbild.de': 16,
+        'bild-stylebook.de': 30,
+        'bild-techbook.de': 82,
+        'bild-travelbook.de': 42,
+        'bild-offer': 24,
+        'bild': 386,
+        'bz-bz-berlin.de': 9,
+        'cbo-computerbild.de': 25,
+        'shop.bild': 181,
+        'welt': 233,
+        'welt-shop.welt.de': 28
+    };
+
     let cmp_ab_id = '';
     let cmp_ab_desc = '';
     let cmp_ab_bucket = '';
@@ -22,6 +47,7 @@
         init,
         run,
         configSourcepoint,
+        getAdobeTagId,
         registerEventHandler,
         onMessageReceiveData,
         onMessageChoiceSelect,
@@ -108,15 +134,27 @@
 
     function onCmpuishown(tcData) {
         if (tcData && tcData.eventStatus === 'cmpuishown') {
+            const adobeTagId = exportedFunctions.getAdobeTagId(window.utag.data['ut.profile']);
             window.utag.data.cmp_events = TCFAPI_COMMON_EVENTS.CMP_UI_SHOWN;
-            exportedFunctions.sendLinkEvent(TCFAPI_COMMON_EVENTS.CMP_UI_SHOWN);
-        }
+            window.utag.view(window.utag.data, null, [adobeTagId]);
+            // Ensure that view event gets processed before link event by adding a delay.
+            setTimeout(() => {
+                exportedFunctions.sendLinkEvent(TCFAPI_COMMON_EVENTS.CMP_UI_SHOWN);
+            }, 500);        }
     }
 
     function onMessage(event) {
         if (event.data && event.data.cmpLayerMessage) {
             exportedFunctions.sendLinkEvent(event.data.payload);
         }
+    }
+
+    function getAdobeTagId(tealiumProfileName) {
+        const adobeTagId = TEALIUM_PROFILES[tealiumProfileName];
+        if (!adobeTagId) {
+            throw new Error('Cannot find Adobe Tag ID for profile: ' + tealiumProfileName);
+        }
+        return adobeTagId;
     }
 
     function registerEventHandler() {

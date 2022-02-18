@@ -1,6 +1,29 @@
 const cmpInteractionTracking = require('../extensions/cmp_interaction_tracking');
 const browserMocks = require('../tests/mocks/browserMocks');
 
+const TEALIUM_PROFILES = [
+    {profileName: 'abo-autobild.de', tagId: 23},
+    {profileName: 'ac-autobild', tagId: 10},
+    {profileName: 'ac-computerbild', tagId: 9},
+    {profileName: 'asmb-metal-hammer.de', tagId: 22},
+    {profileName: 'asmb-musikexpress.de', tagId: 14},
+    {profileName: 'asmb-rollingstone.de', tagId: 16},
+    {profileName: 'bild-bild.de', tagId: 12},
+    {profileName: 'bild-fitbook.de', tagId: 40},
+    {profileName: 'bild-myhomebook.de', tagId: 37},
+    {profileName: 'bild-sportbild.de', tagId: 16},
+    {profileName: 'bild-stylebook.de', tagId: 30},
+    {profileName: 'bild-techbook.de', tagId: 82},
+    {profileName: 'bild-travelbook.de', tagId: 42},
+    {profileName: 'bild-offer', tagId: 24},
+    {profileName: 'bild', tagId: 386},
+    {profileName: 'bz-bz-berlin.de', tagId: 9},
+    {profileName: 'cbo-computerbild.de', tagId: 25},
+    {profileName: 'shop.bild', tagId: 181},
+    {profileName: 'welt', tagId: 233},
+    {profileName: 'welt-shop.welt.de', tagId: 28}
+];
+
 const ABTestingProperties = {
     msgDescription: 'any-description',
     messageId: 'any-id',
@@ -25,6 +48,7 @@ function createWindowMock() {
         _sp_queue: null,
         utag: {
             link: jest.fn(),
+            view: jest.fn(),
             data: {},
             loader: {
                 SC: jest.fn()
@@ -80,6 +104,27 @@ describe('CMP Interaction Tracking', () => {
             expect(cmpInteractionTracking.configSourcepoint).toBeCalledTimes(1);
             expect(cmpInteractionTracking.registerEventHandler).toBeCalledTimes(1);
             expect(cmpInteractionTracking.initABTestingProperties).toBeCalledTimes(1);
+        });
+    });
+
+    describe('getAdobeTagId()', () => {
+        it.each(TEALIUM_PROFILES)('should return the Adobe TagID ($tagId) for the current Tealium Profile ($profileName)',
+            (
+                {
+                    profileName,
+                    tagId
+                }
+            ) => {
+
+                const result = cmpInteractionTracking.getAdobeTagId(profileName);
+
+                expect(result).toBe(tagId);
+            });
+
+        it('should throw an error when there is no Adobe TagID of the current Tealium profile', function () {
+            expect(() => {
+                cmpInteractionTracking.getAdobeTagId('non-existing-profile');
+            }).toThrow();
         });
     });
 
@@ -330,8 +375,21 @@ describe('CMP Interaction Tracking', () => {
     });
 
     describe('onCmpuishown()', () => {
+        const anyAdobeTagID = 'any-tag-id';
+
         beforeEach(() => {
+            jest.useFakeTimers();
+            jest.spyOn(cmpInteractionTracking, 'getAdobeTagId').mockImplementation().mockReturnValue(anyAdobeTagID);
             jest.spyOn(cmpInteractionTracking, 'sendLinkEvent').mockImplementation();
+        });
+
+        afterEach(() => {
+            jest.useRealTimers();
+        });
+
+        it('should get the tag ID of the Adobe first-page-view tracking tag', function () {
+            cmpInteractionTracking.onCmpuishown({eventStatus: 'cmpuishown'});
+            expect(cmpInteractionTracking.getAdobeTagId).toBeCalledTimes(1);
         });
 
         it('should set correct utag.data properties', () => {
@@ -341,8 +399,18 @@ describe('CMP Interaction Tracking', () => {
             });
         });
 
+        it('should call utag.view with correct values', () => {
+            cmpInteractionTracking.onCmpuishown({eventStatus: 'cmpuishown'});
+            jest.runAllTimers();
+            expect(window.utag.view).toHaveBeenNthCalledWith(1,
+                {
+                    'cmp_events': 'cm_layer_shown',
+                }, null, [anyAdobeTagID]);
+        });
+
         it('should call sendLinkEvent function', () => {
             cmpInteractionTracking.onCmpuishown({eventStatus: 'cmpuishown'});
+            jest.runAllTimers();
             expect(cmpInteractionTracking.sendLinkEvent).toHaveBeenCalledWith('cm_layer_shown');
         });
 
@@ -351,8 +419,15 @@ describe('CMP Interaction Tracking', () => {
             expect(window.utag.data).toEqual({});
         });
 
+        it('should NOT call utag.view function when called with invalid event status', () => {
+            cmpInteractionTracking.onCmpuishown({eventStatus: 'any-invalid-status'});
+            jest.runAllTimers();
+            expect(window.utag.view).not.toHaveBeenCalled();
+        });
+
         it('should NOT call sendLinkEvent function when called with invalid event status', () => {
             cmpInteractionTracking.onCmpuishown({eventStatus: 'any-invalid-status'});
+            jest.runAllTimers();
             expect(cmpInteractionTracking.sendLinkEvent).not.toHaveBeenCalled();
         });
     });

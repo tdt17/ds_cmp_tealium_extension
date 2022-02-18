@@ -59,7 +59,8 @@
         setABTestingProperties,
         getABTestingProperties,
         onUserConsent,
-        sendFirstPageViewEvent
+        sendFirstPageViewEvent,
+        hasUserDeclinedConsent
     };
 
     function getABTestingProperties() {
@@ -92,13 +93,21 @@
         exportedFunctions.setABTestingProperties(data);
     }
 
+    function hasUserDeclinedConsent() {
+        return window.utag.data['cp.utag_main_cmp_after']
+            && window.utag.data.consentedVendors
+            && !window.utag.data.consentedVendors.includes('adobe_analytics');
+    }
+
     function sendLinkEvent(label) {
-        window.utag.link({
-            'event_name': 'cmp_interactions',
-            'event_action': 'click',
-            'event_label': label,
-            'event_data': getABTestingProperties()
-        });
+        if (!exportedFunctions.hasUserDeclinedConsent()) {
+            window.utag.link({
+                'event_name': 'cmp_interactions',
+                'event_action': 'click',
+                'event_label': label,
+                'event_data': getABTestingProperties()
+            });
+        }
     }
 
     function onUserConsent() {
@@ -122,7 +131,6 @@
             exportedFunctions.sendLinkEvent(CONSENT_MESSAGE_EVENTS[eventType]);
 
             if (eventType === 11 || eventType === 13) {
-                // Set cookie for first page view tracking.
                 window.utag.loader.SC('utag_main', {'cmp_after': 'true' + ';exp-session'});
             }
 
@@ -148,7 +156,8 @@
             // Ensure that view event gets processed before link event by adding a delay.
             setTimeout(() => {
                 exportedFunctions.sendLinkEvent(TCFAPI_COMMON_EVENTS.CMP_UI_SHOWN);
-            }, 500);        }
+            }, 500);
+        }
     }
 
     function onMessage(event) {

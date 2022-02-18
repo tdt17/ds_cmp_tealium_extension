@@ -210,16 +210,54 @@ describe('CMP Interaction Tracking', () => {
         });
     });
 
-    describe('sendLinkEvent()', () => {
-        beforeEach(() => {
-            jest.spyOn(cmpInteractionTracking, 'sendLinkEvent').mockImplementation();
+    describe('hasUserDeclinedConsent()', () => {
+        it('should be true if user has declined Adobe tracking', function () {
+            window.utag.data['cp.utag_main_cmp_after'] = true;
+            window.utag.data.consentedVendors = 'any-vendor';
+            const result = cmpInteractionTracking.hasUserDeclinedConsent();
+            expect(result).toBe(true);
         });
 
-        it('should call sendLinkEvent() function with correct arguments', () => {
+        it('should be false if user has NOT declined Adobe tracking', function () {
+            window.utag.data['cp.utag_main_cmp_after'] = true;
+            window.utag.data.consentedVendors = 'any-vendor,adobe_analytics';
+            let result = cmpInteractionTracking.hasUserDeclinedConsent();
+            expect(result).toBe(false);
+
+            window.utag.data['cp.utag_main_cmp_after'] = false;
+            window.utag.data.consentedVendors = 'any-vendor';
+            result = cmpInteractionTracking.hasUserDeclinedConsent();
+            expect(result).toBe(false);
+        });
+    });
+
+    describe('sendLinkEvent()', () => {
+        let hasUserDeclinedConsentMock;
+
+        beforeEach(() => {
+            hasUserDeclinedConsentMock = jest.spyOn(cmpInteractionTracking, 'hasUserDeclinedConsent').mockImplementation();
+        });
+
+        it('should call sendLinkEvent() function with correct arguments if user has not already declined consent', () => {
             const anyLabel = 'any-label';
             setABTestingProperties();
+            hasUserDeclinedConsentMock.mockReturnValue(false);
             cmpInteractionTracking.sendLinkEvent(anyLabel);
-            expect(cmpInteractionTracking.sendLinkEvent).toHaveBeenLastCalledWith(anyLabel);
+            expect(window.utag.link).toHaveBeenLastCalledWith(
+                {
+                    'event_action': 'click',
+                    'event_data': ABTestingProperties.messageId + ' ' + ABTestingProperties.msgDescription + ' ' + ABTestingProperties.bucket,
+                    'event_label': 'any-label',
+                    'event_name': 'cmp_interactions'
+                }
+            );
+        });
+
+        it('should NOT call sendLinkEvent() function if user has declined consent', () => {
+            const anyLabel = 'any-label';
+            hasUserDeclinedConsentMock.mockReturnValue(true);
+            cmpInteractionTracking.sendLinkEvent(anyLabel);
+            expect(window.utag.link).not.toHaveBeenCalled();
         });
     });
 
@@ -453,7 +491,7 @@ describe('CMP Interaction Tracking', () => {
         });
 
         it('should call sendLinkEvent function with correct parameters', function () {
-            const label = 'any-label';
+            const label = 'any-l    abel';
             cmpInteractionTracking.onMessage({
                 data: {
                     cmpLayerMessage: true,

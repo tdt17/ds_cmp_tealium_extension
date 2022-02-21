@@ -210,23 +210,30 @@ describe('CMP Interaction Tracking', () => {
         });
     });
 
+    describe('isAfterCMP', () =>{
+        it('should return true if user has given a consent decision', function () {
+            window.utag.data['cp.utag_main_cmp_after'] = 'true';
+            const result = cmpInteractionTracking.isAfterCMP();
+            expect(result).toBe(true);
+        });
+
+        it('should return false if user has NOT given a consent decision', function () {
+            const result = cmpInteractionTracking.isAfterCMP();
+            expect(result).toBe(false);
+        });
+    });
+
     describe('hasUserDeclinedConsent()', () => {
         it('should be true if user has declined Adobe tracking', function () {
-            window.utag.data['cp.utag_main_cmp_after'] = 'true';
+            jest.spyOn(cmpInteractionTracking, 'isAfterCMP').mockReturnValue(true);
             window.utag.data.consentedVendors = 'any-vendor';
             const result = cmpInteractionTracking.hasUserDeclinedConsent();
             expect(result).toBe(true);
         });
 
-        it('should be false if user has NOT declined Adobe tracking', function () {
-            window.utag.data['cp.utag_main_cmp_after'] = 'true';
+        it('should be false if user consented to Adobe Analytics tracking', function () {
             window.utag.data.consentedVendors = 'any-vendor,adobe_analytics';
             let result = cmpInteractionTracking.hasUserDeclinedConsent();
-            expect(result).toBe(false);
-
-            window.utag.data['cp.utag_main_cmp_after'] = false;
-            window.utag.data.consentedVendors = 'any-vendor';
-            result = cmpInteractionTracking.hasUserDeclinedConsent();
             expect(result).toBe(false);
         });
     });
@@ -446,13 +453,13 @@ describe('CMP Interaction Tracking', () => {
         });
 
         it('should NOT get the tag ID of the first-page-view tag if user has already given/declined consent', function () {
-            window.utag.data['cp.utag_main_cmp_after'] = true;
+            jest.spyOn(cmpInteractionTracking, 'isAfterCMP').mockReturnValue(true);
             cmpInteractionTracking.sendFirstPageViewEvent();
             expect(cmpInteractionTracking.getAdobeTagId).not.toHaveBeenCalled();
         });
 
         it('should NOT send first-page-view tracking event if user has already given/declined consent', function () {
-            window.utag.data['cp.utag_main_cmp_after'] = true;
+            jest.spyOn(cmpInteractionTracking, 'isAfterCMP').mockReturnValue(true);
             cmpInteractionTracking.sendFirstPageViewEvent();
             expect(window.utag.view).not.toHaveBeenCalled();
         });

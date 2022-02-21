@@ -60,7 +60,8 @@
         getABTestingProperties,
         onUserConsent,
         sendFirstPageViewEvent,
-        hasUserDeclinedConsent
+        hasUserDeclinedConsent,
+        isAfterCMP
     };
 
     function getABTestingProperties() {
@@ -93,9 +94,13 @@
         exportedFunctions.setABTestingProperties(data);
     }
 
+    function isAfterCMP() {
+        return window.utag.data['cp.utag_main_cmp_after'] ? (window.utag.data['cp.utag_main_cmp_after'].toLowerCase() === 'true') : false;
+    }
+
     function hasUserDeclinedConsent() {
         const hasUserGivenConsent = window.utag.data.consentedVendors && window.utag.data.consentedVendors.includes('adobe_analytics');
-        const isAfterCMP = window.utag.data['cp.utag_main_cmp_after'] ? (window.utag.data['cp.utag_main_cmp_after'].toLowerCase() === 'true') : false;
+        const isAfterCMP = exportedFunctions.isAfterCMP();
 
         return hasUserGivenConsent ? false : isAfterCMP;
     }
@@ -120,7 +125,7 @@
 
     function sendFirstPageViewEvent() {
         // Check if user has already given/declined consent
-        if (!window.utag.data['cp.utag_main_cmp_after']) {
+        if (!exportedFunctions.isAfterCMP()) {
             const adobeTagId = exportedFunctions.getAdobeTagId(window.utag.data['ut.profile']);
             window.utag.view(window.utag.data, null, [adobeTagId]);
         }

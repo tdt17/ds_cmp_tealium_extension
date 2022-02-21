@@ -525,7 +525,7 @@ describe('CMP Interaction Tracking', () => {
         });
 
         it('should call sendLinkEvent function with correct parameters', function () {
-            const label = 'any-l    abel';
+            const label = 'any-label';
             cmpInteractionTracking.onMessage({
                 data: {
                     cmpLayerMessage: true,

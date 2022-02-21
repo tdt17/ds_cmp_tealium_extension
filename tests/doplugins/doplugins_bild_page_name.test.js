@@ -47,15 +47,15 @@ describe('_bildPageNameObj', () => {
             expect(returnValue).toBe(false);
         });
 
-        it('should be true if page_id is 17410084', () => {
-            window.utag.data.page_id = '17410084';
+        it('should be true if page_id is wDmWJyqHFeqhJHmeuqfN', () => {
+            window.utag.data.page_id = 'wDmWJyqHFeqhJHmeuqfN';
 
             const returnValue = s._bildPageNameObj.isHome();
             expect(returnValue).toBe(true);
         });
 
-        it('should be true if page_id is 16237890', () => {
-            window.utag.data.page_id = '16237890';
+        it('should be true if page_id is 22P2NufXQ03Ny17A6vwi', () => {
+            window.utag.data.page_id = '22P2NufXQ03Ny17A6vwi';
 
             const returnValue = s._bildPageNameObj.isHome();
             expect(returnValue).toBe(true);

@@ -96,7 +96,8 @@
 
     function isAfterCMP() {
         const hasCMPAfterCookie = window.utag.data['cp.utag_main_cmp_after'] ? (window.utag.data['cp.utag_main_cmp_after'].toLowerCase() === 'true') : false;
-        const hasVendorList = !!window.utag.data.consentedVendors;
+        const defaultVendorList = 'adobe_cmp';
+        const hasVendorList = !!window.utag.data.consentedVendors && window.utag.data.consentedVendors !== defaultVendorList;
 
         return hasCMPAfterCookie || hasVendorList;
     }

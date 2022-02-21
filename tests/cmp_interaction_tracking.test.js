@@ -222,13 +222,19 @@ describe('CMP Interaction Tracking', () => {
             expect(result).toBe(false);
         });
 
-        it('should return true if list of consented vendors exists', function () {
+        it('should return true if user consented any vendor', function () {
             window.utag.data.consentedVendors = 'any-vendors';
             const result = cmpInteractionTracking.isAfterCMP();
             expect(result).toBe(true);
         });
 
         it('should return false if list of consented vendors does NOT exists', function () {
+            const result = cmpInteractionTracking.isAfterCMP();
+            expect(result).toBe(false);
+        });
+
+        it('should return false if list of consented vendors equals default vendor', function () {
+            window.utag.data.consentedVendors = 'adobe_cmp';
             const result = cmpInteractionTracking.isAfterCMP();
             expect(result).toBe(false);
         });

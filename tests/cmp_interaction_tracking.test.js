@@ -212,14 +212,14 @@ describe('CMP Interaction Tracking', () => {
 
     describe('hasUserDeclinedConsent()', () => {
         it('should be true if user has declined Adobe tracking', function () {
-            window.utag.data['cp.utag_main_cmp_after'] = true;
+            window.utag.data['cp.utag_main_cmp_after'] = 'true';
             window.utag.data.consentedVendors = 'any-vendor';
             const result = cmpInteractionTracking.hasUserDeclinedConsent();
             expect(result).toBe(true);
         });
 
         it('should be false if user has NOT declined Adobe tracking', function () {
-            window.utag.data['cp.utag_main_cmp_after'] = true;
+            window.utag.data['cp.utag_main_cmp_after'] = 'true';
             window.utag.data.consentedVendors = 'any-vendor,adobe_analytics';
             let result = cmpInteractionTracking.hasUserDeclinedConsent();
             expect(result).toBe(false);

@@ -94,9 +94,10 @@
     }
 
     function hasUserDeclinedConsent() {
-        return window.utag.data['cp.utag_main_cmp_after']
-            && (!window.utag.data.consentedVendors ||
-                window.utag.data.consentedVendors && !window.utag.data.consentedVendors.includes('adobe_analytics'));
+        const hasUserGivenConsent = window.utag.data.consentedVendors && window.utag.data.consentedVendors.includes('adobe_analytics');
+        const isAfterCMP = window.utag.data['cp.utag_main_cmp_after'] ? (window.utag.data['cp.utag_main_cmp_after'].toLowerCase() === 'true') : false;
+
+        return hasUserGivenConsent ? false : isAfterCMP;
     }
 
     function sendLinkEvent(label) {

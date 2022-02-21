@@ -95,7 +95,10 @@
     }
 
     function isAfterCMP() {
-        return window.utag.data['cp.utag_main_cmp_after'] ? (window.utag.data['cp.utag_main_cmp_after'].toLowerCase() === 'true') : false;
+        const hasCMPAfterCookie = window.utag.data['cp.utag_main_cmp_after'] ? (window.utag.data['cp.utag_main_cmp_after'].toLowerCase() === 'true') : false;
+        const hasVendorList = !!window.utag.data.consentedVendors;
+
+        return hasCMPAfterCookie || hasVendorList;
     }
 
     function hasUserDeclinedConsent() {

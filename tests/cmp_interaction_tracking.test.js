@@ -211,13 +211,24 @@ describe('CMP Interaction Tracking', () => {
     });
 
     describe('isAfterCMP', () =>{
-        it('should return true if user has given a consent decision', function () {
+        it('should return true if utag_main_cmp_after cookie is set to true', function () {
             window.utag.data['cp.utag_main_cmp_after'] = 'true';
             const result = cmpInteractionTracking.isAfterCMP();
             expect(result).toBe(true);
         });
 
-        it('should return false if user has NOT given a consent decision', function () {
+        it('should return false if utag_main_cmp_after cookie is NOT set to true', function () {
+            const result = cmpInteractionTracking.isAfterCMP();
+            expect(result).toBe(false);
+        });
+
+        it('should return true if list of consented vendors exists', function () {
+            window.utag.data.consentedVendors = 'any-vendors';
+            const result = cmpInteractionTracking.isAfterCMP();
+            expect(result).toBe(true);
+        });
+
+        it('should return false if list of consented vendors does NOT exists', function () {
             const result = cmpInteractionTracking.isAfterCMP();
             expect(result).toBe(false);
         });

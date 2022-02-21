@@ -234,7 +234,7 @@ describe('CMP Interaction Tracking', () => {
         });
 
         it('should return false if list of consented vendors equals default vendor', function () {
-            window.utag.data.consentedVendors = 'adobe_cmp';
+            window.utag.data.consentedVendors = 'adobe_cmp,';
             const result = cmpInteractionTracking.isAfterCMP();
             expect(result).toBe(false);
         });

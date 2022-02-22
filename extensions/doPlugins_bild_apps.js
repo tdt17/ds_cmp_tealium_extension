@@ -65,6 +65,21 @@ s._orderViaArticle = function (s) {
     }
 };
 
+s._setPageCmsPathWithoutBild = function (s) {
+    if (window.utag.data['ut.profile'] === 'bild-app.android'
+        || window.utag.data['ut.profile'] === 'bild-app.iphone'
+        || window.utag.data['ut.profile'] === 'bild-app.ipad') {
+
+        if (typeof window.utag.data.page_cms_path !== 'undefined'
+            && window.utag.data.page_cms_path.indexOf('/BILD/') > -1) {
+
+            window.utag.data.page_cms_path = window.utag.data.page_cms_path.replace('/BILD/', '');
+            s.eVar4 = window.utag.data.page_cms_path;
+            s.prop4 = window.utag.data.page_cms_path;
+        }
+    }
+};
+
 s._bildAppsInit = function (s) {
     s.usePlugins = true;
 
@@ -77,6 +92,7 @@ s._bildAppsInit = function (s) {
 
     s._setPageAgeForCheckout();
     s._bildAppsPageNameObj.setAppsPageName(s);
+    s._setPageCmsPathWithoutBild(s);
 };
 
 s._bildAppsDoPluginsGlobal = function (s) {

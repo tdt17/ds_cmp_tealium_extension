@@ -52,4 +52,12 @@ describe('s._bildAppsInit()', () => {
         expect(setAppsPageNameMock).toHaveBeenCalledWith(s);
     });
 
+    it('should call s._setPageCmsPathWithoutBild()', () => {
+        const setPageCmsPathWithoutBildMock = jest.spyOn(s, '_setPageCmsPathWithoutBild');
+
+        s._bildAppsInit(s);
+
+        expect(setPageCmsPathWithoutBildMock).toHaveBeenCalledWith(s);
+    });
+
 });

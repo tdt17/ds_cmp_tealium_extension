@@ -41,6 +41,7 @@ describe('s.doPlugins()', () => {
         expect(s.eVar184.length).toBeGreaterThanOrEqual(1);
         expect(s.eVar181.length).toBeGreaterThanOrEqual(1);
         expect(s.eVar185).toBe(window.utag.data.myCW);
+        expect(s.expectSupplementalData).toBe(false);        
     });
 
     it('should call s._setEventsProperty() function', () => {

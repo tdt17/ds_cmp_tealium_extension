@@ -21,7 +21,7 @@ describe('s._bildAppsDoPluginsGlobal()', () => {
     it('should assign values to eVar 181, 184 and 185', () => {
         window.utag.data.myCW = 'test_cw';
 
-        s._bildAppsDoPluginsGlobal(s);
+        s.doPlugins(s);
 
         expect(s.expectSupplementalData).toBe(false);
         expect(s.eVar184.length).toBeGreaterThanOrEqual(1);
@@ -32,7 +32,7 @@ describe('s._bildAppsDoPluginsGlobal()', () => {
     it('should call s._orderViaArticle()', () => {
         const orderViaArticleMock = jest.spyOn(s, '_orderViaArticle');
 
-        s._bildAppsDoPluginsGlobal(s);
+        s.doPlugins(s);
 
         expect(orderViaArticleMock).toHaveBeenCalledWith(s);
     });

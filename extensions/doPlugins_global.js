@@ -1,7 +1,19 @@
-/* eslint-disable */
-const s = window.s || window.cmp || {};
+function _getAdobeObject() {
+    let adobeObject = {};
+
+    // Check if global variables contain the Adobe object or something else.
+    if (window.s && window.s.version) {
+        adobeObject = window.s;
+    } else if (window.cmp && window.cmp.version) {
+        adobeObject = window.cmp;
+    }
+    return adobeObject;
+}
+
+const s = _getAdobeObject();
 
 // START: Pre-defined Adobe Plugins
+/* eslint-disable */
 /* istanbul ignore next */
 /* Adobe Consulting Plugin: getPercentPageViewed v5.0.1 */
 s.getPercentPageViewed = function(pid,ch){var n=pid,r=ch;function p(){if(window.ppvID){var a=Math.max(Math.max(document.body.scrollHeight,document.documentElement.scrollHeight),Math.max(document.body.offsetHeight,document.documentElement.offsetHeight),Math.max(document.body.clientHeight,document.documentElement.clientHeight)),b=window.innerHeight||document.documentElement.clientHeight||document.body.clientHeight,d=(window.pageYOffset||window.document.documentElement.scrollTop||window.document.body.scrollTop)+b,f=Math.min(Math.round(d/a*100),100),l=Math.floor(d/b);b=Math.floor(a/b);var c="";if(!window.cookieRead("s_tp")||decodeURIComponent(window.cookieRead("s_ppv").split(",")[0])!==window.ppvID||window.p_fo(window.ppvID)||1==window.ppvChange&&window.cookieRead("s_tp")&&a!=window.cookieRead("s_tp")){(decodeURIComponent(window.cookieRead("s_ppv").split(",")[0])!==window.ppvID||window.p_fo(window.ppvID+"1"))&&window.cookieWrite("s_ips",d);if(window.cookieRead("s_tp")&&decodeURIComponent(window.cookieRead("s_ppv").split(",")[0])===window.ppvID){window.cookieRead("s_tp");c=window.cookieRead("s_ppv");var h=-1<c.indexOf(",")?c.split(","):[];c=h[0]?h[0]:"";h=h[3]?h[3]:"";var q=window.cookieRead("s_ips");c=c+","+Math.round(h/a*100)+","+Math.round(q/a*100)+","+h+","+l}window.cookieWrite("s_tp",a)}else c=window.cookieRead("s_ppv");var k=c&&-1<c.indexOf(",")?c.split(",",6):[];a=0<k.length?k[0]:encodeURIComponent(window.ppvID);h=1<k.length?parseInt(k[1]):f;q=2<k.length?parseInt(k[2]):f;var t=3<k.length?parseInt(k[3]):d,u=4<k.length?parseInt(k[4]):l;k=5<k.length?parseInt(k[5]):b;0<f&&(c=a+","+(f>h?f:h)+","+q+","+(d>t?d:t)+","+(l>u?l:u)+","+(b>k?b:k));window.cookieWrite("s_ppv",c)}}if("-v"===n)return{plugin:"getPercentPageViewed",version:"5.0.1"};var m=function(){if("undefined"!==typeof window.s_c_il)for(var a=0,b;a<window.s_c_il.length;a++)if(b=window.s_c_il[a],b._c&&"s_c"===b._c)return b}();"undefined"!==typeof m&&(m.contextData.getPercentPageViewed="5.0.1");window.pageName="undefined"!==typeof m&&m.pageName||"";window.cookieWrite=window.cookieWrite||function(a,b,d){if("string"===typeof a){var f=window.location.hostname,l=window.location.hostname.split(".").length-1;if(f&&!/^[0-9.]+$/.test(f)){l=2<l?l:2;var c=f.lastIndexOf(".");if(0<=c){for(;0<=c&&1<l;)c=f.lastIndexOf(".",c-1),l--;c=0<c?f.substring(c):f}}g=c;b="undefined"!==typeof b?""+b:"";if(d||""===b)if(""===b&&(d=-60),"number"===typeof d){var h=new Date;h.setTime(h.getTime()+6E4*d)}else h=d;return a&&(document.cookie=encodeURIComponent(a)+"="+encodeURIComponent(b)+"; path=/;"+(d?" expires="+h.toUTCString()+";":"")+(g?" domain="+g+";":""),"undefined"!==typeof window.cookieRead)?window.cookieRead(a)===b:!1}};window.cookieRead=window.cookieRead||function(a){if("string"===typeof a)a=encodeURIComponent(a);else return"";var b=" "+document.cookie,d=b.indexOf(" "+a+"="),f=0>d?d:b.indexOf(";",d);return(a=0>d?"":decodeURIComponent(b.substring(d+2+a.length,0>f?b.length:f)))?a:""};window.p_fo=window.p_fo||function(a){window.__fo||(window.__fo={});if(window.__fo[a])return!1;window.__fo[a]={};return!0};var e=window.cookieRead("s_ppv");e=-1<e.indexOf(",")?e.split(","):[];n=n?n:window.pageName?window.pageName:document.location.href;e[0]=decodeURIComponent(e[0]);window.ppvChange="undefined"===typeof r||1==r?!0:!1;"undefined"!==typeof m&&m.linkType&&"o"===m.linkType||(window.ppvID&&window.ppvID===n||(window.ppvID=n,window.cookieWrite("s_ppv",""),p()),window.p_fo("s_gppvLoad")&&window.addEventListener&&(window.addEventListener("load",p,!1),window.addEventListener("click",p,!1),window.addEventListener("scroll",p,!1)),this._ppvPreviousPage=e[0]?e[0]:"",this._ppvHighestPercentViewed=e[1]?e[1]:"",this._ppvInitialPercentViewed=e[2]?e[2]:"",this._ppvHighestPixelsSeen=e[3]?e[3]:"",this._ppvFoldsSeen=e[4]?e[4]:"",this._ppvFoldsAvailable=e[5]?e[5]:"")};
@@ -25,8 +37,11 @@ s.split = new Function("l","d",""
 /* eslint-enable */
 // END: Pre-defined Adobe Plugins
 
-
+/**
+ * Utility functions which get used by various features.
+ */
 s._utils = {
+    getAdobeObject: _getAdobeObject,
     getDomainFromURLString: function (urlString) {
         try {
             const urlObject = new URL(urlString);
@@ -37,19 +52,13 @@ s._utils = {
     },
     getDocType: function () {
         return window.utag.data.page_type
+            || window.utag.data.page_mapped_doctype_for_pagename
             || window.utag.data.page_document_type
             || window.utag.data.adobe_doc_type
             || window.utag.data.adobe_docType
             || window.utag.data.ad_page_document_type
-            || window.utag.data.page_mapped_doctype_for_pagename
             || '';
     },
-};
-
-/**
- * Module sets the referring context of an article page view as an certain event to the events variable.
- */
-s._articleViewTypeObj = {
     isArticlePage: function () {
         const ARTICLE_TYPES = [
             'article',
@@ -59,11 +68,48 @@ s._articleViewTypeObj = {
             'video',
             'post',
             'media',
-            'single'
+            'single',
+            'sportdaten',
+            'live-sport'
         ];
-        const pageType = s._utils.getDocType();
+        const pageType = this.getDocType();
 
         return ARTICLE_TYPES.indexOf(pageType) !== -1;
+    },
+    isFirstPageView: function () {
+        return !!window.cmp;
+    },
+    isValidURL: function (urlString) {
+        try {
+            const urlObject = new URL(urlString);
+            return !!urlObject.hostname;
+        } catch (err) {
+            return false;
+        }
+    },
+    getReferrerFromLocationHash: function () {
+        let referrerFromHash;
+        if (window.location.hash.indexOf('wt_ref') !== -1) {
+            referrerFromHash = window.location.hash.replace('###wt_ref=', '');
+            referrerFromHash = decodeURIComponent(referrerFromHash);
+        }
+        return this.isValidURL(referrerFromHash) ? referrerFromHash : '';
+    },
+    getReferrer: function () {
+        return this.getReferrerFromLocationHash() || window.document.referrer;
+    },
+    getReferringDomain: function () {
+        return this.getDomainFromURLString(this.getReferrer());
+    }
+};
+
+/**
+ * Module sets the referring context of an article page view as a certain event to the events variable.
+ */
+s._articleViewTypeObj = {
+    cleanUpReferrer: function (referrer) {
+        // remove malformed query param (TRAC-1229)
+        return referrer.split('&wt_t')[0];
     },
 
     isFromSearch: function (referringDomain) {
@@ -82,9 +128,7 @@ s._articleViewTypeObj = {
         });
     },
 
-    /**
-     * Same domain check including subdomains.
-     */
+    // Same domain check including subdomains.
     isFromInternal: function (referringDomain, domain) {
         const referringDomainSegments = referringDomain.split('.');
         const documentDomainSegments = domain.split('.');
@@ -98,10 +142,8 @@ s._articleViewTypeObj = {
         return referringDomainSegments[referringDomainSegments.length - 2] === documentDomainSegments[documentDomainSegments.length - 2];
     },
 
-    /**
-     * Only certain subdomains are considered as homepages: eg. www.bild.de, m.bild.de, sportbild.bild.de
-     * Other special subdomains should not be considered: eg. sport.bild.de, online.welt.de
-     */
+    //Only certain subdomains are considered as homepages: eg. www.bild.de, m.bild.de, sportbild.bild.de
+    //Other special subdomains should not be considered: eg. sport.bild.de, online.welt.de
     isHomepageSubdomain: function (domain) {
         const subdomainsWithHomepages = ['www', 'm', 'sportbild'];
         const domainSegments = domain.split('.');
@@ -114,8 +156,9 @@ s._articleViewTypeObj = {
     },
 
     isFromHome: function (referrer) {
+        const cleanedReferrer = this.cleanUpReferrer(referrer);
         try {
-            const urlObject = new URL(referrer);
+            const urlObject = new URL(cleanedReferrer);
             return urlObject.pathname === '/' && this.isHomepageSubdomain(urlObject.hostname);
         } catch (err) {
             return false;
@@ -183,7 +226,7 @@ s._articleViewTypeObj = {
             articleViewType = 'event24'; //Search
         } else if (this.isFromSocial(referrer)) {
             articleViewType = 'event25'; //Social
-        } else if (this.isFromInternal(referringDomain, domain) && this.isFromTaboola()) {
+        } else if (this.isFromTaboola()) {
             articleViewType = 'event102'; //Taboola
         } else if (this.isFromInternal(referringDomain, domain) && this.isFromHome(referrer)) {
             articleViewType = 'event22'; //Home
@@ -229,7 +272,7 @@ s._articleViewTypeObj = {
     },
 
     setViewType: function (s) {
-        if (this.isArticlePage()) {
+        if (s._utils.isArticlePage()) {
             s._articleViewType = window.document.referrer ? this.getViewTypeByReferrer() : this.getViewTypeByTrackingProperty();
             s.eVar44 = s._articleViewType;
             s._eventsObj.addEvent(s._articleViewType);
@@ -238,6 +281,9 @@ s._articleViewTypeObj = {
     }
 };
 
+/**
+ * Set additional events with referrer context.
+ */
 s._setExternalReferringDomainEvents = function (s) {
     const domainsToEventMapping = [
         {
@@ -246,7 +292,7 @@ s._setExternalReferringDomainEvents = function (s) {
             matchExact: 'true',
         },
         {
-            domains: ['googlequicksearch/'],
+            domains: ['googlequicksearchbox/'],
             event: 'event49',
         },
         {
@@ -271,22 +317,31 @@ s._setExternalReferringDomainEvents = function (s) {
         },
     ];
 
-    domainsToEventMapping.forEach(domainEventMap => {
-        const {domains, event, matchExact} = domainEventMap;
-        const domainMatches = domains.some(domain => {
-            if (matchExact) {
-                return s._referringDomain && s._referringDomain === domain;
-            } else {
-                return s._referringDomain && s._referringDomain.includes(domain);
-            }
+    if (s._utils.isArticlePage()) {
+        const referringURL = s._utils.getReferrer();
 
+        domainsToEventMapping.forEach(domainEventMap => {
+            const {domains, event, matchExact} = domainEventMap;
+            const domainMatches = domains.some(domain => {
+                if (matchExact) {
+                    // Exclude URLs with domains which have trailing slashes.
+                    // This is needed to distinguish Google Discover from Google Search referrer.
+                    return referringURL && referringURL.includes(domain) && !referringURL.includes(domain + '/');
+                } else {
+                    return referringURL && referringURL.includes(domain);
+                }
+
+            });
+            if (domainMatches) {
+                s._eventsObj.addEvent(event);
+            }
         });
-        if (domainMatches) {
-            s._eventsObj.addEvent(event);
-        }
-    });
+    }
 };
 
+/**
+ *  Kameleoon tracking
+ */
 s._setKameleoonTracking = function (s) {
     if (s.linkName === 'Kameleoon Tracking') {
         if (window.Kameleoon) {
@@ -296,25 +351,26 @@ s._setKameleoonTracking = function (s) {
     }
 };
 
+/**
+ * Homepage teaser tracking
+ */
 s._setTeaserTrackingEvars = function (s) {
-
     const pageType = s._utils.getDocType();
-    
+
     // Home teaser tracking evars
     if (sessionStorage.getItem('home_teaser_info')
         && (pageType === 'article' || pageType === 'media')
-        && s._ppvPreviousPage.indexOf('home') === 0) {
-
+        && (s._ppvPreviousPage.indexOf('home') === 0 || s._ppvPreviousPage.indexOf('section') === 0)) {
         s.eVar66 = sessionStorage.getItem('home_teaser_info');
         s.eVar92 = sessionStorage.getItem('home_teaser_info') + '|' + s.eVar1;
-    }
-
-    // All inline elements tracking
-    if (sessionStorage.getItem('home_teaser_info') !== null) {
-        s.eVar77 = sessionStorage.getItem('home_teaser_info');
+        s.eVar97 = sessionStorage.getItem('teaser_block');
     }
 };
 
+/**
+ * Modifying the page name (only for Bild).
+ * setPageName(s) needs to get explicitly called from inside the s.doPlugins() callback function of the Bild profile.
+ */
 s._bildPageNameObj = {
     isDocTypeArticle: function () {
         return s._utils.getDocType() === 'article';
@@ -352,6 +408,8 @@ s._bildPageNameObj = {
             window.utag.data.page_mapped_doctype_for_pagename = 'home';
             s.eVar3 = 'home';
             s.prop3 = 'home';
+            s.eVar4 = '/';
+            s.eVar5 = 'home';
             s.pageName = 'home : ' + window.utag.data['page_id'];
         } else if (this.isLive()) {
             window.utag.data.adobe_doc_type = 'live';
@@ -367,6 +425,9 @@ s._bildPageNameObj = {
     },
 };
 
+/**
+ * Adobe campaign tracking
+ */
 s._campaignObj = {
     getAdobeCampaign: function () {
         if (typeof window.utag.data['qp.cid'] !== 'undefined') {
@@ -386,18 +447,33 @@ s._campaignObj = {
     setCampaignVariables: function (s) {
         window.utag.data.adobe_campaign = this.getAdobeCampaign();
         //To be updated to a single assignment option after it is unified in tealium
-        const adobe_campaign = s.campaign || window.utag.data['adobe_campaign'] || '';
-        s.campaign = s.getValOnce(adobe_campaign, 's_ev0', 0, 'm');
-        s.eVar88 = window.utag.data['adobe_campaign'] || window.utag.data['campaign_value'] || '';
+        const adobeCampaign = s.campaign
+            || window.utag.data['adobe_campaign']
+            || window.utag.data['campaign_value']
+            || '';
+
+        s.eVar88 = adobeCampaign;
+        if (s._utils.isFirstPageView()) {
+            s.campaign = adobeCampaign;
+        } else {
+            // getValOnce() uses cookies and therefore is not allowed before consent.
+            s.campaign = s.getValOnce(adobeCampaign, 's_ev0', 0, 'm');
+        }
     },
 };
 
 /**
- * Scrolltiefe kommt aus dem Cookie vom letzten Aufruf, wenn wir kein Adobe Consent haben gibt es keine Cookies!
+ * Page scroll depth tracking.
  */
 s._scrollDepthObj = {
+    isFirstRun: true,
+
     getPageId: function () {
-        return window.utag.data.page_id || window.utag.data.cid || window.utag.data.screen_escenicId || '';
+        return window.utag.data.page_id
+            || window.utag.data.cid
+            || window.utag.data.page_escenicId
+            || window.utag.data.screen_escenicId
+            || '';
     },
 
     getPageChannel: function () {
@@ -411,15 +487,15 @@ s._scrollDepthObj = {
         return status ? status + ' : ' : '';
     },
 
-    isDocTypeArticleOrVideo: function (s) {
+    isValidDocType: function (s) {
         const doc_type = s._utils.getDocType();
-        return doc_type === 'article' || doc_type === 'video';
+        return doc_type === 'article' || doc_type === 'video' || doc_type === 'single' || doc_type === 'post';
     },
 
     setPreviousPage: function (s) {
         // Previous Page für article und video ==> document type : page_is_premium : page_id : page_channel
-        if (this.isDocTypeArticleOrVideo(s)) {
-            const doc_type = s._utils.getDocType();
+        if (this.isValidDocType(s)) {
+            const doc_type = s._utils.getDocType(); // Fixme: getDocType is called a second time here (already called in isValidDocType).
             const page_id = this.getPageId();
             const page_channel = this.getPageChannel();
             const page_is_premium = this.getPagePremiumStatus();
@@ -438,22 +514,26 @@ s._scrollDepthObj = {
         s.prop65 = Math.round(s._ppvHighestPercentViewed / 10) * 10;
         const event45 = 'event45=' + Math.round(s._ppvInitialPercentViewed / 10) * 10;
         const event46 = 'event46=' + Math.round(s._ppvHighestPercentViewed / 10) * 10;
-        s.events = s.apl(s.events, event45, ',', 1);
-        s.events = s.apl(s.events, event46, ',', 1);
+        s._eventsObj.addEvent(event45);
+        s._eventsObj.addEvent(event46);
     },
 
     setScrollDepthProperties: function (s) {
-        if (s.pageName) {
+        if (s.pageName && this.isFirstRun) {
+            // Should be executed only once.
+            this.isFirstRun = false;
             this.setPreviousPage(s);
             s.getPercentPageViewed(s._prevPage);
-            if (s._ppvPreviousPage) {
+            if (s._ppvPreviousPage && s._ppvPreviousPage !== 'undefined') {
                 this.setData(s);
             }
         }
     },
 };
 
-//internal Campaign
+/**
+ * Internal campaign tracking.
+ */
 s._ICIDTracking = {
     setVariables: function (s) {
         let icid = '';
@@ -468,6 +548,9 @@ s._ICIDTracking = {
     }
 };
 
+/**
+ * Configuration of events property
+ */
 s._eventsObj = {
     events: [],
     addEvent: function (eventName) {
@@ -483,6 +566,9 @@ s._eventsObj = {
     }
 };
 
+/**
+ * Plus density (Plusdichte) tracking
+ */
 s._plusDensityObj = {
     saveToCookie: (source) => {
         window.utag.loader.SC('utag_main', {'source': source + ';exp-session'});
@@ -493,7 +579,7 @@ s._plusDensityObj = {
     setDensity: function (s) {
         const documentType = s._utils.getDocType(s);
         if (documentType === 'article') {
-            const source = window.utag.data.source;
+            const source = window.utag.data['qp.source'];
             if (source) {
                 s.eVar235 = source;
                 this.saveToCookie(source);
@@ -504,48 +590,61 @@ s._plusDensityObj = {
     }
 };
 
+/**
+ * Starting point of extension
+ */
 s._init = function (s) {
     s.currencyCode = 'EUR';
-    s.execdoplugins = 0;
-    s.expectSupplementalData = false;
     s.myChannels = 0;
     s.usePlugins = true;
 
+    //Activity Map
+    s.trackInlineStats = true;
+    s.linkLeaveQueryString = true;
+
     s.trackExternalLinks = true;
     s.eVar61 = window.navigator.userAgent;
-    s.eVar64 = s.visitor && s.visitor.version ? s.visitor.version : undefined;
-
-    //no sdid for A4T
-    s.expectSupplementalData = false; // Force to false;
 
     //Referrer for link events
-    s.referrer = window.document.referrer || '';
-    s._referringDomain = s._utils.getDomainFromURLString(window.document.referrer);
+    s.referrer = s._utils.getReferrer();
+    s._referringDomain = s._utils.getReferringDomain();
 
     //height & width for iPhones
     if (window.navigator.userAgent.indexOf('iPhone') > -1) {
         s.eVar94 = window.screen.width + 'x' + window.screen.height;
     }
 
-    s._setKameleoonTracking(s);
     s._articleViewTypeObj.setViewType(s);
     s._ICIDTracking.setVariables(s);
     s._campaignObj.setCampaignVariables(s);
     s._setExternalReferringDomainEvents(s);
     s._plusDensityObj.setDensity(s);
-    s._setTeaserTrackingEvars(s);
 };
 
+/**
+ * Global doPlugins callback function
+ */
 s._doPluginsGlobal = function (s) {
     //Config
     s.eVar63 = s.version;
+    s.eVar64 = s.visitor && s.visitor.version ? s.visitor.version : undefined;
 
     //Time & Timeparting
     s.eVar184 = new Date().getHours().toString();
     s.eVar181 = new Date().getMinutes().toString();
     s.eVar185 = window.utag.data.myCW || '';
-    s._scrollDepthObj.setScrollDepthProperties(s);
+
+    //no sdid for A4T
+    s.expectSupplementalData = false; // Force to false;    
+
+    // Some functions are not allowed on the first page view (before consent is given).
+    if (!s._utils.isFirstPageView()) {
+        s._scrollDepthObj.setScrollDepthProperties(s);
+        s._setTeaserTrackingEvars(s);
+    }
+
     s._eventsObj.setEventsProperty(s);
+    s._setKameleoonTracking(s);
 };
 
 // Evaluate runtime environment
@@ -553,5 +652,6 @@ if (typeof exports === 'object') {
     // Export s-object with all functions for unit testing
     module.exports = s;
 } else {
+    // Initialize extension
     s._init(s);
 }

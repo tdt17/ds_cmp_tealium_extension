@@ -17,24 +17,38 @@ describe('_scrollDepthObj', () => {
         jest.restoreAllMocks();
     });
 
-    describe('isDocTypeArticleOrVideo', () => {
+    describe('isValidDocType', () => {
 
         it('should return false if doc_type is not defined', () => {
-            const result = s._scrollDepthObj.isDocTypeArticleOrVideo(s);
+            const result = s._scrollDepthObj.isValidDocType(s);
 
             expect(result).toBe(false);
         });
 
         it('should return true if doc_type is article', () => {
             window.utag.data.adobe_doc_type = 'article';
-            const result = s._scrollDepthObj.isDocTypeArticleOrVideo(s);
+            const result = s._scrollDepthObj.isValidDocType(s);
 
             expect(result).toBe(true);
         });
 
         it('should return true if doc_type is video', () => {
             window.utag.data.adobe_doc_type = 'video';
-            const result = s._scrollDepthObj.isDocTypeArticleOrVideo(s);
+            const result = s._scrollDepthObj.isValidDocType(s);
+
+            expect(result).toBe(true);
+        });
+
+        it('should return true if doc_type is single', () => {
+            window.utag.data.adobe_doc_type = 'single';
+            const result = s._scrollDepthObj.isValidDocType(s);
+
+            expect(result).toBe(true);
+        });
+
+        it('should return true if doc_type is post', () => {
+            window.utag.data.adobe_doc_type = 'post';
+            const result = s._scrollDepthObj.isValidDocType(s);
 
             expect(result).toBe(true);
         });
@@ -68,6 +82,13 @@ describe('_scrollDepthObj', () => {
             const value = s._scrollDepthObj.getPageId();
 
             expect(value).toBe(window.utag.data.screen_escenicId);
+        });
+
+        it('should return page_escenicId if it is present', () => {
+            window.utag.data.page_escenicId = 'test_page_escenicId';
+            const value = s._scrollDepthObj.getPageId();
+
+            expect(value).toBe(window.utag.data.page_escenicId);
         });
 
     });
@@ -152,7 +173,7 @@ describe('_scrollDepthObj', () => {
 
         it('should set the right _prevPage if docType is not article or video', () => {
             s.pageName = 'test_pageName';
-            jest.spyOn(s._scrollDepthObj, 'isDocTypeArticleOrVideo').mockReturnValue(false);
+            jest.spyOn(s._scrollDepthObj, 'isValidDocType').mockReturnValue(false);
 
             s._scrollDepthObj.setPreviousPage(s);
 
@@ -160,7 +181,7 @@ describe('_scrollDepthObj', () => {
         });
 
         it('should set the right _prevPage if docType is article or video', () => {
-            jest.spyOn(s._scrollDepthObj, 'isDocTypeArticleOrVideo').mockReturnValue(true);
+            jest.spyOn(s._scrollDepthObj, 'isValidDocType').mockReturnValue(true);
             jest.spyOn(s._utils, 'getDocType').mockReturnValue('test_docType');
             jest.spyOn(s._scrollDepthObj, 'getPageId').mockReturnValue('test_pageId');
             jest.spyOn(s._scrollDepthObj, 'getPageChannel').mockReturnValue('test_pageChannel');
@@ -175,6 +196,10 @@ describe('_scrollDepthObj', () => {
 
     describe('setScrollDepthProperties', () => {
 
+        afterEach( ()=>{
+            s._scrollDepthObj.isFirstRun = true;
+        });
+
         it('should call setPreviousPage and getPercentPageViewed if pageName is defined', () => {
             s.pageName = 'test_pageName';
             const setPrevPage = jest.spyOn(s._scrollDepthObj, 'setPreviousPage');
@@ -184,7 +209,6 @@ describe('_scrollDepthObj', () => {
 
             expect(setPrevPage).toHaveBeenCalledWith(s);
             expect(s.getPercentPageViewed).toHaveBeenCalledWith(s._prevPage);
-
         });
         
         it('should call setData if pageName and _ppvPreviousPage is defined', () => {
@@ -197,13 +221,26 @@ describe('_scrollDepthObj', () => {
             s._scrollDepthObj.setScrollDepthProperties(s);
 
             expect(setData).toHaveBeenCalledWith(s);
-            
+        });
+
+        it('should run only once', () => {
+            s.pageName = 'test_pageName';
+            s._ppvPreviousPage = 'test_ppvPreviousPage';
+
+            jest.spyOn(s, 'getPercentPageViewed').mockImplementation(jest.fn());
+            const setData = jest.spyOn(s._scrollDepthObj, 'setData');
+
+            s._scrollDepthObj.setScrollDepthProperties(s);
+            s._scrollDepthObj.setScrollDepthProperties(s);
+
+            expect(setData).toHaveBeenCalledTimes(1);
         });
         
     });
 
     describe('setData', () => {
         it('should set scroll depth data in s object when called', () => {
+            const addEventMock = jest.spyOn(s._eventsObj, 'addEvent').mockImplementation();
             s._ppvPreviousPage = 'test_ppvPreviousPage';
             s._ppvInitialPercentViewed = 'test_ppvInitialPercentViewed';
             s._ppvHighestPixelsSeen = 'test_ppvHighestPixelsSeen';
@@ -217,8 +254,8 @@ describe('_scrollDepthObj', () => {
             expect(s.prop63).toBe(s._ppvHighestPixelsSeen);
             expect(s.prop64).toBe(Math.round(s._ppvInitialPercentViewed / 10) * 10);
             expect(s.prop65).toBe(Math.round(s._ppvHighestPercentViewed / 10) * 10);
-            expect(s.events).toMatch('event45=' + s.prop64);
-            expect(s.events).toMatch('event46=' + s.prop65);
+            expect(addEventMock).toHaveBeenCalledWith('event45=' + s.prop64);
+            expect(addEventMock).toHaveBeenCalledWith('event46=' + s.prop65);
         });
     });
     

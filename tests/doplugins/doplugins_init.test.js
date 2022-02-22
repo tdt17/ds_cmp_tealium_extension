@@ -7,9 +7,7 @@ describe('init()', () => {
     let setViewTypeMock;
     let setICIDTrackingVariablesMock;
     let setDensityMock;
-    let setKameleoonTrackingMock;
     let setExternalReferringDomainEventsMock;
-    let setTeaserTrackingEvarsMock;
 
     beforeEach(() => {
         // Create a fresh window mock for each test.
@@ -24,10 +22,7 @@ describe('init()', () => {
         setViewTypeMock = jest.spyOn(s._articleViewTypeObj, 'setViewType').mockImplementation();
         setICIDTrackingVariablesMock = jest.spyOn(s._ICIDTracking, 'setVariables').mockImplementation();
         setDensityMock = jest.spyOn(s._plusDensityObj, 'setDensity').mockImplementation();
-        setKameleoonTrackingMock = jest.spyOn(s, '_setKameleoonTracking').mockImplementation();
         setExternalReferringDomainEventsMock = jest.spyOn(s, '_setExternalReferringDomainEvents').mockImplementation();
-        setTeaserTrackingEvarsMock = jest.spyOn(s, '_setTeaserTrackingEvars').mockImplementation();
-
     });
 
     afterEach(() => {
@@ -36,20 +31,17 @@ describe('init()', () => {
     });
 
     it('should set global configuration properties of the Adobe s-object', () => {
-        s.visitor = {version: 'test'};
         window.document.referrer = 'any_referrer';
         window.navigator.userAgent = 'any-user-agent';
         s._init(s);
 
         expect(s.currencyCode).toBe('EUR');
-        expect(s.execdoplugins).toBe(0);
-        expect(s.expectSupplementalData).toBe(false);
         expect(s.myChannels).toBe(0);
         expect(s.usePlugins).toBe(true);
+        expect(s.trackInlineStats).toBe(true);
+        expect(s.linkLeaveQueryString).toBe(true);
         expect(s.trackExternalLinks).toBe(true);
         expect(s.eVar61).toBe(window.navigator.userAgent);
-        expect(s.eVar64).toBe(s.visitor.version);
-        expect(s.expectSupplementalData).toBe(false);
         expect(s.referrer).toBe(window.document.referrer);
     });
 
@@ -88,19 +80,10 @@ describe('init()', () => {
         expect(setDensityMock).toHaveBeenCalledWith(s);
     });
 
-    it('should call s._setKameleoonTracking(s)', () => {
-        s._init(s);
-        expect(setKameleoonTrackingMock).toHaveBeenCalledWith(s);
-    });
-
     it('should call s._setExternalReferringDomainEvents(s)', () => {
         s._init(s);
         expect(setExternalReferringDomainEventsMock).toHaveBeenCalledWith(s);
     });
 
-    it('should call s._setTeaserTrackingEvars(s)', () => {
-        s._init(s);
-        expect(setTeaserTrackingEvarsMock).toHaveBeenCalledWith(s);
-    });
 
 });

@@ -47,15 +47,15 @@ describe('_bildPageNameObj', () => {
             expect(returnValue).toBe(false);
         });
 
-        it('should be true if page_id is wDmWJyqHFeqhJHmeuqfN', () => {
-            window.utag.data.page_id = 'wDmWJyqHFeqhJHmeuqfN';
+        it('should be true if page_id is 22P2NufXQ03Ny17A6vwi (Bild home desktop)', () => {
+            window.utag.data.page_id = '22P2NufXQ03Ny17A6vwi';
 
             const returnValue = s._bildPageNameObj.isHome();
             expect(returnValue).toBe(true);
         });
 
-        it('should be true if page_id is 22P2NufXQ03Ny17A6vwi', () => {
-            window.utag.data.page_id = '22P2NufXQ03Ny17A6vwi';
+        it('should be true if page_id is wDmWJyqHFeqhJHmeuqfN (Bild home mobile)', () => {
+            window.utag.data.page_id = 'wDmWJyqHFeqhJHmeuqfN';
 
             const returnValue = s._bildPageNameObj.isHome();
             expect(returnValue).toBe(true);
@@ -193,6 +193,8 @@ describe('_bildPageNameObj', () => {
             expect(window.utag.data.page_mapped_doctype_for_pagename).toBe('home');
             expect(s.eVar3).toBe('home');
             expect(s.prop3).toBe('home');
+            expect(s.eVar4).toBe('/');
+            expect(s.eVar5).toBe('home');
             expect(s.pageName).toBe('home : ' + window.utag.data.page_id);
         });
 

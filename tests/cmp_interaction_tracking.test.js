@@ -32,7 +32,7 @@ const ABTestingProperties = {
 
 // Utility function for conveniently setting AP-testing properties
 function setABTestingProperties() {
-    cmpInteractionTracking.onMessageReceiveData(ABTestingProperties);
+    cmpInteractionTracking.setABTestingProperties(ABTestingProperties);
 }
 
 function createWindowMock() {
@@ -49,7 +49,10 @@ function createWindowMock() {
         utag: {
             link: jest.fn(),
             view: jest.fn(),
-            data: {}
+            data: {},
+            loader: {
+                SC: jest.fn()
+            }
         }
     };
 }
@@ -93,14 +96,12 @@ describe('CMP Interaction Tracking', () => {
             };
 
             jest.spyOn(cmpInteractionTracking, 'configSourcepoint').mockImplementation();
-            jest.spyOn(cmpInteractionTracking, 'getAdobeTagId').mockImplementation();
             jest.spyOn(cmpInteractionTracking, 'registerEventHandler').mockImplementation();
             jest.spyOn(cmpInteractionTracking, 'initABTestingProperties').mockImplementation();
 
             cmpInteractionTracking.run();
 
             expect(cmpInteractionTracking.configSourcepoint).toBeCalledTimes(1);
-            expect(cmpInteractionTracking.getAdobeTagId).toBeCalledTimes(1);
             expect(cmpInteractionTracking.registerEventHandler).toBeCalledTimes(1);
             expect(cmpInteractionTracking.initABTestingProperties).toBeCalledTimes(1);
         });
@@ -166,275 +167,372 @@ describe('CMP Interaction Tracking', () => {
     });
 
     describe('initABTestingProperties', () => {
-        it('should store AB-Testing properties when provided through global variable', () => {
+        it('should set AB-Testing properties when provided through global object', () => {
+            jest.spyOn(cmpInteractionTracking, 'setABTestingProperties').mockImplementation();
             window.__cmp_interaction_data = {
                 onMessageReceiveData: ABTestingProperties
             };
-
             cmpInteractionTracking.initABTestingProperties();
+            expect(cmpInteractionTracking.setABTestingProperties).toHaveBeenCalledWith(ABTestingProperties);
+        });
 
-            // getting stored properties by triggering link functions which uses them as argument
-            cmpInteractionTracking.onMessageChoiceSelect('test', '11');
-            const utagLinkCallArguments = window.utag.link.mock.calls[0][0];
+        it('should NOT set AB-Testing properties when they are NOT provided through global object', () => {
+            jest.spyOn(cmpInteractionTracking, 'setABTestingProperties').mockImplementation();
+            cmpInteractionTracking.initABTestingProperties();
+            expect(cmpInteractionTracking.setABTestingProperties).not.toHaveBeenCalled();
+        });
+    });
 
-            expect(utagLinkCallArguments.event_data).toEqual(`${ABTestingProperties.messageId} ${ABTestingProperties.msgDescription} ${ABTestingProperties.bucket}`);
+    describe('getABTestingProperties', () => {
+        it('should return a string with concatenated testing properties', function () {
+            setABTestingProperties();
+            const expectedResult = ABTestingProperties.messageId + ' ' + ABTestingProperties.msgDescription + ' ' + ABTestingProperties.bucket;
+            const result = cmpInteractionTracking.getABTestingProperties();
+            expect(result).toBe(expectedResult);
+        });
+
+        it('should return null when there are no testing properties', function () {
+            cmpInteractionTracking.setABTestingProperties({});
+            const result = cmpInteractionTracking.getABTestingProperties();
+            expect(result).toBe(null);
         });
     });
 
     describe('onMessageReceiveData()', () => {
         it('should store received AP-Testing properties', () => {
-            cmpInteractionTracking.onMessageReceiveData(ABTestingProperties);
+            jest.spyOn(cmpInteractionTracking, 'setABTestingProperties').mockImplementation();
 
-            // getting stored properties by triggering link functions which uses them as argument
-            cmpInteractionTracking.onMessageChoiceSelect('test', '11');
-            const utagLinkCallArguments = window.utag.link.mock.calls[0][0];
+            const anyTestingProperties = 'any-properties';
 
-            expect(utagLinkCallArguments.event_data).toEqual(`${ABTestingProperties.messageId} ${ABTestingProperties.msgDescription} ${ABTestingProperties.bucket}`);
+            cmpInteractionTracking.onMessageReceiveData(anyTestingProperties);
+
+            expect(cmpInteractionTracking.setABTestingProperties).toHaveBeenLastCalledWith(anyTestingProperties);
+        });
+    });
+
+    describe('isAfterCMP', () =>{
+        it('should return true if utag_main_cmp_after cookie is set to true', function () {
+            window.utag.data['cp.utag_main_cmp_after'] = 'true';
+            const result = cmpInteractionTracking.isAfterCMP();
+            expect(result).toBe(true);
+        });
+
+        it('should return false if utag_main_cmp_after cookie is NOT set to true', function () {
+            const result = cmpInteractionTracking.isAfterCMP();
+            expect(result).toBe(false);
+        });
+
+        it('should return true if user consented any vendor', function () {
+            window.utag.data.consentedVendors = 'any-vendors';
+            const result = cmpInteractionTracking.isAfterCMP();
+            expect(result).toBe(true);
+        });
+
+        it('should return false if list of consented vendors does NOT exists', function () {
+            const result = cmpInteractionTracking.isAfterCMP();
+            expect(result).toBe(false);
+        });
+
+        it('should return false if list of consented vendors equals default vendor', function () {
+            window.utag.data.consentedVendors = 'adobe_cmp,';
+            const result = cmpInteractionTracking.isAfterCMP();
+            expect(result).toBe(false);
+        });
+    });
+
+    describe('hasUserDeclinedConsent()', () => {
+        it('should be true if user has declined Adobe tracking', function () {
+            jest.spyOn(cmpInteractionTracking, 'isAfterCMP').mockReturnValue(true);
+            window.utag.data.consentedVendors = 'any-vendor';
+            const result = cmpInteractionTracking.hasUserDeclinedConsent();
+            expect(result).toBe(true);
+        });
+
+        it('should be false if user consented to Adobe Analytics tracking', function () {
+            window.utag.data.consentedVendors = 'any-vendor,adobe_analytics';
+            let result = cmpInteractionTracking.hasUserDeclinedConsent();
+            expect(result).toBe(false);
         });
     });
 
     describe('sendLinkEvent()', () => {
-        it('should call utag.link function with correct arguments', () => {
+        let hasUserDeclinedConsentMock;
+
+        beforeEach(() => {
+            hasUserDeclinedConsentMock = jest.spyOn(cmpInteractionTracking, 'hasUserDeclinedConsent').mockImplementation();
+        });
+
+        it('should call sendLinkEvent() function with correct arguments if user has not already declined consent', () => {
             const anyLabel = 'any-label';
             setABTestingProperties();
+            hasUserDeclinedConsentMock.mockReturnValue(false);
             cmpInteractionTracking.sendLinkEvent(anyLabel);
-            expect(window.utag.link).toHaveBeenCalledWith(
+            expect(window.utag.link).toHaveBeenLastCalledWith(
                 {
-                    'event_name': 'cmp_interactions',
                     'event_action': 'click',
-                    'event_label': anyLabel,
-                    'event_data': `${ABTestingProperties.messageId} ${ABTestingProperties.msgDescription} ${ABTestingProperties.bucket}`
-                });
+                    'event_data': ABTestingProperties.messageId + ' ' + ABTestingProperties.msgDescription + ' ' + ABTestingProperties.bucket,
+                    'event_label': 'any-label',
+                    'event_name': 'cmp_interactions'
+                }
+            );
+        });
+
+        it('should NOT call sendLinkEvent() function if user has declined consent', () => {
+            const anyLabel = 'any-label';
+            hasUserDeclinedConsentMock.mockReturnValue(true);
+            cmpInteractionTracking.sendLinkEvent(anyLabel);
+            expect(window.utag.link).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('onUserConsent()', () => {
+        it('should call the scroll-depth feature of the doPlugins extension', function () {
+            window.cmp = {
+                _scrollDepthObj: {
+                    setScrollDepthProperties: jest.fn()
+                }
+            };
+            cmpInteractionTracking.onUserConsent();
+            expect(window.cmp._scrollDepthObj.setScrollDepthProperties).toHaveBeenCalled();
         });
     });
 
     describe('onMessageChoiceSelect(id, eventType)', () => {
-        it('should set correct utag.data properties when eventType === 11', () => {
+        beforeEach(() => {
+            jest.spyOn(cmpInteractionTracking, 'sendLinkEvent').mockImplementation();
+            jest.spyOn(cmpInteractionTracking, 'onUserConsent').mockImplementation();
+        });
+
+        it('should set correct utag.data properties when user gives consent', () => {
             cmpInteractionTracking.onMessageChoiceSelect('any-id', 11);
             expect(window.utag.data).toEqual({
                 'cmp_events': 'cm_accept_all',
-                'cmp_interactions_true': 'false'
+                'cp.utag_main_cmp_after': true
             });
         });
 
-        it('should call utag.link with correct values when eventType === 11', () => {
-            setABTestingProperties();
-            cmpInteractionTracking.onMessageChoiceSelect('test', '11');
-            expect(window.utag.link).toHaveBeenCalledWith(
-                {
-                    'event_name': 'cmp_interactions',
-                    'event_action': 'click',
-                    'event_label': 'cm_accept_all',
-                    'event_data': `${ABTestingProperties.messageId} ${ABTestingProperties.msgDescription} ${ABTestingProperties.bucket}`
-                });
+        it('should call sendLinkEvent with correct argument when user gives consent', () => {
+            cmpInteractionTracking.onMessageChoiceSelect('test', 11);
+            expect(cmpInteractionTracking.sendLinkEvent).toHaveBeenLastCalledWith('cm_accept_all');
         });
 
-        it('should set correct utag.data properties when eventType === 12', () => {
+        it('should set correct utag.data properties when user opens privacy manager', () => {
             cmpInteractionTracking.onMessageChoiceSelect('any-id', 12);
             expect(window.utag.data).toEqual({
-                'cmp_events': 'cm_show_privacy_manager',
-                'cmp_interactions_true': 'false'
+                'cmp_events': 'cm_show_privacy_manager'
             });
         });
 
-        it('should call utag.link with correct values when eventType === 12', () => {
-            setABTestingProperties();
-            cmpInteractionTracking.onMessageChoiceSelect('test', '12');
-            expect(window.utag.link).toHaveBeenCalledWith(
-                {
-                    'event_name': 'cmp_interactions',
-                    'event_action': 'click',
-                    'event_label': 'cm_show_privacy_manager',
-                    'event_data': `${ABTestingProperties.messageId} ${ABTestingProperties.msgDescription} ${ABTestingProperties.bucket}`
-                });
+        it('should call sendLinkEvent with correct argument when user opens privacy manager', () => {
+            cmpInteractionTracking.onMessageChoiceSelect('test', 12);
+            expect(cmpInteractionTracking.sendLinkEvent).toHaveBeenLastCalledWith('cm_show_privacy_manager');
         });
 
-        it('should set correct utag.data properties when eventType === 13', () => {
+        it('should set correct utag.data properties when user declines consent', () => {
             cmpInteractionTracking.onMessageChoiceSelect('any-id', 13);
             expect(window.utag.data).toEqual({
                 'cmp_events': 'cm_reject_all',
-                'cmp_interactions_true': 'false'
+                'cp.utag_main_cmp_after': true
             });
         });
 
-        it('should call utag.link with correct values when eventType === 13', () => {
-            setABTestingProperties();
-            cmpInteractionTracking.onMessageChoiceSelect('test', '13');
-            expect(window.utag.link).toHaveBeenCalledWith(
-                {
-                    'event_name': 'cmp_interactions',
-                    'event_action': 'click',
-                    'event_label': 'cm_reject_all',
-                    'event_data': `${ABTestingProperties.messageId} ${ABTestingProperties.msgDescription} ${ABTestingProperties.bucket}`
-                });
+        it('should call sendLinkEvent with correct argument when user declines consent', () => {
+            cmpInteractionTracking.onMessageChoiceSelect('test', 13);
+            expect(cmpInteractionTracking.sendLinkEvent).toHaveBeenLastCalledWith('cm_reject_all');
         });
 
-        it('should NOT call utag.link when called with wrong event type', () => {
-            cmpInteractionTracking.onMessageChoiceSelect('test', '999');
-            expect(window.utag.link).not.toHaveBeenCalled();
+        it('should NOT call sendLinkEvent when called with wrong event type', () => {
+            cmpInteractionTracking.onMessageChoiceSelect('test', 999);
+            expect(cmpInteractionTracking.sendLinkEvent).not.toHaveBeenCalled();
+        });
+
+        it('should set utag_main_cmp_after cookie to true when user gives consent', () => {
+            cmpInteractionTracking.onMessageChoiceSelect('test', 11);
+            expect(window.utag.loader.SC).toHaveBeenCalledWith('utag_main', {'cmp_after': 'true;exp-session'});
+            expect(window.utag.data['cp.utag_main_cmp_after']).toBe(true);
+        });
+
+        it('should set utag_main_cmp_after cookie to true when user declines consent', () => {
+            cmpInteractionTracking.onMessageChoiceSelect('test', 13);
+            expect(window.utag.loader.SC).toHaveBeenCalledWith('utag_main', {'cmp_after': 'true;exp-session'});
+            expect(window.utag.data['cp.utag_main_cmp_after']).toBe(true);
+        });
+
+        it('should NOT set utag_main_cmp_after cookie when user opens privacy manager', () => {
+            cmpInteractionTracking.onMessageChoiceSelect('test', 12);
+            expect(window.utag.loader.SC).not.toHaveBeenCalledWith('utag_main', {'cmp_after': 'true;exp-session'});
+            expect(window.utag.data['cp.utag_main_cmp_after']).toBeUndefined();
+        });
+
+        it('should call onUserConsent() when user has given consent', function () {
+            cmpInteractionTracking.onMessageChoiceSelect('any-id', 11);
+            expect(cmpInteractionTracking.onUserConsent).toHaveBeenCalled();
+        });
+
+        it('should not call onUserConsent() when user has NOT given consent', function () {
+            cmpInteractionTracking.onMessageChoiceSelect('any-id', 12);
+            expect(cmpInteractionTracking.onUserConsent).not.toHaveBeenCalled();
         });
     });
 
 
     describe('onPrivacyManagerAction(eventType)', () => {
-        it('should set correct utag.data properties when eventType === SAVE_AND_EXIT', () => {
+        beforeEach(() => {
+            jest.spyOn(cmpInteractionTracking, 'sendLinkEvent').mockImplementation();
+        });
+
+        it('should set correct utag.data properties when user saves privacy settings', () => {
             cmpInteractionTracking.onPrivacyManagerAction('SAVE_AND_EXIT');
 
             expect(window.utag.data).toEqual({
                 'cmp_events': 'pm_save_and_exit',
-                'cmp_interactions_true': 'false'
+                'cp.utag_main_cmp_after': true
             });
         });
 
-        it('should call utag.link with correct values when eventType === SAVE_AND_EXIT', () => {
-            setABTestingProperties();
+        it('should call sendLinkEvent() with correct event label as argument when user saves privacy settings', () => {
             cmpInteractionTracking.onPrivacyManagerAction('SAVE_AND_EXIT');
-            expect(window.utag.link).toHaveBeenCalledWith(
-                {
-                    'event_name': 'cmp_interactions',
-                    'event_action': 'click',
-                    'event_label': 'pm_save_and_exit',
-                    'event_data': `${ABTestingProperties.messageId} ${ABTestingProperties.msgDescription} ${ABTestingProperties.bucket}`
-                });
+            expect(cmpInteractionTracking.sendLinkEvent).toHaveBeenLastCalledWith('pm_save_and_exit');
         });
 
-        it('should set correct utag.data properties when eventType === ACCEPT_ALL', () => {
+        it('should set correct utag.data properties when user gives consent', () => {
             cmpInteractionTracking.onPrivacyManagerAction('ACCEPT_ALL');
-
             expect(window.utag.data).toEqual({
                 'cmp_events': 'pm_accept_all',
-                'cmp_interactions_true': 'false'
+                'cp.utag_main_cmp_after': true
             });
         });
 
-        it('should call utag.link with correct values when eventType === ACCEPT_ALL', () => {
-            setABTestingProperties();
+        it('should call sendLinkEvent() with correct event label as argument when user gives consent', () => {
             cmpInteractionTracking.onPrivacyManagerAction('ACCEPT_ALL');
-            expect(window.utag.link).toHaveBeenCalledWith(
-                {
-                    'event_name': 'cmp_interactions',
-                    'event_action': 'click',
-                    'event_label': 'pm_accept_all',
-                    'event_data': `${ABTestingProperties.messageId} ${ABTestingProperties.msgDescription} ${ABTestingProperties.bucket}`
-                });
+            expect(cmpInteractionTracking.sendLinkEvent).toHaveBeenLastCalledWith('pm_accept_all');
         });
 
         it('should set utag.data properties when called with an all purposeConsent', () => {
             cmpInteractionTracking.onPrivacyManagerAction({purposeConsent: 'all'});
             expect(window.utag.data).toEqual({
                 'cmp_events': 'pm_accept_all',
-                'cmp_interactions_true': 'false'
+                'cp.utag_main_cmp_after': true
             });
         });
 
-        it('should call utag.link with correct values when called with an all purposeConsent', () => {
-            setABTestingProperties();
+        it('should call sendLinkEvent() with correct event label as argument when called with an all purposeConsent', () => {
             cmpInteractionTracking.onPrivacyManagerAction({purposeConsent: 'all'});
-            expect(window.utag.link).toHaveBeenCalledWith(
-                {
-                    'event_name': 'cmp_interactions',
-                    'event_action': 'click',
-                    'event_label': 'pm_accept_all',
-                    'event_data': `${ABTestingProperties.messageId} ${ABTestingProperties.msgDescription} ${ABTestingProperties.bucket}`
-                });
+            expect(cmpInteractionTracking.sendLinkEvent).toHaveBeenLastCalledWith('pm_accept_all');
         });
 
         it('should set utag.data properties when called with a purposeConsent other from all', () => {
             cmpInteractionTracking.onPrivacyManagerAction({purposeConsent: 'any-purpose-consent'});
             expect(window.utag.data).toEqual({
                 'cmp_events': 'pm_save_and_exit',
-                'cmp_interactions_true': 'false'
+                'cp.utag_main_cmp_after': true
             });
         });
 
-        it('should call utag.link with correct values when called with a purposeConsent other from all', () => {
-            setABTestingProperties();
+        it('should call sendLinkEvent() with correct event label as argument when called with a purposeConsent other from all', () => {
             cmpInteractionTracking.onPrivacyManagerAction({purposeConsent: 'any-purpose-consent'});
-            expect(window.utag.link).toHaveBeenCalledWith(
-                {
-                    'event_name': 'cmp_interactions',
-                    'event_action': 'click',
-                    'event_label': 'pm_save_and_exit',
-                    'event_data': `${ABTestingProperties.messageId} ${ABTestingProperties.msgDescription} ${ABTestingProperties.bucket}`
-                });
+            expect(cmpInteractionTracking.sendLinkEvent).toHaveBeenLastCalledWith('pm_save_and_exit');
         });
 
-        it('should NOT call utag.link when called with wrong eventType', () => {
+        it('should NOT call sendLinkEvent() when called with wrong eventType', () => {
             cmpInteractionTracking.onPrivacyManagerAction('any-invalid-type');
-            expect(window.utag.link).not.toHaveBeenCalled();
+            expect(cmpInteractionTracking.sendLinkEvent).not.toHaveBeenCalled();
+        });
+
+        it('should set utag_main_cmp_after cookie to true', () => {
+            cmpInteractionTracking.onPrivacyManagerAction('SAVE_AND_EXIT');
+            expect(window.utag.loader.SC).toHaveBeenCalledWith('utag_main', {'cmp_after': 'true;exp-session'});
+            expect(window.utag.data['cp.utag_main_cmp_after']).toBe(true);
+        });
+    });
+
+    describe('sendFirstPageViewEvent()', () => {
+        const anyAdobeTagID = 'any-tag-id';
+
+        beforeEach(() => {
+            jest.spyOn(cmpInteractionTracking, 'getAdobeTagId').mockImplementation().mockReturnValue(anyAdobeTagID);
+        });
+
+        it('should get the tag ID of the first-page-view tag if user has NOT already given/declined consent', function () {
+            cmpInteractionTracking.sendFirstPageViewEvent();
+            expect(cmpInteractionTracking.getAdobeTagId).toBeCalledTimes(1);
+        });
+
+        it('should send first-page-view tracking event if user has NOT already given/declined consent', function () {
+            window.utag.data = {
+                anyDataLayerProperty: 'any-property'
+            };
+            cmpInteractionTracking.sendFirstPageViewEvent();
+            expect(window.utag.view).toHaveBeenNthCalledWith(1,
+                window.utag.data,
+                null,
+                [anyAdobeTagID]);
+        });
+
+        it('should NOT get the tag ID of the first-page-view tag if user has already given/declined consent', function () {
+            jest.spyOn(cmpInteractionTracking, 'isAfterCMP').mockReturnValue(true);
+            cmpInteractionTracking.sendFirstPageViewEvent();
+            expect(cmpInteractionTracking.getAdobeTagId).not.toHaveBeenCalled();
+        });
+
+        it('should NOT send first-page-view tracking event if user has already given/declined consent', function () {
+            jest.spyOn(cmpInteractionTracking, 'isAfterCMP').mockReturnValue(true);
+            cmpInteractionTracking.sendFirstPageViewEvent();
+            expect(window.utag.view).not.toHaveBeenCalled();
         });
     });
 
     describe('onCmpuishown()', () => {
         beforeEach(() => {
             jest.useFakeTimers();
+            jest.spyOn(cmpInteractionTracking, 'sendFirstPageViewEvent').mockImplementation();
+            jest.spyOn(cmpInteractionTracking, 'sendLinkEvent').mockImplementation();
         });
+
         afterEach(() => {
             jest.useRealTimers();
         });
 
+
         it('should set correct utag.data properties', () => {
             cmpInteractionTracking.onCmpuishown({eventStatus: 'cmpuishown'});
-            jest.runAllTimers();
             expect(window.utag.data).toEqual({
-                'cmp_events': 'cm_layer_shown',
-                'cmp_interactions_true': 'false',
-                'first_pv': 'true'
+                'cmp_events': 'cm_layer_shown'
             });
         });
 
-        it('should call utag.view with correct values', () => {
+        it('should call sendLinkEvent function', () => {
             cmpInteractionTracking.onCmpuishown({eventStatus: 'cmpuishown'});
-            expect(window.utag.view).toHaveBeenNthCalledWith(1,
-                {
-                    'cmp_events': 'cm_layer_shown',
-                    'cmp_interactions_true': 'true',
-                    'first_pv': 'true'
-                }, null, [undefined]);
-        });
-
-        it('should NOT call utag.view when called without event status', () => {
-            cmpInteractionTracking.onCmpuishown();
             jest.runAllTimers();
-            expect(window.utag.view).not.toHaveBeenCalled();
+            expect(cmpInteractionTracking.sendLinkEvent).toHaveBeenCalledWith('cm_layer_shown');
         });
 
-        it('should NOT call utag.view when onCmpuishown is called with invalid event status', () => {
+        it('should NOT set utag.data properties when called with invalid event status', () => {
+            cmpInteractionTracking.onCmpuishown({eventStatus: 'any-invalid-status'});
+            expect(window.utag.data).toEqual({});
+        });
+
+        it('should NOT call sendLinkEvent function when called with invalid event status', () => {
             cmpInteractionTracking.onCmpuishown({eventStatus: 'any-invalid-status'});
             jest.runAllTimers();
-            expect(window.utag.view).not.toHaveBeenCalled();
-        });
-
-        it('should call utag.link with correct values', () => {
-            setABTestingProperties();
-            cmpInteractionTracking.onCmpuishown({eventStatus: 'cmpuishown'});
-            jest.runAllTimers();
-            expect(window.utag.link).toHaveBeenNthCalledWith(1,
-                {
-                    'event_name': 'cmp_interactions',
-                    'event_action': 'click',
-                    'event_label': 'cm_layer_shown',
-                    'event_data': `${ABTestingProperties.messageId} ${ABTestingProperties.msgDescription} ${ABTestingProperties.bucket}`
-                });
+            expect(cmpInteractionTracking.sendLinkEvent).not.toHaveBeenCalled();
         });
     });
 
     describe('onMessage', () => {
-        it('should call utag.link function with correct parameters', function () {
+        beforeEach(() => {
+            jest.spyOn(cmpInteractionTracking, 'sendLinkEvent').mockImplementation();
+        });
+
+        it('should call sendLinkEvent function with correct parameters', function () {
             const label = 'any-label';
-            setABTestingProperties();
             cmpInteractionTracking.onMessage({
                 data: {
                     cmpLayerMessage: true,
                     payload: label
                 },
             });
-            expect(window.utag.link).toHaveBeenCalledWith({
-                'event_name': 'cmp_interactions',
-                'event_action': 'click',
-                'event_label': label,
-                'event_data': `${ABTestingProperties.messageId} ${ABTestingProperties.msgDescription} ${ABTestingProperties.bucket}`
-            });
+            expect(cmpInteractionTracking.sendLinkEvent).toHaveBeenCalledWith(label);
         });
     });
 

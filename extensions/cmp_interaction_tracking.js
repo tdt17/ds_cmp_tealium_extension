@@ -38,8 +38,6 @@
         'welt-shop.welt.de': 28
     };
 
-    let adobeTagId;
-
     let cmp_ab_id = '';
     let cmp_ab_desc = '';
     let cmp_ab_bucket = '';
@@ -57,79 +55,126 @@
         onCmpuishown,
         initABTestingProperties,
         sendLinkEvent,
-        onMessage
+        onMessage,
+        setABTestingProperties,
+        getABTestingProperties,
+        onUserConsent,
+        sendFirstPageViewEvent,
+        hasUserDeclinedConsent,
+        isAfterCMP
     };
 
     function getABTestingProperties() {
-        return cmp_ab_id + ' '
-            + cmp_ab_desc + ' '
-            + cmp_ab_bucket;
+        if (cmp_ab_id || cmp_ab_desc || cmp_ab_bucket) {
+            return cmp_ab_id + ' '
+                + cmp_ab_desc + ' '
+                + cmp_ab_bucket;
+        } else {
+            return null;
+        }
+
     }
 
     function setABTestingProperties(data) {
-        cmp_ab_desc = data.msgDescription;
-        cmp_ab_id = data.messageId;
-        cmp_ab_bucket = data.bucket;
+        if (data) {
+            cmp_ab_desc = data.msgDescription;
+            cmp_ab_id = data.messageId;
+            cmp_ab_bucket = data.bucket;
+        }
     }
 
-    // Alternative way of setting AB-Testing properties through global letiable.
+    // Alternative way of setting AB-Testing properties through global variable.
     function initABTestingProperties() {
         if (window.__cmp_interaction_data && window.__cmp_interaction_data.onMessageReceiveData) {
-            setABTestingProperties(window.__cmp_interaction_data.onMessageReceiveData);
+            exportedFunctions.setABTestingProperties(window.__cmp_interaction_data.onMessageReceiveData);
         }
     }
 
     function onMessageReceiveData(data) {
-        setABTestingProperties(data);
+        exportedFunctions.setABTestingProperties(data);
+    }
+
+    function isAfterCMP() {
+        const hasCMPAfterCookie = window.utag.data['cp.utag_main_cmp_after'] ? (window.utag.data['cp.utag_main_cmp_after'].toLowerCase() === 'true') : false;
+        const defaultVendorList = 'adobe_cmp,';
+        const hasVendors = !!window.utag.data.consentedVendors && window.utag.data.consentedVendors !== defaultVendorList;
+
+        return hasCMPAfterCookie || hasVendors;
+    }
+
+    function hasUserDeclinedConsent() {
+        const hasUserGivenConsent = window.utag.data.consentedVendors && window.utag.data.consentedVendors.includes('adobe_analytics');
+        const isAfterCMP = exportedFunctions.isAfterCMP();
+
+        return hasUserGivenConsent ? false : isAfterCMP;
     }
 
     function sendLinkEvent(label) {
-        window.utag.link({
-            'event_name': 'cmp_interactions',
-            'event_action': 'click',
-            'event_label': label,
-            'event_data': getABTestingProperties()
-        });
+        if (!exportedFunctions.hasUserDeclinedConsent()) {
+            window.utag.link({
+                'event_name': 'cmp_interactions',
+                'event_action': 'click',
+                'event_label': label,
+                'event_data': getABTestingProperties()
+            });
+        }
+    }
+
+    function onUserConsent() {
+        if (window.cmp && window.cmp._scrollDepthObj) {
+            // Calling setScrollDepthProperties() will make the current page trackable as the _ppvPreviousPage of the next page view.
+            window.cmp._scrollDepthObj.setScrollDepthProperties(window.cmp);
+        }
+    }
+
+    function sendFirstPageViewEvent() {
+        // Check if user has already given/declined consent
+        if (!exportedFunctions.isAfterCMP()) {
+            const adobeTagId = exportedFunctions.getAdobeTagId(window.utag.data['ut.profile']);
+            window.utag.view(window.utag.data, null, [adobeTagId]);
+        }
     }
 
     function onMessageChoiceSelect(id, eventType) {
         if (CONSENT_MESSAGE_EVENTS[eventType]) {
             window.utag.data['cmp_events'] = CONSENT_MESSAGE_EVENTS[eventType];
-            window.utag.data['cmp_interactions_true'] = 'true';
             exportedFunctions.sendLinkEvent(CONSENT_MESSAGE_EVENTS[eventType]);
-            window.utag.data['cmp_interactions_true'] = 'false';
+
+            if (eventType === 11 || eventType === 13) {
+                window.utag.loader.SC('utag_main', {'cmp_after': 'true' + ';exp-session'});
+                window.utag.data['cp.utag_main_cmp_after'] = true;
+            }
+
+            if (eventType === 11) {
+                exportedFunctions.onUserConsent();
+            }
         }
     }
 
     function onPrivacyManagerAction(eventType) {
         if (PRIVACY_MANAGER_EVENTS[eventType] || eventType.purposeConsent) {
             window.utag.data['cmp_events'] = eventType.purposeConsent ? (eventType.purposeConsent === 'all' ? PRIVACY_MANAGER_EVENTS.ACCEPT_ALL : PRIVACY_MANAGER_EVENTS.SAVE_AND_EXIT) : PRIVACY_MANAGER_EVENTS[eventType];
-            window.utag.data['cmp_interactions_true'] = 'true';
             exportedFunctions.sendLinkEvent(window.utag.data['cmp_events']);
-            window.utag.data['cmp_interactions_true'] = 'false';
+            // Set cookie for first page view tracking.
+            window.utag.loader.SC('utag_main', {'cmp_after': 'true' + ';exp-session'});
+            window.utag.data['cp.utag_main_cmp_after'] = true;
         }
     }
 
     function onCmpuishown(tcData) {
         if (tcData && tcData.eventStatus === 'cmpuishown') {
-            window.utag.data.cmp_events = 'cm_layer_shown';
-            window.utag.data['cmp_events'] = TCFAPI_COMMON_EVENTS.CMP_UI_SHOWN;
-            window.utag.data['cmp_interactions_true'] = 'true';
-            window.utag.data['first_pv'] = 'true';
-            window.utag.view(window.utag.data, null, [adobeTagId]);
+            window.utag.data.cmp_events = TCFAPI_COMMON_EVENTS.CMP_UI_SHOWN;
+            exportedFunctions.sendFirstPageViewEvent();
             // Ensure that view event gets processed before link event by adding a delay.
             setTimeout(() => {
                 exportedFunctions.sendLinkEvent(TCFAPI_COMMON_EVENTS.CMP_UI_SHOWN);
-                window.utag.data['cmp_interactions_true'] = 'false';
             }, 500);
         }
     }
 
-    function onMessage(event){
+    function onMessage(event) {
         if (event.data && event.data.cmpLayerMessage) {
-            window.utag.data['cmp_interactions_true'] = 'true';
             exportedFunctions.sendLinkEvent(event.data.payload);
-            window.utag.data['cmp_interactions_true'] = 'false';
         }
     }
 
@@ -163,7 +208,6 @@
     }
 
     function run() {
-        adobeTagId = exportedFunctions.getAdobeTagId(window.utag.data['ut.profile']);
         exportedFunctions.configSourcepoint();
         exportedFunctions.initABTestingProperties();
         exportedFunctions.registerEventHandler();

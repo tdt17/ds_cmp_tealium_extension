@@ -17,35 +17,18 @@ describe('articleViewType()', () => {
         jest.restoreAllMocks();
     });
 
-    describe('isArticlePage()', () => {
-        let getDocTypeMock;
-
-        beforeEach(() => {
-            getDocTypeMock = jest.spyOn(s._utils, 'getDocType').mockImplementation();
+    describe('cleanUpReferrer', () => {
+        it('should remove the wt_t parameter', function () {
+            const anyBaseURL = 'https://www.any-domain.com/';
+            const anyWTParam = '&wt_t=any-value';
+            const result = s._articleViewTypeObj.cleanUpReferrer(anyBaseURL + anyWTParam);
+            expect(result).toBe(anyBaseURL);
         });
 
-        it('should be false when page is NOT of type article', () => {
-            getDocTypeMock.mockReturnValue('any-non-article-type');
-            const result = s._articleViewTypeObj.isArticlePage();
-            expect(result).toBe(false);
-        });
-
-        it('should be true when page is of type article', () => {
-            const ARTICLE_TYPES = [
-                'article',
-                'artikel',
-                'live',
-                'gallery',
-                'video',
-                'post',
-                'media'
-            ];
-
-            ARTICLE_TYPES.forEach(articleType => {
-                getDocTypeMock.mockReturnValue(articleType);
-                const result = s._articleViewTypeObj.isArticlePage();
-                expect(result).toBe(true);
-            });
+        it('should return the untouched referrer if there is no wt_t parameter', function () {
+            const anyURL = 'https://www.any-domain.com/any-path?any-query=any-value';
+            const result = s._articleViewTypeObj.cleanUpReferrer(anyURL);
+            expect(result).toBe(anyURL);
         });
     });
 
@@ -212,9 +195,15 @@ describe('articleViewType()', () => {
     });
 
     describe('isFromHome', () => {
+        let cleanUpReferrerMock;
+        beforeEach(() => {
+            cleanUpReferrerMock = jest.spyOn(s._articleViewTypeObj, 'cleanUpReferrer').mockImplementation();
+        });
+
         it('should return TRUE if referrer is from homepage (no location.pathname)', function () {
             const anyDomain = 'www.any-domain.de';
             const referrer = `https://${anyDomain}`;
+            cleanUpReferrerMock.mockReturnValue(referrer);
             window.document.domain = anyDomain;
             const result = s._articleViewTypeObj.isFromHome(referrer);
             expect(result).toBe(true);
@@ -223,6 +212,7 @@ describe('articleViewType()', () => {
         it('should return FALSE if referrer is from a sub page (with location.pathname)', function () {
             const anyDomain = 'www.any-domain.de';
             const referrer = `https://${anyDomain}/any-path`;
+            cleanUpReferrerMock.mockReturnValue(referrer);
             window.document.domain = anyDomain;
             const result = s._articleViewTypeObj.isFromHome(referrer);
             expect(result).toBe(false);
@@ -335,17 +325,10 @@ describe('articleViewType()', () => {
         });
 
         it('should return the right event name if referrer is of type: Taboola', () => {
-            isFromInternalMock.mockReturnValue(true);
             isFromTaboolaMock.mockReturnValue(true);
             let result = s._articleViewTypeObj.getViewTypeByReferrer();
             expect(result).toBe('event102');
 
-            isFromInternalMock.mockReturnValue(false);
-            isFromTaboolaMock.mockReturnValue(true);
-            result = s._articleViewTypeObj.getViewTypeByReferrer();
-            expect(result).not.toBe('event102');
-
-            isFromInternalMock.mockReturnValue(true);
             isFromTaboolaMock.mockReturnValue(false);
             result = s._articleViewTypeObj.getViewTypeByReferrer();
             expect(result).not.toBe('event102');
@@ -521,7 +504,7 @@ describe('articleViewType()', () => {
         let addEventMock;
 
         beforeEach(() => {
-            isArticlePageMock = jest.spyOn(s._articleViewTypeObj, 'isArticlePage');
+            isArticlePageMock = jest.spyOn(s._utils, 'isArticlePage');
             getViewTypeByReferrerMock = jest.spyOn(s._articleViewTypeObj, 'getViewTypeByReferrer').mockImplementation();
             getViewTypeByTrackingPropertyMock = jest.spyOn(s._articleViewTypeObj, 'getViewTypeByTrackingProperty').mockImplementation();
             setPageSourceAndAgeForCheckoutMock = jest.spyOn(s._articleViewTypeObj, 'setPageSourceAndAgeForCheckout').mockImplementation();

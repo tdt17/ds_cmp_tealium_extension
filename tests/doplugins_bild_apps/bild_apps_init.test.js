@@ -23,7 +23,6 @@ describe('s._bildAppsInit()', () => {
         s._bildAppsInit(s);
 
         expect(s.usePlugins).toBe(true);
-        expect(s.expectSupplementalData).toBe(false);
         expect(s.eVar61).toBe(window.navigator.userAgent);
     });
 

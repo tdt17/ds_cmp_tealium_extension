@@ -23,6 +23,7 @@ describe('s._bildAppsDoPluginsGlobal()', () => {
 
         s._bildAppsDoPluginsGlobal(s);
 
+        expect(s.expectSupplementalData).toBe(false);
         expect(s.eVar184.length).toBeGreaterThanOrEqual(1);
         expect(s.eVar181.length).toBeGreaterThanOrEqual(1);
         expect(s.eVar185).toBe(window.utag.data.myCW);

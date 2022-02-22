@@ -68,9 +68,6 @@ s._orderViaArticle = function (s) {
 s._bildAppsInit = function (s) {
     s.usePlugins = true;
 
-    //no sdid for A4T
-    s.expectSupplementalData = false; // Force to false;
-
     s.eVar61 = window.navigator.userAgent;
 
     //height & width for iPhones
@@ -83,6 +80,9 @@ s._bildAppsInit = function (s) {
 };
 
 s._bildAppsDoPluginsGlobal = function (s) {
+    //no sdid for A4T
+    s.expectSupplementalData = false; // Force to false;
+
     s.eVar184 = new Date().getHours().toString();
     s.eVar181 = new Date().getMinutes().toString();
     s.eVar185 = window.utag.data.myCW || '';

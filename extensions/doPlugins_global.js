@@ -595,7 +595,6 @@ s._plusDensityObj = {
  */
 s._init = function (s) {
     s.currencyCode = 'EUR';
-    s.expectSupplementalData = false;
     s.myChannels = 0;
     s.usePlugins = true;
 
@@ -605,9 +604,6 @@ s._init = function (s) {
 
     s.trackExternalLinks = true;
     s.eVar61 = window.navigator.userAgent;
-
-    //no sdid for A4T
-    s.expectSupplementalData = false; // Force to false;
 
     //Referrer for link events
     s.referrer = s._utils.getReferrer();
@@ -637,6 +633,9 @@ s._doPluginsGlobal = function (s) {
     s.eVar184 = new Date().getHours().toString();
     s.eVar181 = new Date().getMinutes().toString();
     s.eVar185 = window.utag.data.myCW || '';
+
+    //no sdid for A4T
+    s.expectSupplementalData = false; // Force to false;    
 
     // Some functions are not allowed on the first page view (before consent is given).
     if (!s._utils.isFirstPageView()) {

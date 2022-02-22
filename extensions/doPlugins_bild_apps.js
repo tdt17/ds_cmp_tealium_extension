@@ -95,7 +95,7 @@ s._bildAppsInit = function (s) {
     s._setPageCmsPathWithoutBild(s);
 };
 
-s._bildAppsDoPluginsGlobal = function (s) {
+s.doPlugins = function (s) {
     //no sdid for A4T
     s.expectSupplementalData = false; // Force to false;
 

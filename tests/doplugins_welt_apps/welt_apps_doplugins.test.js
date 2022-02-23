@@ -1,7 +1,7 @@
-const sObject = require('../../extensions/doPlugins_bild_apps');
+const sObject = require('../../extensions/doPlugins_welt_apps');
 const { createWindowMock } = require('../mocks/browserMocks');
 
-describe('s._bildAppsDoPluginsGlobal()', () => {
+describe('s.doPlugins()', () => {
     let s;
 
     beforeEach(() => {
@@ -27,14 +27,6 @@ describe('s._bildAppsDoPluginsGlobal()', () => {
         expect(s.eVar184.length).toBeGreaterThanOrEqual(1);
         expect(s.eVar181.length).toBeGreaterThanOrEqual(1);
         expect(s.eVar185).toBe(window.utag.data.myCW);
-    });
-
-    it('should call s._orderViaArticle()', () => {
-        const orderViaArticleMock = jest.spyOn(s, '_orderViaArticle');
-
-        s.doPlugins(s);
-
-        expect(orderViaArticleMock).toHaveBeenCalledWith(s);
     });
 
 });

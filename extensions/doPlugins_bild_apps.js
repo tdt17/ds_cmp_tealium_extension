@@ -1,5 +1,5 @@
 /* eslint-disable */
-const s = window.s || window.cmp || {};
+const s = window.s || {};
 
 s._utils = {
     isDocTypeArticle: function () {

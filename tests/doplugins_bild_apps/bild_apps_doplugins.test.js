@@ -1,7 +1,7 @@
 const sObject = require('../../extensions/doPlugins_bild_apps');
 const { createWindowMock } = require('../mocks/browserMocks');
 
-describe('s._bildAppsDoPluginsGlobal()', () => {
+describe('s.doPlugins()', () => {
     let s;
 
     beforeEach(() => {

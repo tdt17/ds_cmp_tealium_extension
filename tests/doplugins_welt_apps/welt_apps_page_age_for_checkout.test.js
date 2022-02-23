@@ -22,6 +22,7 @@ describe('_setPageAgeForCheckout', () => {
 
     it('should store the screen age publication (utag.data.screen_agePublication) in the utag_main cookie if doc type is article', () => {
         window.utag.data.adobe_docType = 'article';
+        window.utag.data.screen_agePublication = 'test_screen_agePublication';
 
         s._setPageAgeForCheckout();
 

@@ -1,5 +1,5 @@
 /* eslint-disable */
-const s = window.s || window.cmp || {};
+const s = window.s || {};
 
 s._setPageAgeForCheckout = function () {
     if (typeof window.utag.data.adobe_docType !== 'undefined' && window.utag.data.adobe_docType === 'article') {

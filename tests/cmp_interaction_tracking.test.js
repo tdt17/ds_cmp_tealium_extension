@@ -348,19 +348,19 @@ describe('CMP Interaction Tracking', () => {
 
         it('should set utag_main_cmp_after cookie to true when user gives consent', () => {
             cmpInteractionTracking.onMessageChoiceSelect('test', 11);
-            expect(window.utag.loader.SC).toHaveBeenCalledWith('utag_main', {'cmp_after': 'true;exp-session'});
+            expect(window.utag.loader.SC).toHaveBeenCalledWith('utag_main', {'cmp_after': 'true'});
             expect(window.utag.data['cp.utag_main_cmp_after']).toBe(true);
         });
 
         it('should set utag_main_cmp_after cookie to true when user declines consent', () => {
             cmpInteractionTracking.onMessageChoiceSelect('test', 13);
-            expect(window.utag.loader.SC).toHaveBeenCalledWith('utag_main', {'cmp_after': 'true;exp-session'});
+            expect(window.utag.loader.SC).toHaveBeenCalledWith('utag_main', {'cmp_after': 'true'});
             expect(window.utag.data['cp.utag_main_cmp_after']).toBe(true);
         });
 
         it('should NOT set utag_main_cmp_after cookie when user opens privacy manager', () => {
             cmpInteractionTracking.onMessageChoiceSelect('test', 12);
-            expect(window.utag.loader.SC).not.toHaveBeenCalledWith('utag_main', {'cmp_after': 'true;exp-session'});
+            expect(window.utag.loader.SC).not.toHaveBeenCalledWith('utag_main', {'cmp_after': 'true'});
             expect(window.utag.data['cp.utag_main_cmp_after']).toBeUndefined();
         });
 
@@ -441,7 +441,7 @@ describe('CMP Interaction Tracking', () => {
 
         it('should set utag_main_cmp_after cookie to true', () => {
             cmpInteractionTracking.onPrivacyManagerAction('SAVE_AND_EXIT');
-            expect(window.utag.loader.SC).toHaveBeenCalledWith('utag_main', {'cmp_after': 'true;exp-session'});
+            expect(window.utag.loader.SC).toHaveBeenCalledWith('utag_main', {'cmp_after': 'true'});
             expect(window.utag.data['cp.utag_main_cmp_after']).toBe(true);
         });
     });

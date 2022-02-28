@@ -43,7 +43,7 @@ s.doPlugins = function (s) {
 
     s.eVar184 = new Date().getHours().toString();
     s.eVar181 = new Date().getMinutes().toString();
-    s.eVar185 = window.utag.data.myCW;
+    s.eVar185 = window.utag.data.myCW || '';
 
 };
 

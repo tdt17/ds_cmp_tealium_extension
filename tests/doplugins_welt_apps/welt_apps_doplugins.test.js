@@ -20,10 +20,16 @@ describe('s.doPlugins()', () => {
 
     it('should assign values to eVar 181, 184 and 185', () => {
         window.utag.data.myCW = 'test_cw';
-
+        s.version = 'test_version';
+        s.visitor = {
+            version: 'test_visitor_version'
+        };
+        
         s.doPlugins(s);
 
         expect(s.expectSupplementalData).toBe(false);
+        expect(s.eVar63).toBe(s.version);
+        expect(s.eVar64).toBe(s.visitor.version);
         expect(s.eVar184.length).toBeGreaterThanOrEqual(1);
         expect(s.eVar181.length).toBeGreaterThanOrEqual(1);
         expect(s.eVar185).toBe(window.utag.data.myCW);

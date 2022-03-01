@@ -82,6 +82,7 @@ s._setPageCmsPathWithoutBild = function (s) {
 
 s._bildAppsInit = function (s) {
     s.usePlugins = true;
+    s.currencyCode = 'EUR';
 
     s.eVar61 = window.navigator.userAgent;
 
@@ -98,6 +99,9 @@ s._bildAppsInit = function (s) {
 s.doPlugins = function (s) {
     //no sdid for A4T
     s.expectSupplementalData = false; // Force to false;
+
+    s.eVar63 = s.version;
+    s.eVar64 = s.visitor && s.visitor.version ? s.visitor.version : undefined;
 
     s.eVar184 = new Date().getHours().toString();
     s.eVar181 = new Date().getMinutes().toString();

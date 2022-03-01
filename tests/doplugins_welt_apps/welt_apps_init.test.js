@@ -46,12 +46,4 @@ describe('s._weltAppsInit()', () => {
         expect(setPageAgeForCheckoutMock).toHaveBeenCalled();
     });
 
-    it('should call s._setPageSection()', () => {
-        const setPageSectionMock = jest.spyOn(s, '_setPageSection');
-
-        s._weltAppsInit(s);
-
-        expect(setPageSectionMock).toHaveBeenCalledWith(s);
-    });
-
 });

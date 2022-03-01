@@ -24,7 +24,7 @@ describe('s.doPlugins()', () => {
         s.visitor = {
             version: 'test_visitor_version'
         };
-        
+
         s.doPlugins(s);
 
         expect(s.expectSupplementalData).toBe(false);
@@ -33,6 +33,14 @@ describe('s.doPlugins()', () => {
         expect(s.eVar184.length).toBeGreaterThanOrEqual(1);
         expect(s.eVar181.length).toBeGreaterThanOrEqual(1);
         expect(s.eVar185).toBe(window.utag.data.myCW);
+    });
+
+    it('should call s._setPageSection()', () => {
+        const setPageSectionMock = jest.spyOn(s, '_setPageSection');
+
+        s.doPlugins(s);
+
+        expect(setPageSectionMock).toHaveBeenCalledWith(s);
     });
 
 });

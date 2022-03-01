@@ -24,6 +24,7 @@ describe('s._weltAppsInit()', () => {
         s._weltAppsInit(s);
 
         expect(s.usePlugins).toBe(true);
+        expect(s.currencyCode).toBe('EUR');
         expect(s.eVar61).toBe(window.navigator.userAgent);
     });
 

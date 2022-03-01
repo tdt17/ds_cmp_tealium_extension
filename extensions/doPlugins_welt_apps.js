@@ -35,7 +35,7 @@ s._weltAppsInit = function (s) {
     }
 
     s._setPageAgeForCheckout();
-    s._setPageSection(s);
+    
 };
 
 s.doPlugins = function (s) {
@@ -49,6 +49,7 @@ s.doPlugins = function (s) {
     s.eVar181 = new Date().getMinutes().toString();
     s.eVar185 = window.utag.data.myCW || '';
 
+    s._setPageSection(s);
 };
 
 // Evaluate runtime environment

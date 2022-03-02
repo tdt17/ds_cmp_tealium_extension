@@ -120,10 +120,21 @@
         }
     }
 
+    function setCookieDomain () {
+        if (urlObject.hostname.lenght() == 3){
+            //cookieDomain must be without m., www. or subdomain
+            const hostName = urlObject.hostname.split('.').shift();
+            cookieDomain = hostname.join('.')
+        }
+
     function onUserConsent() {
         if (window.cmp && window.cmp._scrollDepthObj) {
             // Calling setScrollDepthProperties() will make the current page trackable as the _ppvPreviousPage of the next page view.
             window.cmp._scrollDepthObj.setScrollDepthProperties(window.cmp);
+        }
+        if (window.cmp. && window.cmp._campaignObj) {
+            window.cmp._campaignObj.getAdobeCamaign();
+            document.cookie = "s_ev0=" + utag.data.adobe_campaign + ";" + ";path=/;domain=" + cookieDomain; 
         }
     }
 

@@ -122,9 +122,9 @@
 
     function setCookieDomain () {
         if (urlObject.hostname.lenght() == 3){
-            //cookieDomain must be without m., www. or subdomain
-            const hostName = urlObject.hostname.split('.').shift();
-            cookieDomain = hostname.join('.')
+            //cookieDomain must be without m., www. or subdomain (.bild.de, .welt.de)
+            const hostCookie = urlObject.hostname.split('.');
+            cookieDomain = hostCookie.slice(1).join('.');
         }
 
     function onUserConsent() {

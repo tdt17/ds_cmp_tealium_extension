@@ -121,11 +121,14 @@
     }
 
     function setCookieDomain () {
-        if (urlObject.hostname.lenght() == 3){
+        if (location.hostname){
             //cookieDomain must be without m., www. or subdomain (.bild.de, .welt.de)
-            const hostCookie = urlObject.hostname.split('.');
+            const hostCookie = location.hostname.split('.');
+
+            if(hostCookie.length == 3){
             cookieDomain = hostCookie.slice(1).join('.');
-        }
+            }
+        }  
 
     function onUserConsent() {
         if (window.cmp && window.cmp._scrollDepthObj) {

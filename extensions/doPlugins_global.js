@@ -355,7 +355,6 @@ s._setKameleoonTracking = function (s) {
  * Homepage teaser tracking
  */
 s._setTeaserTrackingEvars = function (s) {
-    const pageType = s._utils.getDocType();
 
     // Home teaser tracking evars
     if (sessionStorage.getItem('home_teaser_info')

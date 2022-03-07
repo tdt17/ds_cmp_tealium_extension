@@ -95,7 +95,7 @@
     }
 
     function isAfterCMP() {
-        const hasCMPAfterCookie = window.utag.data['cp.utag_main_cmp_after'] ? (window.utag.data['cp.utag_main_cmp_after'].toLowerCase() === 'true') : false;
+        const hasCMPAfterCookie = window.utag.data['cp.utag_main_cmp_after'] ? (window.utag.data['cp.utag_main_cmp_after'] === 'true') : false;
         const defaultVendorList = 'adobe_cmp,';
         const hasVendors = !!window.utag.data.consentedVendors && window.utag.data.consentedVendors !== defaultVendorList;
 
@@ -142,7 +142,7 @@
 
             if (eventType === 11 || eventType === 13) {
                 window.utag.loader.SC('utag_main', {'cmp_after': 'true'});
-                window.utag.data['cp.utag_main_cmp_after'] = true;
+                window.utag.data['cp.utag_main_cmp_after'] = 'true';
             }
 
             if (eventType === 11) {
@@ -157,7 +157,7 @@
             exportedFunctions.sendLinkEvent(window.utag.data['cmp_events']);
             // Set cookie for first page view tracking.
             window.utag.loader.SC('utag_main', {'cmp_after': 'true'});
-            window.utag.data['cp.utag_main_cmp_after'] = true;
+            window.utag.data['cp.utag_main_cmp_after'] = 'true';
         }
     }
 

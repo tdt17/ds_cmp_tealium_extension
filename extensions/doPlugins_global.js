@@ -355,11 +355,10 @@ s._setKameleoonTracking = function (s) {
  * Homepage teaser tracking
  */
 s._setTeaserTrackingEvars = function (s) {
-    const pageType = s._utils.getDocType();
 
     // Home teaser tracking evars
     if (sessionStorage.getItem('home_teaser_info')
-        && (pageType === 'article' || pageType === 'media')
+        && (s._utils.isArticlePage())
         && (s._ppvPreviousPage.indexOf('home') === 0 || s._ppvPreviousPage.indexOf('section') === 0)) {
         s.eVar66 = sessionStorage.getItem('home_teaser_info');
         s.eVar92 = sessionStorage.getItem('home_teaser_info') + '|' + s.eVar1;

@@ -360,9 +360,12 @@ s._setTeaserTrackingEvars = function (s) {
     if (sessionStorage.getItem('home_teaser_info')
         && (s._utils.isArticlePage())
         && (s._ppvPreviousPage.indexOf('home') === 0 || s._ppvPreviousPage.indexOf('section') === 0)) {
-        s.eVar66 = sessionStorage.getItem('home_teaser_info');
-        s.eVar92 = sessionStorage.getItem('home_teaser_info') + '|' + s.eVar1;
-        s.eVar97 = sessionStorage.getItem('teaser_block');
+        //s.eVar66 = sessionStorage.getItem('home_teaser_info');
+        s.eVar66 = window.utag.data['cp.utag_main_hti'];
+        //s.eVar92 = sessionStorage.getItem('home_teaser_info') + '|' + s.eVar1;
+        s.eVar66 = window.utag.data['cp.utag_main_hti'] + '|' + s.eVar1;        
+        //s.eVar97 = sessionStorage.getItem('teaser_block');
+        s.eVar66 = window.utag.data['cp.utag_main_tb'];
     }
 };
 

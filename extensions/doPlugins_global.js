@@ -361,8 +361,8 @@ s._setTeaserTrackingEvars = function (s) {
         && (s._utils.isArticlePage())
         && (s._ppvPreviousPage.indexOf('home') === 0 || s._ppvPreviousPage.indexOf('section') === 0)) {
         s.eVar66 = window.utag.data['cp.utag_main_hti'];
-        s.eVar66 = window.utag.data['cp.utag_main_hti'] + '|' + s.eVar1;        
-        s.eVar66 = window.utag.data['cp.utag_main_tb'];
+        s.eVar92 = window.utag.data['cp.utag_main_hti'] + '|' + s.eVar1;        
+        s.eVar97 = window.utag.data['cp.utag_main_tb'];
     }
 };
 

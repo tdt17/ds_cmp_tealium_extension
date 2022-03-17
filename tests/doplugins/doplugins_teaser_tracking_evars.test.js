@@ -15,12 +15,13 @@ describe('_setTeaserTrackingEvars', () => {
 
     afterEach(() => {
         jest.restoreAllMocks();
-        sessionStorage.removeItem('home_teaser_info');
+        window.utag.loader.SC('utag_main', {'hti':'', 'tb':''}, 'session');
     });
 
     it('should set eVar66, eVar92 and eVar97 if session storage contains home_teaser_info, page type is article or video and _ppvPreviousPage contains home', () => {
-        sessionStorage.setItem('home_teaser_info', 'test_home_teaser_info');
-        sessionStorage.setItem('teaser_block', 'test_teaser_block');
+
+        window.utag.loader.SC('utag_main', {'hti':'test_home_teaser_info', 'tb':'test_teaser_block'}, 'session');
+
         window.utag.data.page_type = 'article';
         s._ppvPreviousPage = 'home';
         s.eVar1 = 'test';

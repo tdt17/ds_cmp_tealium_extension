@@ -357,7 +357,8 @@ s._setKameleoonTracking = function (s) {
 s._setTeaserTrackingEvars = function (s) {
 
     // Home teaser tracking evars
-    if (sessionStorage.getItem('home_teaser_info')
+    //if (sessionStorage.getItem('home_teaser_info')
+    if (window.utag.data['cp.utag_main_hti'] 
         && (s._utils.isArticlePage())
         && (s._ppvPreviousPage.indexOf('home') === 0 || s._ppvPreviousPage.indexOf('section') === 0)) {
         s.eVar66 = window.utag.data['cp.utag_main_hti'];

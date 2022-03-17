@@ -19,7 +19,7 @@ describe('_setTeaserTrackingEvars', () => {
 
     });
 
-    it('should set eVar66, eVar92 and eVar97 if utag_main cookie contains home_teaser_info, page type is article or video and _ppvPreviousPage contains home', () => {
+    it('clicks at Teaser at BILD HOMEPAGE should set home_teaser_info and teaser_block in utag_main Cookie. Then eVars66/92/92 are set for the following Page View of all article types and event22', () => {
 
         window.utag.data['cp.utag_main_hti'] = 'test_home_teaser_info';
         window.utag.data['cp.utag_main_tb'] = 'test_teaser_block';
@@ -35,7 +35,7 @@ describe('_setTeaserTrackingEvars', () => {
 
     });
 
-    it('should not set eVar66 and eVar92 if  utag_main cookie does not contain home_teaser_info, page type is not article or video or _ppvPreviousPage does not contain home', () => {
+    it('home_teaser_info and teaser_block are only set with event22 at all article types ', () => {
         s._setTeaserTrackingEvars(s);
 
         expect(s.eVar66).toBeUndefined();

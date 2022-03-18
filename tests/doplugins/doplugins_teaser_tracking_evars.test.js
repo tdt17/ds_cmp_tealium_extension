@@ -19,7 +19,7 @@ describe('_setTeaserTrackingEvars', () => {
 
     });
 
-    it('clicks at Teaser at BILD HOMEPAGE should set home_teaser_info and teaser_block in utag_main Cookie. Then eVars66/92/92 are set for the following Page View of all article types and event22', () => {
+    it('should set a campaign value to certain eVars if a user has opened an article through a homepage teaser', () => {
 
         window.utag.data['cp.utag_main_hti'] = 'test_home_teaser_info';
         window.utag.data['cp.utag_main_tb'] = 'test_teaser_block';
@@ -35,10 +35,11 @@ describe('_setTeaserTrackingEvars', () => {
 
     });
 
-    it('home_teaser_info and teaser_block are only set with event22 at all article types ', () => {
+    it('should not set campaign values on non article pages', () => {
         s._setTeaserTrackingEvars(s);
 
         expect(s.eVar66).toBeUndefined();
         expect(s.eVar92).toBeUndefined();
+        expect(s.eVar97).toBeUndefined();        
     });
 });

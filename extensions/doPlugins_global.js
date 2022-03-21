@@ -840,7 +840,7 @@ s._doPluginsGlobal = function (s) {
     // Some functions are not allowed on the first page view (before consent is given).
     if (!s._utils.isFirstPageView()) {
         s._scrollDepthObj.setScrollDepthProperties(s);
-        s._homeTeaserTrackingObj.trackTeaserClick();
+        s._homeTeaserTrackingObj.trackTeaserClick(s);
     }
 
     s._eventsObj.setEventsProperty(s);

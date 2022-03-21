@@ -11,16 +11,18 @@ describe('_setTeaserTrackingEvars', () => {
 
         // Provide a fresh copy of the s-object for each test.
         s = { ...sObject };
+
     });
 
     afterEach(() => {
         jest.restoreAllMocks();
-        sessionStorage.removeItem('home_teaser_info');
+
     });
 
-    it('should set eVar66, eVar92 and eVar97 if session storage contains home_teaser_info, page type is article or video and _ppvPreviousPage contains home', () => {
-        sessionStorage.setItem('home_teaser_info', 'test_home_teaser_info');
-        sessionStorage.setItem('teaser_block', 'test_teaser_block');
+    it('should set a campaign value to certain eVars if a user has opened an article through a homepage teaser', () => {
+
+        window.utag.data['cp.utag_main_hti'] = 'test_home_teaser_info';
+        window.utag.data['cp.utag_main_tb'] = 'test_teaser_block';
         window.utag.data.page_type = 'article';
         s._ppvPreviousPage = 'home';
         s.eVar1 = 'test';
@@ -33,10 +35,11 @@ describe('_setTeaserTrackingEvars', () => {
 
     });
 
-    it('should not set eVar66 and eVar92 if session storage does not contain home_teaser_info, page type is not article or video or _ppvPreviousPage does not contain home', () => {
+    it('should not set campaign values on non article pages', () => {
         s._setTeaserTrackingEvars(s);
 
         expect(s.eVar66).toBeUndefined();
         expect(s.eVar92).toBeUndefined();
+        expect(s.eVar97).toBeUndefined();        
     });
 });

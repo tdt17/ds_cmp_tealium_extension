@@ -1,3 +1,16 @@
+function _getAdobeObject() {
+    let adobeObject = {};
+    // Check if global variables contain the Adobe object or something else.
+    if (window.s && window.s.version) {
+        adobeObject = window.s;
+    } else if (window.cmp && window.cmp.version) {
+        adobeObject = window.cmp;
+    }
+    return adobeObject;
+}
+
+const s = _getAdobeObject();
+
 const _myCW = {
 
     leadingZero: function(num) {
@@ -13,13 +26,13 @@ const _myCW = {
 
     getYear: function(date) {
         const dow = date.getDate() - date.getDay() + 1;
-        const newDate = new Date(date.setDate(dow))
+        const newDate = new Date(date.setDate(dow));
         return newDate.getFullYear().toString();
     },
 
     getDayOfWeek: function(date, day) {
         const dow = date.getDate() - date.getDay() + day;
-        const newDate = new Date(date.setDate(dow))
+        const newDate = new Date(date.setDate(dow));
         return this.leadingZero(newDate.getMonth()+1) + '.' + this.leadingZero(newDate.getDate());
     },
 
@@ -36,5 +49,9 @@ const _myCW = {
 
 };
 
-module.exports = _myCW;
-//b.myCW = _myCW.getCW(new Date())
+if (typeof exports === 'object') {
+    // Export s-object with all functions for unit testing
+    module.exports = _myCW;
+} 
+
+s._myCW = _myCW;

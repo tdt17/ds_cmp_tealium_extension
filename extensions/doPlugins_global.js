@@ -173,14 +173,6 @@ s._articleViewTypeObj = {
         return referringDomain === 'm.bild.de';
     },
 
-    isFromBildHomeWithTaboola: function (referrer, search) {
-        return referrer.indexOf('https://trc.taboola.com/bilddedt/') !== -1 && search.indexOf('wtmc=') !== -1;
-    },
-
-    isFromBildMobileHomeWithTaboola: function (referrer, search) {
-        return referrer.indexOf('https://trc.taboola.com/bilddemw/') !== -1 && search.indexOf('wtmc=') !== -1;
-    },
-
     getTrackingValue: function () {
         let trackingValue;
         try {
@@ -190,12 +182,6 @@ s._articleViewTypeObj = {
             trackingValue = '';
         }
         return trackingValue;
-    },
-
-    isFromTaboola: function () {
-        const trackingValue = this.getTrackingValue();
-
-        return trackingValue.indexOf('kooperation.reco.taboola.') !== -1;
     },
 
     isFromArticleWithReco: function () {
@@ -243,8 +229,6 @@ s._articleViewTypeObj = {
             articleViewType = 'event24'; //Search
         } else if (this.isFromSocial(referrer)) {
             articleViewType = 'event25'; //Social
-        } else if (this.isFromTaboola()) {
-            articleViewType = 'event102'; //Taboola Todo: deprecated
         } else if (this.isFromArticleWithReco()) {
             articleViewType = 'event102'; //Outbrain
         } else if (this.isFromInternal(referringDomain, domain) && this.isFromHome(referrer)) {
@@ -253,14 +237,10 @@ s._articleViewTypeObj = {
             articleViewType = 'event23'; //Other Internal
         } else if (this.isFromBild(referringDomain) && this.isFromHome(referrer)) {
             articleViewType = 'event76'; // Bild home
-        } else if (this.isFromBildHomeWithTaboola(referrer, search)) {
-            articleViewType = 'event76'; // Bild home Todo: deprecated
         } else if (this.isFromHomeDesktopWithReco(referrer, search)) {
             articleViewType = 'event76'; // Bild home
         } else if (this.isFromBildMobile(referringDomain) && this.isFromHome(referrer)) {
             articleViewType = 'event77'; // Bild mobile home
-        } else if (this.isFromBildMobileHomeWithTaboola(referrer, search)) {
-            articleViewType = 'event77'; // Bild mobile home Todo: deprecated
         } else if (this.isFromHomeMobileWithReco()) {
             articleViewType = 'event77'; // Bild mobile home
         }
@@ -383,8 +363,17 @@ s._homeTeaserTrackingObj = {
             && (s._ppvPreviousPage.indexOf('home') === 0 || s._ppvPreviousPage.indexOf('section') === 0);
     },
 
+    getTeaserBrandFromCID: function () {
+        let teaserBrand = '';
+
+        return teaserBrand;
+    },
+
     getTrackingValue: function () {
-        return window.utag.data['cp.utag_main_hti'] || window.utag.data['qp.dtp'];
+        //
+        // cid=kooperation.home.outbrain.[platform].[widgetID].[brand]
+        const teaserBrand = this.getTeaserBrandFromCID();
+        return window.utag.data['cp.utag_main_hti'] || teaserBrand;
     },
 
     setEvars: function (s) {
@@ -392,13 +381,19 @@ s._homeTeaserTrackingObj = {
         if (trackingValue) {
             s.eVar66 = trackingValue;
             s.eVar92 = trackingValue + '|' + s.eVar1;
-            s.eVar97 = window.utag.data['cp.utag_main_tb'];
+            s.eVar97 = window.utag.data['cp.utag_main_tb'] || '';
         }
+    },
+
+    deleteTrackingValuesFromCookie: function() {
+        window.utag.loader.SC('utag_main', {'hti': '' + ';exp-session'});
+        window.utag.loader.SC('utag_main', {'tb': '' + ';exp-session'});
     },
 
     trackTeaserClick: function (s) {
         if (this.isArticleAfterHome(s)) {
             this.setEvars(s);
+            this.deleteTrackingValuesFromCookie();
         }
     }
 };

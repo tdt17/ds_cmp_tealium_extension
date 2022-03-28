@@ -58,17 +58,32 @@ describe('_homeTeaserTrackingObj', () => {
         });
     });
 
+    describe('getTeaserBrandFromCID', () => {
+        it('should return the brand segment of the CID string', function () {
+            const brandSegment = 'any-brand';
+            window.utag.data['qp.utag_main_cid'] = 'kooperation.reco.outbrain.free.welt.desktop.AR_2.' + brandSegment;
+            const result = s._homeTeaserTrackingObj.getTeaserBrandFromCID();
+            expect(result).toBe(brandSegment);
+        });
+
+        it('should return an empty string if there is no CID value', function () {
+            const result = s._homeTeaserTrackingObj.getTeaserBrandFromCID();
+            expect(result).toBe('');
+        });
+    });
+
     describe('getTrackingValue', () => {
-        it('should return the hti value which is stored in utag_main cookie', function () {
+        it('should return the hti value from utag_main cookie if available', function () {
             window.utag.data['cp.utag_main_hti'] = 'any-hti-value';
             const result = s._homeTeaserTrackingObj.getTrackingValue();
             expect(result).toBe(window.utag.data['cp.utag_main_hti']);
         });
 
-        it('should return the dtp value which is available as a URL query parameter', function () {
-            window.utag.data['qp.dtp'] = 'any-dtp-value';
+        it('should return the teaser brand segment from CID URL query parameter if available', function () {
+            const anyTeaserBrand = 'any-brand';
+            jest.spyOn(s._homeTeaserTrackingObj, 'getTrackingValue').mockImplementation().mockReturnValue(anyTeaserBrand);
             const result = s._homeTeaserTrackingObj.getTrackingValue();
-            expect(result).toBe(window.utag.data['qp.dtp']);
+            expect(result).toBe(anyTeaserBrand);
         });
     });
 
@@ -85,25 +100,38 @@ describe('_homeTeaserTrackingObj', () => {
         });
     });
 
+    describe('deleteTrackingValuesFromCookie()', ()=>{
+        it('should delete the hti and tb values of the utag_main cookie', function () {
+            window.utag.loader.SC = jest.fn();
+            s._homeTeaserTrackingObj.deleteTrackingValuesFromCookie();
+            expect(window.utag.loader.SC).toHaveBeenNthCalledWith(1, 'utag_main', {'hti': ';exp-session'});
+            expect(window.utag.loader.SC).toHaveBeenNthCalledWith(2, 'utag_main', {'tb': ';exp-session'});
+        });
+    });
+
     describe('trackTeaserClick', () => {
         let isArticleAfterHomeMock;
         let setEvarsMock;
+        let deleteTrackingValuesFromCookieMock;
 
         beforeEach(() => {
             isArticleAfterHomeMock = jest.spyOn(s._homeTeaserTrackingObj, 'isArticleAfterHome').mockImplementation();
             setEvarsMock = jest.spyOn(s._homeTeaserTrackingObj, 'setEvars').mockImplementation();
+            deleteTrackingValuesFromCookieMock = jest.spyOn(s._homeTeaserTrackingObj, 'deleteTrackingValuesFromCookie').mockImplementation();
         });
 
-        it('should call this.setEvars(s) if article page was visited after home or section page', function () {
+        it('should call this.setEvars(s) and this.deleteTrackingValuesFromCookie() if article page was visited after home or section page', function () {
             isArticleAfterHomeMock.mockReturnValue(true);
             s._homeTeaserTrackingObj.trackTeaserClick(s);
             expect(setEvarsMock).toHaveBeenCalledTimes(1);
+            expect(deleteTrackingValuesFromCookieMock).toHaveBeenCalledTimes(1);
         });
 
-        it('should NOT call this.setEvars(s) if article page was NOT visited after home or section page', function () {
+        it('should NOT call this.setEvars(s) or this.deleteTrackingValuesFromCookie() if article page was NOT visited after home or section page', function () {
             isArticleAfterHomeMock.mockReturnValue(false);
             s._homeTeaserTrackingObj.trackTeaserClick(s);
             expect(setEvarsMock).not.toHaveBeenCalled();
+            expect(deleteTrackingValuesFromCookieMock).not.toHaveBeenCalled();
         });
     });
 });

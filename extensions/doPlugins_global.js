@@ -374,7 +374,7 @@ s._homeTeaserTrackingObj = {
 
         const cid = window.utag.data['qp.utag_main_cid'];
         if (cid) {
-            teaserBrand = cid.split('.').pop();
+            teaserBrand = cid.split('.').pop(); //eg. ?cid=kooperation.home.outbrain.desktop.stylebook
         }
 
         return teaserBrand;

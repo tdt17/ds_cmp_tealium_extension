@@ -364,9 +364,17 @@ s._setKameleoonTracking = function (s) {
  * Homepage teaser tracking
  */
 s._homeTeaserTrackingObj = {
+    isAfterHomeByCookie: function (s) {
+        return (s._ppvPreviousPage.indexOf('home') === 0 || s._ppvPreviousPage.indexOf('section') === 0);
+    },
+
+    isAfterHomeByCID: function () {
+        const cid = window.utag.data['qp.cid'];
+        return cid ? cid.includes('.home.') : false;
+    },
+
     isArticleAfterHome: function (s) {
-        return s._utils.isArticlePage()
-            && (s._ppvPreviousPage.indexOf('home') === 0 || s._ppvPreviousPage.indexOf('section') === 0);
+        return s._utils.isArticlePage() && (this.isAfterHomeByCookie(s) || this.isAfterHomeByCID());
     },
 
     getTeaserBrandFromCID: function () {

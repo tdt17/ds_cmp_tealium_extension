@@ -227,9 +227,7 @@ s._articleViewTypeObj = {
 
         // Is referrer of same domain?
         if (this.isFromInternal(referringDomain, domain)) {
-            if (this.isFromArticleWithReco()) {
-                articleViewType = 'event102'; //Outbrain
-            } else if (this.isFromHome(referrer)) {
+            if (this.isFromHome(referrer)) {
                 articleViewType = 'event22'; //Home
             } else {
                 articleViewType = 'event23'; //Other Internal
@@ -244,9 +242,11 @@ s._articleViewTypeObj = {
             } else if (this.isFromBildMobile(referringDomain) && this.isFromHome(referrer)) {
                 articleViewType = 'event77'; // Bild mobile home
             } else if (this.isFromHomeDesktopWithReco()) {
-                articleViewType = 'event76'; // Bild home
+                articleViewType = 'event76'; // Bild home desktop recommendation
             } else if (this.isFromHomeMobileWithReco()) {
-                articleViewType = 'event77'; // Bild mobile home
+                articleViewType = 'event77'; // Bild home mobile recommendation
+            } else if (this.isFromArticleWithReco()) {
+                articleViewType = 'event102'; // Article recommendation
             }
         }
 

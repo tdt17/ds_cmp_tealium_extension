@@ -304,17 +304,6 @@ describe('articleViewType()', () => {
             expect(result).toBe('event27');
         });
 
-        it('should return event102 if type is Reco/Outbrain', () => {
-            isFromInternalMock.mockReturnValue(true);
-            isFromArticleWithRecoMock.mockReturnValue(true);
-            let result = s._articleViewTypeObj.getViewTypeByReferrer();
-            expect(result).toBe('event102');
-
-            isFromArticleWithRecoMock.mockReturnValue(false);
-            result = s._articleViewTypeObj.getViewTypeByReferrer();
-            expect(result).not.toBe('event102');
-        });
-
         it('should return event22 if type is Home', () => {
             isFromInternalMock.mockReturnValue(true);
             isFromHomeMock.mockReturnValue(true);
@@ -375,6 +364,16 @@ describe('articleViewType()', () => {
             isFromHomeMobileWithRecoMock.mockReturnValue(true);
             const result = s._articleViewTypeObj.getViewTypeByReferrer();
             expect(result).toBe('event77');
+        });
+
+        it('should return event102 if type is Reco/Outbrain', () => {
+            isFromArticleWithRecoMock.mockReturnValue(true);
+            let result = s._articleViewTypeObj.getViewTypeByReferrer();
+            expect(result).toBe('event102');
+
+            isFromArticleWithRecoMock.mockReturnValue(false);
+            result = s._articleViewTypeObj.getViewTypeByReferrer();
+            expect(result).not.toBe('event102');
         });
     });
 

@@ -307,7 +307,7 @@ describe('CMP Interaction Tracking', () => {
             cmpInteractionTracking.onMessageChoiceSelect('any-id', 11);
             expect(window.utag.data).toEqual({
                 'cmp_events': 'cm_accept_all',
-                'cp.utag_main_cmp_after': true
+                'cp.utag_main_cmp_after': 'true'
             });
         });
 
@@ -332,7 +332,7 @@ describe('CMP Interaction Tracking', () => {
             cmpInteractionTracking.onMessageChoiceSelect('any-id', 13);
             expect(window.utag.data).toEqual({
                 'cmp_events': 'cm_reject_all',
-                'cp.utag_main_cmp_after': true
+                'cp.utag_main_cmp_after': 'true'
             });
         });
 
@@ -349,13 +349,13 @@ describe('CMP Interaction Tracking', () => {
         it('should set utag_main_cmp_after cookie to true when user gives consent', () => {
             cmpInteractionTracking.onMessageChoiceSelect('test', 11);
             expect(window.utag.loader.SC).toHaveBeenCalledWith('utag_main', {'cmp_after': 'true'});
-            expect(window.utag.data['cp.utag_main_cmp_after']).toBe(true);
+            expect(window.utag.data['cp.utag_main_cmp_after']).toBe('true');
         });
 
         it('should set utag_main_cmp_after cookie to true when user declines consent', () => {
             cmpInteractionTracking.onMessageChoiceSelect('test', 13);
             expect(window.utag.loader.SC).toHaveBeenCalledWith('utag_main', {'cmp_after': 'true'});
-            expect(window.utag.data['cp.utag_main_cmp_after']).toBe(true);
+            expect(window.utag.data['cp.utag_main_cmp_after']).toBe('true');
         });
 
         it('should NOT set utag_main_cmp_after cookie when user opens privacy manager', () => {
@@ -386,7 +386,7 @@ describe('CMP Interaction Tracking', () => {
 
             expect(window.utag.data).toEqual({
                 'cmp_events': 'pm_save_and_exit',
-                'cp.utag_main_cmp_after': true
+                'cp.utag_main_cmp_after': 'true'
             });
         });
 
@@ -399,7 +399,7 @@ describe('CMP Interaction Tracking', () => {
             cmpInteractionTracking.onPrivacyManagerAction('ACCEPT_ALL');
             expect(window.utag.data).toEqual({
                 'cmp_events': 'pm_accept_all',
-                'cp.utag_main_cmp_after': true
+                'cp.utag_main_cmp_after': 'true'
             });
         });
 
@@ -412,7 +412,7 @@ describe('CMP Interaction Tracking', () => {
             cmpInteractionTracking.onPrivacyManagerAction({purposeConsent: 'all'});
             expect(window.utag.data).toEqual({
                 'cmp_events': 'pm_accept_all',
-                'cp.utag_main_cmp_after': true
+                'cp.utag_main_cmp_after': 'true'
             });
         });
 
@@ -425,7 +425,7 @@ describe('CMP Interaction Tracking', () => {
             cmpInteractionTracking.onPrivacyManagerAction({purposeConsent: 'any-purpose-consent'});
             expect(window.utag.data).toEqual({
                 'cmp_events': 'pm_save_and_exit',
-                'cp.utag_main_cmp_after': true
+                'cp.utag_main_cmp_after': 'true'
             });
         });
 
@@ -442,7 +442,7 @@ describe('CMP Interaction Tracking', () => {
         it('should set utag_main_cmp_after cookie to true', () => {
             cmpInteractionTracking.onPrivacyManagerAction('SAVE_AND_EXIT');
             expect(window.utag.loader.SC).toHaveBeenCalledWith('utag_main', {'cmp_after': 'true'});
-            expect(window.utag.data['cp.utag_main_cmp_after']).toBe(true);
+            expect(window.utag.data['cp.utag_main_cmp_after']).toBe('true');
         });
     });
 

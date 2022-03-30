@@ -35,6 +35,14 @@ describe('s.doPlugins()', () => {
         expect(s.eVar185).toBe(window.utag.data.myCW);
     });
 
+    it('should call s._bildAppsPageNameObj.setAppsPageName()', () => {
+        const setAppsPageNameMock = jest.spyOn(s._bildAppsPageNameObj, 'setAppsPageName');
+
+        s.doPlugins(s);
+
+        expect(setAppsPageNameMock).toHaveBeenCalledWith(s);
+    });
+
     it('should call s._orderViaArticle()', () => {
         const orderViaArticleMock = jest.spyOn(s, '_orderViaArticle');
 

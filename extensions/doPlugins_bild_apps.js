@@ -92,7 +92,6 @@ s._bildAppsInit = function (s) {
     }
 
     s._setPageAgeForCheckout();
-    s._bildAppsPageNameObj.setAppsPageName(s);
     s._setPageCmsPathWithoutBild(s);
 };
 
@@ -107,6 +106,7 @@ s.doPlugins = function (s) {
     s.eVar181 = new Date().getMinutes().toString();
     s.eVar185 = window.utag.data.myCW || '';
 
+    s._bildAppsPageNameObj.setAppsPageName(s);
     s._orderViaArticle(s);
 
 };

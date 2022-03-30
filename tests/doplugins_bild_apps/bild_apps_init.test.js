@@ -45,14 +45,6 @@ describe('s._bildAppsInit()', () => {
         expect(setPageAgeForCheckoutMock).toHaveBeenCalled();
     });
 
-    it('should call s._bildAppsPageNameObj.setAppsPageName()', () => {
-        const setAppsPageNameMock = jest.spyOn(s._bildAppsPageNameObj, 'setAppsPageName');
-
-        s._bildAppsInit(s);
-
-        expect(setAppsPageNameMock).toHaveBeenCalledWith(s);
-    });
-
     it('should call s._setPageCmsPathWithoutBild()', () => {
         const setPageCmsPathWithoutBildMock = jest.spyOn(s, '_setPageCmsPathWithoutBild');
 

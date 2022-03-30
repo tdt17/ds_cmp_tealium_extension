@@ -61,7 +61,7 @@ describe('_homeTeaserTrackingObj', () => {
     describe('getTeaserBrandFromCID', () => {
         it('should return the brand segment of the CID string', function () {
             const brandSegment = 'any-brand';
-            window.utag.data['qp.utag_main_cid'] = 'kooperation.reco.outbrain.free.welt.desktop.AR_2.' + brandSegment;
+            window.utag.data['qp.cid'] = 'kooperation.reco.outbrain.free.welt.desktop.AR_2.' + brandSegment;
             const result = s._homeTeaserTrackingObj.getTeaserBrandFromCID();
             expect(result).toBe(brandSegment);
         });

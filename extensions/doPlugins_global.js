@@ -372,7 +372,7 @@ s._homeTeaserTrackingObj = {
     getTeaserBrandFromCID: function () {
         let teaserBrand = '';
 
-        const cid = window.utag.data['qp.utag_main_cid'];
+        const cid = window.utag.data['qp.cid'];
         if (cid) {
             //return last segment of cid (kooperation.home.outbrain.desktop.AR_2.stylebook)
             teaserBrand = cid.split('.').pop();

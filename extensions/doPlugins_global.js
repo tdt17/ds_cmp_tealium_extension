@@ -370,12 +370,11 @@ s._homeTeaserTrackingObj = {
 
     isAfterHomeByCID: function () {
         const cid = window.utag.data['qp.cid'];
-        // return !!(cid && cid.includes('.home.'));
         return cid ? cid.includes('.home.') : false;
     },
 
     isArticleAfterHome: function (s) {
-        return s._utils.isArticlePage() && (this.isAfterHomeByCookie() || this.isAfterHomeByCID());
+        return s._utils.isArticlePage() && (this.isAfterHomeByCookie(s) || this.isAfterHomeByCID());
     },
 
     getTeaserBrandFromCID: function () {

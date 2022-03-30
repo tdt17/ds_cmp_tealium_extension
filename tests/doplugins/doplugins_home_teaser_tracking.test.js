@@ -61,35 +61,93 @@ describe('_homeTeaserTrackingObj', () => {
         });
     });
 
-    describe('isArticleAfterHome', () => {
-        let isArticlePageMock;
-        let isAfterHomeByCookieMock;
-        let isAfterHomeByCIDMock;
-        beforeEach(() => {
-            isArticlePageMock = jest.spyOn(s._utils, 'isArticlePage').mockImplementation();
-            isAfterHomeByCookieMock = jest.spyOn(s._homeTeaserTrackingObj, 'isAfterHomeByCookie').mockImplementation();
-            isAfterHomeByCIDMock = jest.spyOn(s._homeTeaserTrackingObj, 'isAfterHomeByCID').mockImplementation();
+    describe('isAfterHomeByReferrer', () => {
+        it('should return TRUE if referrer is Bild homepage desktop', () => {
+            window.document.referrer = 'https://www.bild.de/';
+            const result = s._homeTeaserTrackingObj.isAfterHomeByReferrer();
+            expect(result).toBe(true);
         });
 
-        it('should return TRUE if current page is of type article and previous page is of type home', () => {
-            isArticlePageMock.mockReturnValue(true);
+        it('should return TRUE if referrer is Bild homepage mobile', () => {
+            window.document.referrer = 'https://m.bild.de/';
+            const result = s._homeTeaserTrackingObj.isAfterHomeByReferrer();
+            expect(result).toBe(true);
+        });
+
+        it('should return FALSE if referrer is NOT A Bild homepage', () => {
+            let result = s._homeTeaserTrackingObj.isAfterHomeByReferrer();
+            expect(result).toBe(false);
+
+            window.document.referrer = 'https://www.welt.de/';
+
+            result = s._homeTeaserTrackingObj.isAfterHomeByReferrer();
+            expect(result).toBe(false);
+        });
+
+    });
+
+    describe('isAfterHome', () => {
+        let isAfterHomeByCookieMock;
+        let isAfterHomeByCIDMock;
+        let isAfterHomeByReferrerMock;
+        beforeEach(() => {
+            isAfterHomeByCookieMock = jest.spyOn(s._homeTeaserTrackingObj, 'isAfterHomeByCookie').mockImplementation();
+            isAfterHomeByCIDMock = jest.spyOn(s._homeTeaserTrackingObj, 'isAfterHomeByCID').mockImplementation();
+            isAfterHomeByReferrerMock = jest.spyOn(s._homeTeaserTrackingObj, 'isAfterHomeByReferrer').mockImplementation();
+        });
+
+        it('should return TRUE if previous page is of type home', () => {
             isAfterHomeByCookieMock.mockReturnValue(true);
             isAfterHomeByCIDMock.mockReturnValue(false);
+            isAfterHomeByReferrerMock.mockReturnValue(false);
 
-            let result = s._homeTeaserTrackingObj.isArticleAfterHome(s);
+            let result = s._homeTeaserTrackingObj.isAfterHome(s);
             expect(result).toBe(true);
 
             isAfterHomeByCookieMock.mockReturnValue(false);
             isAfterHomeByCIDMock.mockReturnValue(true);
+            isAfterHomeByReferrerMock.mockReturnValue(false);
 
-            result = s._homeTeaserTrackingObj.isArticleAfterHome(s);
+            result = s._homeTeaserTrackingObj.isAfterHome(s);
+            expect(result).toBe(true);
+
+            isAfterHomeByCookieMock.mockReturnValue(false);
+            isAfterHomeByCIDMock.mockReturnValue(false);
+            isAfterHomeByReferrerMock.mockReturnValue(true);
+
+            result = s._homeTeaserTrackingObj.isAfterHome(s);
+            expect(result).toBe(true);
+        });
+
+        it('should return FALSE if previous page is NOT of type home', () => {
+            isAfterHomeByCookieMock.mockReturnValue(false);
+            isAfterHomeByCIDMock.mockReturnValue(false);
+            isAfterHomeByReferrerMock.mockReturnValue(false);
+
+            let result = s._homeTeaserTrackingObj.isAfterHome(s);
+            expect(result).toBe(false);
+        });
+    });
+
+    describe('isArticleAfterHome', () => {
+        let isArticlePageMock;
+        let isAfterHomeMock;
+        beforeEach(() => {
+            isArticlePageMock = jest.spyOn(s._utils, 'isArticlePage').mockImplementation();
+            isAfterHomeMock = jest.spyOn(s._homeTeaserTrackingObj, 'isAfterHome').mockImplementation();
+        });
+
+        it('should return TRUE if current page is of type article and previous page is of type home', () => {
+            isArticlePageMock.mockReturnValue(true);
+            isAfterHomeMock.mockReturnValue(true);
+
+            let result = s._homeTeaserTrackingObj.isArticleAfterHome(s);
             expect(result).toBe(true);
         });
 
         it('should return FALSE if current page is NOT of type article', () => {
             isArticlePageMock.mockReturnValue(false);
-            isAfterHomeByCookieMock.mockReturnValue(true);
-            isAfterHomeByCIDMock.mockReturnValue(true);
+            isAfterHomeMock.mockReturnValue(true);
 
             let result = s._homeTeaserTrackingObj.isArticleAfterHome(s);
             expect(result).toBe(false);
@@ -97,8 +155,7 @@ describe('_homeTeaserTrackingObj', () => {
 
         it('should return FALSE if current page is of type article and previous page is NOT of type home', () => {
             isArticlePageMock.mockReturnValue(true);
-            isAfterHomeByCookieMock.mockReturnValue(false);
-            isAfterHomeByCIDMock.mockReturnValue(false);
+            isAfterHomeMock.mockReturnValue(false);
 
             let result = s._homeTeaserTrackingObj.isArticleAfterHome(s);
             expect(result).toBe(false);
@@ -131,6 +188,12 @@ describe('_homeTeaserTrackingObj', () => {
             jest.spyOn(s._homeTeaserTrackingObj, 'getTrackingValue').mockImplementation().mockReturnValue(anyTeaserBrand);
             const result = s._homeTeaserTrackingObj.getTrackingValue();
             expect(result).toBe(anyTeaserBrand);
+        });
+
+        it('should return the dtp URL query parameter if available', function () {
+            window.utag.data['qp.dtp'] = 'any-dtp-value';
+            const result = s._homeTeaserTrackingObj.getTrackingValue();
+            expect(result).toBe(window.utag.data['qp.dtp']);
         });
     });
 

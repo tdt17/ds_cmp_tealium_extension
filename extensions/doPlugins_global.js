@@ -373,8 +373,17 @@ s._homeTeaserTrackingObj = {
         return cid ? cid.includes('.home.') : false;
     },
 
+    isAfterHomeByReferrer: function () {
+        return window.document.referrer === 'https://www.bild.de/'
+        || window.document.referrer === 'https://m.bild.de/';
+    },
+
+    isAfterHome: function (s) {
+        return this.isAfterHomeByCookie(s) || this.isAfterHomeByCID() || this.isAfterHomeByReferrer();
+    },
+
     isArticleAfterHome: function (s) {
-        return s._utils.isArticlePage() && (this.isAfterHomeByCookie(s) || this.isAfterHomeByCID());
+        return s._utils.isArticlePage() && this.isAfterHome(s);
     },
 
     getTeaserBrandFromCID: function () {
@@ -391,7 +400,7 @@ s._homeTeaserTrackingObj = {
 
     getTrackingValue: function () {
         const teaserBrand = this.getTeaserBrandFromCID();
-        return window.utag.data['cp.utag_main_hti'] || teaserBrand;
+        return  teaserBrand || window.utag.data['cp.utag_main_hti'] || window.utag.data['qp.dtp'];
     },
 
     setEvars: function (s) {

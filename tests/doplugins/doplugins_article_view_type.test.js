@@ -67,6 +67,28 @@ describe('articleViewType()', () => {
         });
     });
 
+    describe('isFromInternal()', function () {
+        it('should return TRUE if referring domain is from the same domain', function () {
+            const anyDomain = 'any-domain.com';
+            const result = s._articleViewTypeObj.isFromInternal(anyDomain, anyDomain);
+            expect(result).toBe(true);
+        });
+
+        it('should return FALSE if referring domain is NOT from the same domain', function () {
+            const anyDomain = 'any-domain.com';
+            const anyOtherDomain = 'any-other-domain.com';
+            const result = s._articleViewTypeObj.isFromInternal(anyDomain, anyOtherDomain);
+            expect(result).toBe(false);
+        });
+
+        it('should return TRUE if referring domain is from sub domain', function () {
+            const anyDomain = 'any-domain.de';
+            const referringDomain = `any-sub-domain.${anyDomain}`;
+            const result = s._articleViewTypeObj.isFromInternal(referringDomain, anyDomain);
+            expect(result).toBe(true);
+        });
+    });
+
     describe('isFromBild()', () => {
         it('should return TRUE if referrer is www.bild.de', () => {
             const referringDomain = 'www.bild.de';
@@ -92,74 +114,6 @@ describe('articleViewType()', () => {
             const referringDomain = 'any-domain.de';
             const result = s._articleViewTypeObj.isFromBildMobile(referringDomain);
             expect(result).toBe(false);
-        });
-    });
-
-    describe('isFromBildHomeWithTaboola()', () => {
-        it('should return TRUE if referrer is https://trc.taboola.com/bilddedt/ and location.search has param wtmc', () => {
-            const referrer = 'https://trc.taboola.com/bilddedt/any-path';
-            const search = '?wtmc=any-value';
-            const result = s._articleViewTypeObj.isFromBildHomeWithTaboola(referrer, search);
-            expect(result).toBe(true);
-        });
-
-        it('should NOT return TRUE if referrer is NOT https://trc.taboola.com/bilddedt/ and location.search has param wtmc', () => {
-            const referrer = 'https://any-domain.com';
-            const search = '?wtmc=any-value';
-            const result = s._articleViewTypeObj.isFromBildHomeWithTaboola(referrer, search);
-            expect(result).toBe(false);
-        });
-
-        it('should NOT return TRUE if referrer is https://trc.taboola.com/bilddedt/ and location.search has NOT param wtmc', () => {
-            const referrer = 'https://trc.taboola.com/bilddedt/any-path';
-            const search = '?any-param=any-value';
-            const result = s._articleViewTypeObj.isFromBildHomeWithTaboola(referrer, search);
-            expect(result).toBe(false);
-        });
-    });
-
-    describe('isFromBildMobileHomeWithTaboola()', () => {
-        it('should return TRUE if referrer is https://trc.taboola.com/bilddemw/ and location.search has param wtmc', () => {
-            const referrer = 'https://trc.taboola.com/bilddemw/any-path';
-            const search = '?wtmc=any-value';
-            const result = s._articleViewTypeObj.isFromBildMobileHomeWithTaboola(referrer, search);
-            expect(result).toBe(true);
-        });
-
-        it('should NOT return TRUE if referrer is NOT https://trc.taboola.com/bilddemw/ and location.search has param wtmc', () => {
-            const referrer = 'https://any-domain.com';
-            const search = '?wtmc=any-value';
-            const result = s._articleViewTypeObj.isFromBildMobileHomeWithTaboola(referrer, search);
-            expect(result).toBe(false);
-        });
-
-        it('should NOT return TRUE if referrer is https://trc.taboola.com/bilddemw/ and location.search has NOT param wtmc', () => {
-            const referrer = 'https://trc.taboola.com/bilddemw/any-path';
-            const search = '?any-param=any-value';
-            const result = s._articleViewTypeObj.isFromBildMobileHomeWithTaboola(referrer, search);
-            expect(result).toBe(false);
-        });
-    });
-
-    describe('isFromInternal()', function () {
-        it('should return TRUE if referring domain is from the same domain', function () {
-            const anyDomain = 'any-domain.com';
-            const result = s._articleViewTypeObj.isFromInternal(anyDomain, anyDomain);
-            expect(result).toBe(true);
-        });
-
-        it('should return FALSE if referring domain is NOT from the same domain', function () {
-            const anyDomain = 'any-domain.com';
-            const anyOtherDomain = 'any-other-domain.com';
-            const result = s._articleViewTypeObj.isFromInternal(anyDomain, anyOtherDomain);
-            expect(result).toBe(false);
-        });
-
-        it('should return TRUE if referring domain is from sub domain', function () {
-            const anyDomain = 'any-domain.de';
-            const referringDomain = `any-sub-domain.${anyDomain}`;
-            const result = s._articleViewTypeObj.isFromInternal(referringDomain, anyDomain);
-            expect(result).toBe(true);
         });
     });
 
@@ -219,27 +173,65 @@ describe('articleViewType()', () => {
         });
     });
 
-    describe('isFromTaboola()', () => {
+    describe('isFromArticleWithReco()', () => {
         let getTrackingValueMock;
         beforeEach(() => {
             getTrackingValueMock = jest.spyOn(s._articleViewTypeObj, 'getTrackingValue');
         });
 
-        afterEach(() => {
-            jest.restoreAllMocks();
-        });
-
-        it('should return TRUE if referrer is from Taboola context', function () {
-            const taboolaTrackingValue = 'kooperation.reco.taboola.any-text';
-            getTrackingValueMock.mockReturnValue(taboolaTrackingValue);
-            const result = s._articleViewTypeObj.isFromTaboola();
+        it('should return TRUE if article URL contains recommendation parameter', function () {
+            const outbrainTrackingValue = 'kooperation.article.outbrain.anything';
+            getTrackingValueMock.mockReturnValue(outbrainTrackingValue);
+            const result = s._articleViewTypeObj.isFromArticleWithReco();
             expect(result).toBe(true);
         });
 
-        it('should return FALSE if referrer is NOT from Taboola context', function () {
+        it('should return FALSE if article URL NOT contains recommendation parameter', function () {
             const anyTrackingValue = 'any-tracking-value';
             getTrackingValueMock.mockReturnValue(anyTrackingValue);
-            const result = s._articleViewTypeObj.isFromTaboola();
+            const result = s._articleViewTypeObj.isFromArticleWithReco();
+            expect(result).toBe(false);
+        });
+    });
+
+    describe('isFromHomeDesktopWithReco()', () => {
+        let getTrackingValueMock;
+        beforeEach(() => {
+            getTrackingValueMock = jest.spyOn(s._articleViewTypeObj, 'getTrackingValue');
+        });
+
+        it('should return TRUE if article URL contains recommendation parameter (home/desktop)', function () {
+            const outbrainTrackingValue = 'kooperation.home.outbrain.desktop';
+            getTrackingValueMock.mockReturnValue(outbrainTrackingValue);
+            const result = s._articleViewTypeObj.isFromHomeDesktopWithReco();
+            expect(result).toBe(true);
+        });
+
+        it('should return FALSE if article URL NOT contains recommendation parameter (home/desktop)', function () {
+            const anyTrackingValue = 'any-tracking-value';
+            getTrackingValueMock.mockReturnValue(anyTrackingValue);
+            const result = s._articleViewTypeObj.isFromHomeDesktopWithReco();
+            expect(result).toBe(false);
+        });
+    });
+
+    describe('isFromHomeMobileWithReco()', () => {
+        let getTrackingValueMock;
+        beforeEach(() => {
+            getTrackingValueMock = jest.spyOn(s._articleViewTypeObj, 'getTrackingValue');
+        });
+
+        it('should return TRUE if article URL contains recommendation parameter (home/desktop)', function () {
+            const outbrainTrackingValue = 'kooperation.home.outbrain.mobile';
+            getTrackingValueMock.mockReturnValue(outbrainTrackingValue);
+            const result = s._articleViewTypeObj.isFromHomeMobileWithReco();
+            expect(result).toBe(true);
+        });
+
+        it('should return FALSE if article URL NOT contains recommendation parameter (home/desktop)', function () {
+            const anyTrackingValue = 'any-tracking-value';
+            getTrackingValueMock.mockReturnValue(anyTrackingValue);
+            const result = s._articleViewTypeObj.isFromHomeMobileWithReco();
             expect(result).toBe(false);
         });
     });
@@ -268,11 +260,11 @@ describe('articleViewType()', () => {
         let isFromSocialMock;
         let isFromInternalMock;
         let isFromHomeMock;
-        let isFromTaboolaMock;
+        let isFromArticleWithRecoMock;
         let isFromBildMock;
-        let isFromBildHomeWithTaboolaMock;
+        let isFromHomeDesktopWithRecoMock;
         let isFromBildMobileMock;
-        let isFromBildHomeMobileWithTaboolaMock;
+        let isFromHomeMobileWithRecoMock;
         let getReferrerFromLocationHashMock;
         let getDomainFromURLStringMock;
 
@@ -281,11 +273,11 @@ describe('articleViewType()', () => {
             isFromSocialMock = jest.spyOn(s._articleViewTypeObj, 'isFromSocial').mockReturnValue(false);
             isFromInternalMock = jest.spyOn(s._articleViewTypeObj, 'isFromInternal').mockReturnValue(false);
             isFromHomeMock = jest.spyOn(s._articleViewTypeObj, 'isFromHome').mockReturnValue(false);
-            isFromTaboolaMock = jest.spyOn(s._articleViewTypeObj, 'isFromTaboola').mockReturnValue(false);
+            isFromArticleWithRecoMock = jest.spyOn(s._articleViewTypeObj, 'isFromArticleWithReco').mockReturnValue(false);
             isFromBildMock = jest.spyOn(s._articleViewTypeObj, 'isFromBild').mockReturnValue(false);
             isFromBildMobileMock = jest.spyOn(s._articleViewTypeObj, 'isFromBildMobile').mockReturnValue(false);
-            isFromBildHomeWithTaboolaMock = jest.spyOn(s._articleViewTypeObj, 'isFromBildHomeWithTaboola').mockReturnValue(false);
-            isFromBildHomeMobileWithTaboolaMock = jest.spyOn(s._articleViewTypeObj, 'isFromBildMobileHomeWithTaboola').mockReturnValue(false);
+            isFromHomeDesktopWithRecoMock = jest.spyOn(s._articleViewTypeObj, 'isFromHomeDesktopWithReco').mockReturnValue(false);
+            isFromHomeMobileWithRecoMock = jest.spyOn(s._articleViewTypeObj, 'isFromHomeMobileWithReco').mockReturnValue(false);
             getReferrerFromLocationHashMock = jest.spyOn(s._articleViewTypeObj, 'getReferrerFromLocationHash').mockReturnValue('');
             getDomainFromURLStringMock = jest.spyOn(s._utils, 'getDomainFromURLString').mockReturnValue('');
         });
@@ -307,34 +299,23 @@ describe('articleViewType()', () => {
             expect(getDomainFromURLStringMock).toHaveBeenCalledWith(window.document.referrer);
         });
 
-        it('should return the right event name if referrer is of type: Other External', () => {
+        it('should return event27 if type is Other External', () => {
             const result = s._articleViewTypeObj.getViewTypeByReferrer();
             expect(result).toBe('event27');
         });
 
-        it('should return the right event name if referrer is of type: Search', () => {
-            isFromSearchMock.mockReturnValue(true);
-            const result = s._articleViewTypeObj.getViewTypeByReferrer();
-            expect(result).toBe('event24');
-        });
-
-        it('should return the right event name if referrer is of type: Social', () => {
-            isFromSocialMock.mockReturnValue(true);
-            const result = s._articleViewTypeObj.getViewTypeByReferrer();
-            expect(result).toBe('event25');
-        });
-
-        it('should return the right event name if referrer is of type: Taboola', () => {
-            isFromTaboolaMock.mockReturnValue(true);
+        it('should return event102 if type is Reco/Outbrain', () => {
+            isFromInternalMock.mockReturnValue(true);
+            isFromArticleWithRecoMock.mockReturnValue(true);
             let result = s._articleViewTypeObj.getViewTypeByReferrer();
             expect(result).toBe('event102');
 
-            isFromTaboolaMock.mockReturnValue(false);
+            isFromArticleWithRecoMock.mockReturnValue(false);
             result = s._articleViewTypeObj.getViewTypeByReferrer();
             expect(result).not.toBe('event102');
         });
 
-        it('should return the right event name if referrer is of type: Home', () => {
+        it('should return event22 if type is Home', () => {
             isFromInternalMock.mockReturnValue(true);
             isFromHomeMock.mockReturnValue(true);
             let result = s._articleViewTypeObj.getViewTypeByReferrer();
@@ -351,34 +332,47 @@ describe('articleViewType()', () => {
             expect(result).not.toBe('event22');
         });
 
-        it('should return the right event name if referrer is of type: Other Internal', () => {
+        it('should return event23 if type is Other Internal', () => {
             isFromInternalMock.mockReturnValue(true);
             const result = s._articleViewTypeObj.getViewTypeByReferrer();
             expect(result).toBe('event23');
         });
 
-        it('should return the right event name if referrer is of type: Bild Homepage', () => {
+        it('should return event24 if referrer is of type Search', () => {
+            isFromSearchMock.mockReturnValue(true);
+            const result = s._articleViewTypeObj.getViewTypeByReferrer();
+            expect(result).toBe('event24');
+        });
+
+        it('should return event25 if referrer is of type Social', () => {
+            isFromSocialMock.mockReturnValue(true);
+            const result = s._articleViewTypeObj.getViewTypeByReferrer();
+            expect(result).toBe('event25');
+        });
+
+
+        it('should return event76 if referrer is the Bild homepage and current domain is not *.bild.de', () => {
             isFromBildMock.mockReturnValue(true);
             isFromHomeMock.mockReturnValue(true);
             const result = s._articleViewTypeObj.getViewTypeByReferrer();
             expect(result).toBe('event76');
         });
 
-        it('should return the right event name if referrer is of type: Bild Homepage', () => {
-            isFromBildHomeWithTaboolaMock.mockReturnValue(true);
+        it('should return event76 if referrer is homepage recommendation teaser (desktop)', () => {
+            isFromHomeDesktopWithRecoMock.mockReturnValue(true);
             const result = s._articleViewTypeObj.getViewTypeByReferrer();
             expect(result).toBe('event76');
         });
 
-        it('should return the right event name if referrer is of type: Bild Mobile Homepage', () => {
+        it('should return event77 if referrer is the Bild mobile homepage', () => {
             isFromBildMobileMock.mockReturnValue(true);
             isFromHomeMock.mockReturnValue(true);
             const result = s._articleViewTypeObj.getViewTypeByReferrer();
             expect(result).toBe('event77');
         });
 
-        it('should return the right event name if referrer is of type: Bild Mobile Homepage', () => {
-            isFromBildHomeMobileWithTaboolaMock.mockReturnValue(true);
+        it('should return event77 if referrer is homepage recommendation teaser (desktop)', () => {
+            isFromHomeMobileWithRecoMock.mockReturnValue(true);
             const result = s._articleViewTypeObj.getViewTypeByReferrer();
             expect(result).toBe('event77');
         });

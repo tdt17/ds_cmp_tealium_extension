@@ -173,14 +173,6 @@ s._articleViewTypeObj = {
         return referringDomain === 'm.bild.de';
     },
 
-    isFromBildHomeWithTaboola: function (referrer, search) {
-        return referrer.indexOf('https://trc.taboola.com/bilddedt/') !== -1 && search.indexOf('wtmc=') !== -1;
-    },
-
-    isFromBildMobileHomeWithTaboola: function (referrer, search) {
-        return referrer.indexOf('https://trc.taboola.com/bilddemw/') !== -1 && search.indexOf('wtmc=') !== -1;
-    },
-
     getTrackingValue: function () {
         let trackingValue;
         try {
@@ -192,10 +184,21 @@ s._articleViewTypeObj = {
         return trackingValue;
     },
 
-    isFromTaboola: function () {
+    isFromArticleWithReco: function () {
         const trackingValue = this.getTrackingValue();
 
-        return trackingValue.indexOf('kooperation.reco.taboola.') !== -1;
+        return trackingValue.includes('kooperation.article.outbrain.');
+    },
+
+    isFromHomeDesktopWithReco: function () {
+        const trackingValue = this.getTrackingValue();
+
+        return trackingValue.includes('kooperation.home.outbrain.desktop');
+    },
+
+    isFromHomeMobileWithReco: function () {
+        const trackingValue = this.getTrackingValue();
+        return trackingValue.includes('kooperation.home.outbrain.mobile');
     },
 
     isValidURL: function (urlString) {
@@ -220,27 +223,33 @@ s._articleViewTypeObj = {
         const referrer = this.getReferrerFromLocationHash() || window.document.referrer;
         const referringDomain = s._utils.getDomainFromURLString(referrer);
         const domain = window.document.domain;
-        const search = window.location.search;
         let articleViewType = 'event27'; //Other External
-        if (this.isFromSearch(referringDomain)) {
-            articleViewType = 'event24'; //Search
-        } else if (this.isFromSocial(referrer)) {
-            articleViewType = 'event25'; //Social
-        } else if (this.isFromTaboola()) {
-            articleViewType = 'event102'; //Taboola
-        } else if (this.isFromInternal(referringDomain, domain) && this.isFromHome(referrer)) {
-            articleViewType = 'event22'; //Home
-        } else if (this.isFromInternal(referringDomain, domain)) {
-            articleViewType = 'event23'; //Other Internal
-        } else if (this.isFromBild(referringDomain) && this.isFromHome(referrer)) {
-            articleViewType = 'event76'; // Bild home
-        } else if (this.isFromBildHomeWithTaboola(referrer, search)) {
-            articleViewType = 'event76'; // Bild home
-        } else if (this.isFromBildMobile(referringDomain) && this.isFromHome(referrer)) {
-            articleViewType = 'event77'; // Bild mobile home
-        } else if (this.isFromBildMobileHomeWithTaboola(referrer, search)) {
-            articleViewType = 'event77'; // Bild mobile home
+
+        // Is referrer of same domain?
+        if (this.isFromInternal(referringDomain, domain)) {
+            if (this.isFromArticleWithReco()) {
+                articleViewType = 'event102'; //Outbrain
+            } else if (this.isFromHome(referrer)) {
+                articleViewType = 'event22'; //Home
+            } else {
+                articleViewType = 'event23'; //Other Internal
+            }
+        } else {
+            if (this.isFromSearch(referringDomain)) {
+                articleViewType = 'event24'; //Search
+            } else if (this.isFromSocial(referrer)) {
+                articleViewType = 'event25'; //Social
+            } else if (this.isFromBild(referringDomain) && this.isFromHome(referrer)) {
+                articleViewType = 'event76'; // Bild home
+            } else if (this.isFromBildMobile(referringDomain) && this.isFromHome(referrer)) {
+                articleViewType = 'event77'; // Bild mobile home
+            } else if (this.isFromHomeDesktopWithReco()) {
+                articleViewType = 'event76'; // Bild home
+            } else if (this.isFromHomeMobileWithReco()) {
+                articleViewType = 'event77'; // Bild mobile home
+            }
         }
+
         return articleViewType;
     },
 
@@ -354,18 +363,51 @@ s._setKameleoonTracking = function (s) {
 /**
  * Homepage teaser tracking
  */
-s._setTeaserTrackingEvars = function (s) {
+s._homeTeaserTrackingObj = {
+    isArticleAfterHome: function (s) {
+        return s._utils.isArticlePage()
+            && (s._ppvPreviousPage.indexOf('home') === 0 || s._ppvPreviousPage.indexOf('section') === 0);
+    },
 
-    // Home teaser tracking evars
-    //if (sessionStorage.getItem('home_teaser_info')
-    if (window.utag.data['cp.utag_main_hti'] 
-        && (s._utils.isArticlePage())
-        && (s._ppvPreviousPage.indexOf('home') === 0 || s._ppvPreviousPage.indexOf('section') === 0)) {
-        s.eVar66 = window.utag.data['cp.utag_main_hti'];
-        s.eVar92 = window.utag.data['cp.utag_main_hti'] + '|' + s.eVar1;        
-        s.eVar97 = window.utag.data['cp.utag_main_tb'];
+    getTeaserBrandFromCID: function () {
+        let teaserBrand = '';
+
+        const cid = window.utag.data['qp.cid'];
+        if (cid) {
+            //return last segment of cid (kooperation.home.outbrain.desktop.AR_2.stylebook)
+            teaserBrand = cid.split('.').pop();
+        }
+
+        return teaserBrand;
+    },
+
+    getTrackingValue: function () {
+        const teaserBrand = this.getTeaserBrandFromCID();
+        return window.utag.data['cp.utag_main_hti'] || teaserBrand;
+    },
+
+    setEvars: function (s) {
+        const trackingValue = this.getTrackingValue();
+        if (trackingValue) {
+            s.eVar66 = trackingValue;
+            s.eVar92 = trackingValue + '|' + s.eVar1;
+            s.eVar97 = window.utag.data['cp.utag_main_tb'] || '';
+        }
+    },
+
+    deleteTrackingValuesFromCookie: function () {
+        window.utag.loader.SC('utag_main', {'hti': '' + ';exp-session'});
+        window.utag.loader.SC('utag_main', {'tb': '' + ';exp-session'});
+    },
+
+    trackTeaserClick: function (s) {
+        if (this.isArticleAfterHome(s)) {
+            this.setEvars(s);
+            this.deleteTrackingValuesFromCookie();
+        }
     }
 };
+
 
 /**
  * Modifying the page name (only for Bild).
@@ -640,7 +682,7 @@ s._doPluginsGlobal = function (s) {
     // Some functions are not allowed on the first page view (before consent is given).
     if (!s._utils.isFirstPageView()) {
         s._scrollDepthObj.setScrollDepthProperties(s);
-        s._setTeaserTrackingEvars(s);
+        s._homeTeaserTrackingObj.trackTeaserClick(s);
     }
 
     s._eventsObj.setEventsProperty(s);

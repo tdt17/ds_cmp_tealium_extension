@@ -219,7 +219,6 @@ s._articleViewTypeObj = {
 
     getInternalType: function (referrer) {
         if (this.isFromHome(referrer)) {
-            s._homeTeaserTrackingObj.setEvars(s);
             return 'event22'; //Home
         } else {
             return 'event23'; //Other Internal
@@ -228,10 +227,8 @@ s._articleViewTypeObj = {
 
     getRecommendationType: function () {
         if (this.isFromHomeDesktopWithReco()) {
-            s._homeTeaserTrackingObj.setEvars(s);
             return 'event76'; // Bild home desktop recommendation
         } else if (this.isFromHomeMobileWithReco()) {
-            s._homeTeaserTrackingObj.setEvars(s);
             return 'event77'; // Bild home mobile recommendation
         } else if (this.isFromArticleWithReco()) {
             return 'event102'; // Article recommendation

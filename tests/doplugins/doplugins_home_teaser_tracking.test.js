@@ -11,155 +11,11 @@ describe('_homeTeaserTrackingObj', () => {
 
         // Provide a fresh copy of the s-object for each test.
         s = {...sObject};
-
     });
 
     afterEach(() => {
         jest.restoreAllMocks();
 
-    });
-
-    describe('isAfterHomeByCookie', () => {
-        it('should return TRUE if previous page is of type home', () => {
-            s._ppvPreviousPage = 'home';
-
-            const result = s._homeTeaserTrackingObj.isAfterHomeByCookie(s);
-            expect(result).toBe(true);
-        });
-
-        it('should return TRUE if previous page is of type section', () => {
-            s._ppvPreviousPage = 'section';
-
-            const result = s._homeTeaserTrackingObj.isAfterHomeByCookie(s);
-            expect(result).toBe(true);
-        });
-
-        it('should return FALSE if previous page is NOT of type home or section', () => {
-            s._ppvPreviousPage = 'video';
-
-            const result = s._homeTeaserTrackingObj.isAfterHomeByCookie(s);
-            expect(result).toBe(false);
-        });
-    });
-
-    describe('isAfterHomeByCID', () => {
-        it('should return TRUE if CID tracking parameter is of type home', () => {
-            window.utag.data['qp.cid'] = 'kooperation.home.outbrain.desktop.AR_2.stylebook';
-
-            const result = s._homeTeaserTrackingObj.isAfterHomeByCID();
-            expect(result).toBe(true);
-        });
-
-        it('should return TRUE if CID tracking parameter is of type home', () => {
-            let result = s._homeTeaserTrackingObj.isAfterHomeByCID();
-            expect(result).toBe(false);
-
-            window.utag.data['qp.cid'] = 'kooperation.article.outbrain.anything';
-
-            result = s._homeTeaserTrackingObj.isAfterHomeByCID();
-            expect(result).toBe(false);
-        });
-    });
-
-    describe('isAfterHomeByReferrer', () => {
-        it('should return TRUE if referrer is Bild homepage desktop', () => {
-            window.document.referrer = 'https://www.bild.de/';
-            const result = s._homeTeaserTrackingObj.isAfterHomeByReferrer();
-            expect(result).toBe(true);
-        });
-
-        it('should return TRUE if referrer is Bild homepage mobile', () => {
-            window.document.referrer = 'https://m.bild.de/';
-            const result = s._homeTeaserTrackingObj.isAfterHomeByReferrer();
-            expect(result).toBe(true);
-        });
-
-        it('should return FALSE if referrer is NOT A Bild homepage', () => {
-            let result = s._homeTeaserTrackingObj.isAfterHomeByReferrer();
-            expect(result).toBe(false);
-
-            window.document.referrer = 'https://www.welt.de/';
-
-            result = s._homeTeaserTrackingObj.isAfterHomeByReferrer();
-            expect(result).toBe(false);
-        });
-
-    });
-
-    describe('isAfterHome', () => {
-        let isAfterHomeByCookieMock;
-        let isAfterHomeByCIDMock;
-        let isAfterHomeByReferrerMock;
-        beforeEach(() => {
-            isAfterHomeByCookieMock = jest.spyOn(s._homeTeaserTrackingObj, 'isAfterHomeByCookie').mockImplementation();
-            isAfterHomeByCIDMock = jest.spyOn(s._homeTeaserTrackingObj, 'isAfterHomeByCID').mockImplementation();
-            isAfterHomeByReferrerMock = jest.spyOn(s._homeTeaserTrackingObj, 'isAfterHomeByReferrer').mockImplementation();
-        });
-
-        it('should return TRUE if previous page is of type home', () => {
-            isAfterHomeByCookieMock.mockReturnValue(true);
-            isAfterHomeByCIDMock.mockReturnValue(false);
-            isAfterHomeByReferrerMock.mockReturnValue(false);
-
-            let result = s._homeTeaserTrackingObj.isAfterHome(s);
-            expect(result).toBe(true);
-
-            isAfterHomeByCookieMock.mockReturnValue(false);
-            isAfterHomeByCIDMock.mockReturnValue(true);
-            isAfterHomeByReferrerMock.mockReturnValue(false);
-
-            result = s._homeTeaserTrackingObj.isAfterHome(s);
-            expect(result).toBe(true);
-
-            isAfterHomeByCookieMock.mockReturnValue(false);
-            isAfterHomeByCIDMock.mockReturnValue(false);
-            isAfterHomeByReferrerMock.mockReturnValue(true);
-
-            result = s._homeTeaserTrackingObj.isAfterHome(s);
-            expect(result).toBe(true);
-        });
-
-        it('should return FALSE if previous page is NOT of type home', () => {
-            isAfterHomeByCookieMock.mockReturnValue(false);
-            isAfterHomeByCIDMock.mockReturnValue(false);
-            isAfterHomeByReferrerMock.mockReturnValue(false);
-
-            let result = s._homeTeaserTrackingObj.isAfterHome(s);
-            expect(result).toBe(false);
-        });
-    });
-
-    describe('isArticleAfterHome', () => {
-        let isArticlePageMock;
-        let isAfterHomeMock;
-        beforeEach(() => {
-            isArticlePageMock = jest.spyOn(s._utils, 'isArticlePage').mockImplementation();
-            isAfterHomeMock = jest.spyOn(s._homeTeaserTrackingObj, 'isAfterHome').mockImplementation();
-        });
-
-        it('should return TRUE if current page is of type article and previous page is of type home', () => {
-            isArticlePageMock.mockReturnValue(true);
-            isAfterHomeMock.mockReturnValue(true);
-
-            let result = s._homeTeaserTrackingObj.isArticleAfterHome(s);
-            expect(result).toBe(true);
-        });
-
-        it('should return FALSE if current page is NOT of type article', () => {
-            isArticlePageMock.mockReturnValue(false);
-            isAfterHomeMock.mockReturnValue(true);
-
-            let result = s._homeTeaserTrackingObj.isArticleAfterHome(s);
-            expect(result).toBe(false);
-        });
-
-        it('should return FALSE if current page is of type article and previous page is NOT of type home', () => {
-            isArticlePageMock.mockReturnValue(true);
-            isAfterHomeMock.mockReturnValue(false);
-
-            let result = s._homeTeaserTrackingObj.isArticleAfterHome(s);
-            expect(result).toBe(false);
-        });
     });
 
     describe('getTeaserBrandFromCID', () => {
@@ -219,26 +75,48 @@ describe('_homeTeaserTrackingObj', () => {
         });
     });
 
+    describe('isArticleViewOfTypeHome()', ()=>{
+        it('should return TRUE if article-view-type is event22 (home)', function () {
+            const result = s._homeTeaserTrackingObj.isArticleViewOfTypeHome('event22');
+            expect(result).toBe(true);
+        });
+
+        it('should return TRUE if article-view-type is event76 (Bild desktop home)', function () {
+            const result = s._homeTeaserTrackingObj.isArticleViewOfTypeHome('event76');
+            expect(result).toBe(true);
+        });
+
+        it('should return TRUE if article-view-type is event77 (Bild mobile home)', function () {
+            const result = s._homeTeaserTrackingObj.isArticleViewOfTypeHome('event77');
+            expect(result).toBe(true);
+        });
+
+        it('should return FALSE if article-view-type is not of type home', function () {
+            const result = s._homeTeaserTrackingObj.isArticleViewOfTypeHome('event123');
+            expect(result).toBe(false);
+        });
+    });
+
     describe('trackTeaserClick', () => {
-        let isArticleAfterHomeMock;
+        let isArticleViewOfTypeHomeMock;
         let setEvarsMock;
         let deleteTrackingValuesFromCookieMock;
 
         beforeEach(() => {
-            isArticleAfterHomeMock = jest.spyOn(s._homeTeaserTrackingObj, 'isArticleAfterHome').mockImplementation();
+            isArticleViewOfTypeHomeMock = jest.spyOn(s._homeTeaserTrackingObj, 'isArticleViewOfTypeHome').mockImplementation();
             setEvarsMock = jest.spyOn(s._homeTeaserTrackingObj, 'setEvars').mockImplementation();
             deleteTrackingValuesFromCookieMock = jest.spyOn(s._homeTeaserTrackingObj, 'deleteTrackingValuesFromCookie').mockImplementation();
         });
 
-        it('should call this.setEvars(s) and this.deleteTrackingValuesFromCookie() if article page was visited after home or section page', function () {
-            isArticleAfterHomeMock.mockReturnValue(true);
+        it('should call this.setEvars(s) and this.deleteTrackingValuesFromCookie() if article-view is of type home', function () {
+            isArticleViewOfTypeHomeMock.mockReturnValue(true);
             s._homeTeaserTrackingObj.trackTeaserClick(s);
             expect(setEvarsMock).toHaveBeenCalledTimes(1);
             expect(deleteTrackingValuesFromCookieMock).toHaveBeenCalledTimes(1);
         });
 
-        it('should NOT call this.setEvars(s) or this.deleteTrackingValuesFromCookie() if article page was NOT visited after home or section page', function () {
-            isArticleAfterHomeMock.mockReturnValue(false);
+        it('should NOT call this.setEvars(s) and this.deleteTrackingValuesFromCookie() if article-view is NOT of type home', function () {
+            isArticleViewOfTypeHomeMock.mockReturnValue(false);
             s._homeTeaserTrackingObj.trackTeaserClick(s);
             expect(setEvarsMock).not.toHaveBeenCalled();
             expect(deleteTrackingValuesFromCookieMock).not.toHaveBeenCalled();

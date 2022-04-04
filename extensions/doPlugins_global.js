@@ -129,7 +129,9 @@ s._articleViewTypeObj = {
     },
 
     // Same domain check including subdomains.
-    isFromInternal: function (referringDomain, domain) {
+    isFromInternal: function (referrer) {
+        const referringDomain = s._utils.getDomainFromURLString(referrer);
+        const domain = window.document.domain;
         const referringDomainSegments = referringDomain.split('.');
         const documentDomainSegments = domain.split('.');
 
@@ -184,6 +186,11 @@ s._articleViewTypeObj = {
         return trackingValue;
     },
 
+    isFromRecommendation: function (referrer) {
+        const referringDomain = s._utils.getDomainFromURLString(referrer);
+        return referringDomain === 'traffic.outbrain.com';
+    },
+
     isFromArticleWithReco: function () {
         const trackingValue = this.getTrackingValue();
 
@@ -210,6 +217,47 @@ s._articleViewTypeObj = {
         return true;
     },
 
+    getInternalType: function (referrer) {
+        if (this.isFromHome(referrer)) {
+            s._homeTeaserTrackingObj.setEvars(s);
+            return 'event22'; //Home
+        } else {
+            return 'event23'; //Other Internal
+        }
+    },
+
+    getRecommendationType: function () {
+        if (this.isFromHomeDesktopWithReco()) {
+            s._homeTeaserTrackingObj.setEvars(s);
+            return 'event76'; // Bild home desktop recommendation
+        } else if (this.isFromHomeMobileWithReco()) {
+            s._homeTeaserTrackingObj.setEvars(s);
+            return 'event77'; // Bild home mobile recommendation
+        } else if (this.isFromArticleWithReco()) {
+            return 'event102'; // Article recommendation
+        } else {
+            return 'event27';
+        }
+    },
+
+    getExternalType: function (referrer) {
+        const referringDomain = s._utils.getDomainFromURLString(referrer);
+
+        if (this.isFromSearch(referringDomain)) {
+            return 'event24'; //Search
+        } else if (this.isFromSocial(referrer)) {
+            return 'event25'; //Social
+        } else if (this.isFromBild(referringDomain) && this.isFromHome(referrer)) {
+            s._homeTeaserTrackingObj.setEvars(s);
+            return 'event76'; // Bild home
+        } else if (this.isFromBildMobile(referringDomain) && this.isFromHome(referrer)) {
+            s._homeTeaserTrackingObj.setEvars(s);
+            return 'event77'; // Bild mobile home
+        } else {
+            return 'event27';
+        }
+    },
+
     getReferrerFromLocationHash: function () {
         let referrerFromHash;
         if (window.location.hash.indexOf('wt_ref') !== -1) {
@@ -221,33 +269,17 @@ s._articleViewTypeObj = {
 
     getViewTypeByReferrer: function () {
         const referrer = this.getReferrerFromLocationHash() || window.document.referrer;
-        const referringDomain = s._utils.getDomainFromURLString(referrer);
-        const domain = window.document.domain;
-        let articleViewType = 'event27'; //Other External
+        let articleViewType;
 
-        // Is referrer of same domain?
-        if (this.isFromInternal(referringDomain, domain)) {
-            if (this.isFromHome(referrer)) {
-                articleViewType = 'event22'; //Home
-            } else {
-                articleViewType = 'event23'; //Other Internal
-            }
+        if (this.isFromInternal(referrer)) {
+            // Referrer is of same domain
+            articleViewType = this.getInternalType(referrer);
+        } else if (this.isFromRecommendation(referrer)) {
+            // Referrer is of recommendation service (Outbrain) domain
+            articleViewType = this.getRecommendationType();
         } else {
-            if (this.isFromSearch(referringDomain)) {
-                articleViewType = 'event24'; //Search
-            } else if (this.isFromSocial(referrer)) {
-                articleViewType = 'event25'; //Social
-            } else if (this.isFromBild(referringDomain) && this.isFromHome(referrer)) {
-                articleViewType = 'event76'; // Bild home
-            } else if (this.isFromBildMobile(referringDomain) && this.isFromHome(referrer)) {
-                articleViewType = 'event77'; // Bild mobile home
-            } else if (this.isFromHomeDesktopWithReco()) {
-                articleViewType = 'event76'; // Bild home desktop recommendation
-            } else if (this.isFromHomeMobileWithReco()) {
-                articleViewType = 'event77'; // Bild home mobile recommendation
-            } else if (this.isFromArticleWithReco()) {
-                articleViewType = 'event102'; // Article recommendation
-            }
+            // Referrer is of any other domain
+            articleViewType = this.getExternalType(referrer);
         }
 
         return articleViewType;
@@ -285,6 +317,7 @@ s._articleViewTypeObj = {
             s._articleViewType = window.document.referrer ? this.getViewTypeByReferrer() : this.getViewTypeByTrackingProperty();
             s.eVar44 = s._articleViewType;
             s._eventsObj.addEvent(s._articleViewType);
+
             this.setPageSourceAndAgeForCheckout(s);
         }
     }
@@ -364,28 +397,6 @@ s._setKameleoonTracking = function (s) {
  * Homepage teaser tracking
  */
 s._homeTeaserTrackingObj = {
-    isAfterHomeByCookie: function (s) {
-        return (s._ppvPreviousPage.indexOf('home') === 0 || s._ppvPreviousPage.indexOf('section') === 0);
-    },
-
-    isAfterHomeByCID: function () {
-        const cid = window.utag.data['qp.cid'];
-        return cid ? cid.includes('.home.') : false;
-    },
-
-    isAfterHomeByReferrer: function () {
-        return window.document.referrer === 'https://www.bild.de/'
-        || window.document.referrer === 'https://m.bild.de/';
-    },
-
-    isAfterHome: function (s) {
-        return this.isAfterHomeByCookie(s) || this.isAfterHomeByCID() || this.isAfterHomeByReferrer();
-    },
-
-    isArticleAfterHome: function (s) {
-        return s._utils.isArticlePage() && this.isAfterHome(s);
-    },
-
     getTeaserBrandFromCID: function () {
         let teaserBrand = '';
 
@@ -400,7 +411,7 @@ s._homeTeaserTrackingObj = {
 
     getTrackingValue: function () {
         const teaserBrand = this.getTeaserBrandFromCID();
-        return  teaserBrand || window.utag.data['cp.utag_main_hti'] || window.utag.data['qp.dtp'];
+        return teaserBrand || window.utag.data['cp.utag_main_hti'] || window.utag.data['qp.dtp'];
     },
 
     setEvars: function (s) {
@@ -417,8 +428,17 @@ s._homeTeaserTrackingObj = {
         window.utag.loader.SC('utag_main', {'tb': '' + ';exp-session'});
     },
 
+    isArticleViewOfTypeHome: function (articleViewType) {
+        const homepageViewTypes = [
+            'event22',
+            'event76',
+            'event77'
+        ];
+        return homepageViewTypes.some(viewType => articleViewType === viewType);
+    },
+
     trackTeaserClick: function (s) {
-        if (this.isArticleAfterHome(s)) {
+        if (this.isArticleViewOfTypeHome(s._articleViewType)) {
             this.setEvars(s);
             this.deleteTrackingValuesFromCookie();
         }

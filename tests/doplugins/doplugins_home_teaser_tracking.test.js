@@ -75,49 +75,27 @@ describe('_homeTeaserTrackingObj', () => {
         });
     });
 
-    describe('isArticleViewOfTypeHome()', ()=>{
-        it('should return TRUE if article-view-type is event22 (home)', function () {
-            const result = s._homeTeaserTrackingObj.isArticleViewOfTypeHome('event22');
-            expect(result).toBe(true);
-        });
-
-        it('should return TRUE if article-view-type is event76 (Bild desktop home)', function () {
-            const result = s._homeTeaserTrackingObj.isArticleViewOfTypeHome('event76');
-            expect(result).toBe(true);
-        });
-
-        it('should return TRUE if article-view-type is event77 (Bild mobile home)', function () {
-            const result = s._homeTeaserTrackingObj.isArticleViewOfTypeHome('event77');
-            expect(result).toBe(true);
-        });
-
-        it('should return FALSE if article-view-type is not of type home', function () {
-            const result = s._homeTeaserTrackingObj.isArticleViewOfTypeHome('event123');
-            expect(result).toBe(false);
-        });
-    });
-
-    describe('trackTeaserClick', () => {
-        let isArticleViewOfTypeHomeMock;
+    describe('setHomeTeaserProperties', () => {
+        let hasHomeTeaserEventMock;
         let setEvarsMock;
         let deleteTrackingValuesFromCookieMock;
 
         beforeEach(() => {
-            isArticleViewOfTypeHomeMock = jest.spyOn(s._homeTeaserTrackingObj, 'isArticleViewOfTypeHome').mockImplementation();
+            hasHomeTeaserEventMock = jest.spyOn(s._eventsObj, 'hasHomeTeaserEvent').mockImplementation();
             setEvarsMock = jest.spyOn(s._homeTeaserTrackingObj, 'setEvars').mockImplementation();
             deleteTrackingValuesFromCookieMock = jest.spyOn(s._homeTeaserTrackingObj, 'deleteTrackingValuesFromCookie').mockImplementation();
         });
 
         it('should call this.setEvars(s) and this.deleteTrackingValuesFromCookie() if article-view is of type home', function () {
-            isArticleViewOfTypeHomeMock.mockReturnValue(true);
-            s._homeTeaserTrackingObj.trackTeaserClick(s);
+            hasHomeTeaserEventMock.mockReturnValue(true);
+            s._homeTeaserTrackingObj.setHomeTeaserProperties(s);
             expect(setEvarsMock).toHaveBeenCalledTimes(1);
             expect(deleteTrackingValuesFromCookieMock).toHaveBeenCalledTimes(1);
         });
 
         it('should NOT call this.setEvars(s) and this.deleteTrackingValuesFromCookie() if article-view is NOT of type home', function () {
-            isArticleViewOfTypeHomeMock.mockReturnValue(false);
-            s._homeTeaserTrackingObj.trackTeaserClick(s);
+            hasHomeTeaserEventMock.mockReturnValue(false);
+            s._homeTeaserTrackingObj.setHomeTeaserProperties(s);
             expect(setEvarsMock).not.toHaveBeenCalled();
             expect(deleteTrackingValuesFromCookieMock).not.toHaveBeenCalled();
         });

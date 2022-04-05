@@ -71,7 +71,7 @@ describe('articleViewType()', () => {
         const anyReferrer = 'https://any-domain.com/any-path';
         let getDomainFromURLStringMock;
 
-        beforeEach(()=>{
+        beforeEach(() => {
             getDomainFromURLStringMock = jest.spyOn(s._utils, 'getDomainFromURLString').mockReturnValue('');
         });
 
@@ -193,7 +193,7 @@ describe('articleViewType()', () => {
         const recommendationDomain = 'traffic.outbrain.com';
         let getDomainFromURLStringMock;
 
-        beforeEach(()=>{
+        beforeEach(() => {
             getDomainFromURLStringMock = jest.spyOn(s._utils, 'getDomainFromURLString').mockReturnValue('');
         });
 
@@ -579,7 +579,7 @@ describe('articleViewType()', () => {
         });
     });
 
-    describe('setViewType()', () => {
+    describe('setArticleViewType()', () => {
         let isArticlePageMock;
         let getViewTypeByReferrerMock;
         let getViewTypeByTrackingPropertyMock;
@@ -601,28 +601,28 @@ describe('articleViewType()', () => {
         it('should evaluate the article-view-type on article pages', function () {
             isArticlePageMock.mockReturnValue(true);
 
-            s._articleViewTypeObj.setViewType(s);
+            s._articleViewTypeObj.setArticleViewType(s);
             expect(getViewTypeByTrackingPropertyMock).toHaveBeenCalled();
         });
 
         it('should NOT evaluate the article-view-type on NON article pages', function () {
             isArticlePageMock.mockReturnValue(false);
 
-            s._articleViewTypeObj.setViewType(s);
+            s._articleViewTypeObj.setArticleViewType(s);
             expect(getViewTypeByTrackingPropertyMock).not.toHaveBeenCalled();
         });
 
         it('should evaluate referrer URL when available to determine article-view-type', function () {
             isArticlePageMock.mockReturnValue(true);
             window.document.referrer = 'any-referrer-url';
-            s._articleViewTypeObj.setViewType(s);
+            s._articleViewTypeObj.setArticleViewType(s);
             expect(getViewTypeByReferrerMock).toHaveBeenCalled();
         });
 
         it('should evaluate tracking URL param when referrer is NOT available', function () {
             isArticlePageMock.mockReturnValue(true);
             window.document.referrer = '';
-            s._articleViewTypeObj.setViewType(s);
+            s._articleViewTypeObj.setArticleViewType(s);
             expect(getViewTypeByTrackingPropertyMock).toHaveBeenCalled();
         });
 
@@ -634,7 +634,7 @@ describe('articleViewType()', () => {
             expect(s._articleViewType).toBeUndefined();
             expect(s.eVar44).toBeUndefined();
 
-            s._articleViewTypeObj.setViewType(s);
+            s._articleViewTypeObj.setArticleViewType(s);
 
             expect(s._articleViewType).toBe(anyViewType);
             expect(s.eVar44).toBe(anyViewType);
@@ -643,7 +643,7 @@ describe('articleViewType()', () => {
         it('should call setPageSourceAndAgeForCheckout() function', function () {
             isArticlePageMock.mockReturnValue(true);
 
-            s._articleViewTypeObj.setViewType(s);
+            s._articleViewTypeObj.setArticleViewType(s);
             expect(setPageSourceAndAgeForCheckoutMock).toHaveBeenCalled();
         });
 
@@ -652,10 +652,30 @@ describe('articleViewType()', () => {
             isArticlePageMock.mockReturnValue(true);
             getViewTypeByTrackingPropertyMock.mockReturnValue(anyViewType);
 
-            s._articleViewTypeObj.setViewType(s);
+            s._articleViewTypeObj.setArticleViewType(s);
 
             expect(addEventMock).toHaveBeenCalledWith(anyViewType);
         });
     });
 
+    describe('setViewTypes', () => {
+        let setPageAfterHomeTypeMock;
+        let setArticleViewTypeMock;
+
+        beforeEach(() => {
+            setPageAfterHomeTypeMock = jest.spyOn(s._articleViewTypeObj, 'setPageAfterHomeType').mockImplementation();
+            setArticleViewTypeMock = jest.spyOn(s._articleViewTypeObj, 'setArticleViewType').mockImplementation();
+        });
+
+        it('should call setPageAfterHomeType(s)', () => {
+            s._articleViewTypeObj.setViewTypes(s);
+            expect(setPageAfterHomeTypeMock).toHaveBeenCalledTimes(1);
+        });
+
+        it('should call setArticleViewType(s)', () => {
+            s._articleViewTypeObj.setViewTypes(s);
+            expect(setArticleViewTypeMock).toHaveBeenCalledTimes(1);
+        });
+
+    });
 });

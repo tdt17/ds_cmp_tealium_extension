@@ -6,7 +6,7 @@ describe('s.doPlugins()', () => {
     let setEventsPropertyMock;
     let setScrollDepthPropertiesMock;
     let firstPageViewMock;
-    let trackTeaserClickMock;
+    let setHomeTeaserPropertiesMock;
     let setKameleoonTrackingMock;
 
     beforeEach(() => {
@@ -20,7 +20,7 @@ describe('s.doPlugins()', () => {
         setEventsPropertyMock = jest.spyOn(s._eventsObj, 'setEventsProperty');
         setScrollDepthPropertiesMock = jest.spyOn(s._scrollDepthObj, 'setScrollDepthProperties');
         firstPageViewMock = jest.spyOn(s._utils, 'isFirstPageView').mockImplementation().mockReturnValue(false);
-        trackTeaserClickMock = jest.spyOn(s._homeTeaserTrackingObj, 'trackTeaserClick').mockImplementation();
+        setHomeTeaserPropertiesMock = jest.spyOn(s._homeTeaserTrackingObj, 'setHomeTeaserProperties').mockImplementation();
         setKameleoonTrackingMock = jest.spyOn(s, '_setKameleoonTracking').mockImplementation();
     });
 
@@ -65,13 +65,13 @@ describe('s.doPlugins()', () => {
 
     it('should call s._setTeaserTrackingEvars(s)', () => {
         s._doPluginsGlobal(s);
-        expect(trackTeaserClickMock).toHaveBeenCalledWith(s);
+        expect(setHomeTeaserPropertiesMock).toHaveBeenCalledWith(s);
     });
 
     it('should NOT call s._setTeaserTrackingEvars(s) if it is first-page-view context (before consent)', () => {
         firstPageViewMock.mockReturnValue(true);
         s._doPluginsGlobal(s);
-        expect(trackTeaserClickMock).not.toHaveBeenCalledWith(s);
+        expect(setHomeTeaserPropertiesMock).not.toHaveBeenCalledWith(s);
     });
 
     it('should call s._setKameleoonTracking(s)', () => {

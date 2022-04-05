@@ -4,7 +4,7 @@ const {createWindowMock} = require('../mocks/browserMocks');
 describe('init()', () => {
     let s;
     let setCampaignVariablesMock;
-    let setViewTypeMock;
+    let setViewTypesMock;
     let setICIDTrackingVariablesMock;
     let setDensityMock;
     let setExternalReferringDomainEventsMock;
@@ -19,7 +19,7 @@ describe('init()', () => {
         s = {...sObject};
 
         setCampaignVariablesMock = jest.spyOn(s._campaignObj, 'setCampaignVariables').mockImplementation();
-        setViewTypeMock = jest.spyOn(s._articleViewTypeObj, 'setViewType').mockImplementation();
+        setViewTypesMock = jest.spyOn(s._articleViewTypeObj, 'setViewTypes').mockImplementation();
         setICIDTrackingVariablesMock = jest.spyOn(s._ICIDTracking, 'setVariables').mockImplementation();
         setDensityMock = jest.spyOn(s._plusDensityObj, 'setDensity').mockImplementation();
         setExternalReferringDomainEventsMock = jest.spyOn(s, '_setExternalReferringDomainEvents').mockImplementation();
@@ -65,9 +65,9 @@ describe('init()', () => {
         expect(setCampaignVariablesMock).toHaveBeenCalledWith(s);
     });
 
-    it('should call s._articleViewTypeObj.setViewType(s)', () => {
+    it('should call s._articleViewTypeObj.setArticleViewType(s)', () => {
         s._init(s);
-        expect(setViewTypeMock).toHaveBeenCalledWith(s);
+        expect(setViewTypesMock).toHaveBeenCalledWith(s);
     });
 
     it('should call s._ICIDTracking.setVariables(s)', () => {

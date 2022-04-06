@@ -579,6 +579,28 @@ describe('articleViewType()', () => {
         });
     });
 
+    describe('isPageViewFromHome', () => {
+        it('should return TRUE if page-view-type is event22', function () {
+            const result = s._articleViewTypeObj.isPageViewFromHome('event22');
+            expect(result).toBe(true);
+        });
+
+        it('should return TRUE if page-view-type is event76', function () {
+            const result = s._articleViewTypeObj.isPageViewFromHome('event22');
+            expect(result).toBe(true);
+        });
+
+        it('should return TRUE if page-view-type is event77', function () {
+            const result = s._articleViewTypeObj.isPageViewFromHome('event22');
+            expect(result).toBe(true);
+        });
+
+        it('should return FALSE if page-view-type is NOT event22, event76 orevent77', function () {
+            const result = s._articleViewTypeObj.isPageViewFromHome('event123');
+            expect(result).toBe(false);
+        });
+    });
+
     describe('setViewTypes()', () => {
         let isArticlePageMock;
         let getViewTypeByReferrerMock;
@@ -679,23 +701,31 @@ describe('articleViewType()', () => {
         });
 
         it('should call s._eventsObj.addEvent() with event20 as the argument if page was viewed after the homepage (homepage teaser click)', function () {
-            const anyViewType = 'any-view-type';
             isPageViewFromHomeMock.mockReturnValue(true);
-            getViewTypeByReferrerMock.mockReturnValue(anyViewType);
-
             s._articleViewTypeObj.setViewTypes(s);
 
             expect(addEventMock).toHaveBeenCalledWith('event20');
         });
 
         it('should NOT call s._eventsObj.addEvent() with event20 as the argument if page was NOT viewed after the homepage (homepage teaser click)', function () {
-            const anyViewType = 'any-view-type';
             isPageViewFromHomeMock.mockReturnValue(false);
-            getViewTypeByReferrerMock.mockReturnValue(anyViewType);
-
             s._articleViewTypeObj.setViewTypes(s);
 
             expect(addEventMock).not.toHaveBeenCalled();
+        });
+
+        it('should set the homepage teaser tracking properties if page was viewed after the homepage (homepage teaser click)', function () {
+            isPageViewFromHomeMock.mockReturnValue(true);
+            s._articleViewTypeObj.setViewTypes(s);
+
+            expect(setHomeTeaserPropertiesMock).toHaveBeenCalled();
+        });
+
+        it('should NOT set the homepage teaser tracking properties if page was NOT viewed after the homepage (homepage teaser click)', function () {
+            isPageViewFromHomeMock.mockReturnValue(false);
+            s._articleViewTypeObj.setViewTypes(s);
+
+            expect(setHomeTeaserPropertiesMock).not.toHaveBeenCalled();
         });
 
     });

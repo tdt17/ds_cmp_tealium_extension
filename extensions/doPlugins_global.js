@@ -311,7 +311,7 @@ s._articleViewTypeObj = {
 
     setPageAfterHomeType: function(){
         const referrer = this.getReferrerFromLocationHash() || window.document.referrer;
-        if (this.isFromInternal(referrer) && this.isFromHome(referrer)) {
+        if (this.isFromHome(referrer)) {
             s._eventsObj.addEvent('event20');
         }
     },
@@ -326,7 +326,7 @@ s._articleViewTypeObj = {
     },
 
     setViewTypes: function (s) {
-        this.setPageAfterHomeType(s);
+        this.setPageAfterHomeType(s);// Todo: naming: pageViewFromHome
         this.setArticleViewType(s);
     }
 };
@@ -702,7 +702,7 @@ s._init = function (s) {
         s.eVar94 = window.screen.width + 'x' + window.screen.height;
     }
 
-    s._articleViewTypeObj.setViewTypes(s);
+    s._articleViewTypeObj.setViewTypes(s); // Todo: rename s._pageViewTypesObj
     s._ICIDTracking.setVariables(s);
     s._campaignObj.setCampaignVariables(s);
     s._setExternalReferringDomainEvents(s);

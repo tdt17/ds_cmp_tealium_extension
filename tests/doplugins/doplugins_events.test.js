@@ -26,6 +26,38 @@ describe('_eventsObj', () => {
         });
     });
 
+    describe('hasHomeTeaserEvent()', ()=>{
+        it('should return TRUE if event20 is set (from homepage)', function () {
+            s._eventsObj.events = ['event20'];
+            const result = s._eventsObj.hasHomeTeaserEvent();
+            expect(result).toBe(true);
+        });
+
+        it('should return TRUE if event22 is set (article from homepage)', function () {
+            s._eventsObj.events = ['event22'];
+            const result = s._eventsObj.hasHomeTeaserEvent();
+            expect(result).toBe(true);
+        });
+
+        it('should return TRUE if event76 is set (from Bild desktop homepage)', function () {
+            s._eventsObj.events = ['event76'];
+            const result = s._eventsObj.hasHomeTeaserEvent();
+            expect(result).toBe(true);
+        });
+
+        it('should return TRUE if event77 is set (from Bild mobile homepage)', function () {
+            s._eventsObj.events = ['event77'];
+            const result = s._eventsObj.hasHomeTeaserEvent();
+            expect(result).toBe(true);
+        });
+
+        it('should return FALSE if article-view-type is not of type home', function () {
+            s._eventsObj.events = ['event123'];
+            const result = s._eventsObj.hasHomeTeaserEvent();
+            expect(result).toBe(false);
+        });
+    });
+
     describe('setEventsProperty(s)', () => {
         let aplMock;
         beforeEach(() => {

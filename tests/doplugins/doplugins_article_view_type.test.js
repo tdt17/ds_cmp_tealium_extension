@@ -579,12 +579,14 @@ describe('articleViewType()', () => {
         });
     });
 
-    describe('setArticleViewType()', () => {
+    describe('setViewTypes()', () => {
         let isArticlePageMock;
         let getViewTypeByReferrerMock;
         let getViewTypeByTrackingPropertyMock;
         let setPageSourceAndAgeForCheckoutMock;
         let addEventMock;
+        let isPageViewFromHomeMock;
+        let setHomeTeaserPropertiesMock;
 
         beforeEach(() => {
             isArticlePageMock = jest.spyOn(s._utils, 'isArticlePage');
@@ -592,41 +594,29 @@ describe('articleViewType()', () => {
             getViewTypeByTrackingPropertyMock = jest.spyOn(s._articleViewTypeObj, 'getViewTypeByTrackingProperty').mockImplementation();
             setPageSourceAndAgeForCheckoutMock = jest.spyOn(s._articleViewTypeObj, 'setPageSourceAndAgeForCheckout').mockImplementation();
             addEventMock = jest.spyOn(s._eventsObj, 'addEvent').mockImplementation();
+            isPageViewFromHomeMock = jest.spyOn(s._articleViewTypeObj, 'isPageViewFromHome').mockImplementation();
+            setHomeTeaserPropertiesMock = jest.spyOn(s._homeTeaserTrackingObj, 'setHomeTeaserProperties').mockImplementation();
         });
 
         afterEach(() => {
             jest.restoreAllMocks();
         });
 
-        it('should evaluate the article-view-type on article pages', function () {
-            isArticlePageMock.mockReturnValue(true);
-
-            s._articleViewTypeObj.setArticleViewType(s);
-            expect(getViewTypeByTrackingPropertyMock).toHaveBeenCalled();
-        });
-
-        it('should NOT evaluate the article-view-type on NON article pages', function () {
-            isArticlePageMock.mockReturnValue(false);
-
-            s._articleViewTypeObj.setArticleViewType(s);
-            expect(getViewTypeByTrackingPropertyMock).not.toHaveBeenCalled();
-        });
-
         it('should evaluate referrer URL when available to determine article-view-type', function () {
             isArticlePageMock.mockReturnValue(true);
             window.document.referrer = 'any-referrer-url';
-            s._articleViewTypeObj.setArticleViewType(s);
+            s._articleViewTypeObj.setViewTypes(s);
             expect(getViewTypeByReferrerMock).toHaveBeenCalled();
         });
 
         it('should evaluate tracking URL param when referrer is NOT available', function () {
             isArticlePageMock.mockReturnValue(true);
             window.document.referrer = '';
-            s._articleViewTypeObj.setArticleViewType(s);
+            s._articleViewTypeObj.setViewTypes(s);
             expect(getViewTypeByTrackingPropertyMock).toHaveBeenCalled();
         });
 
-        it('should assign the article-view-type to s._articleViewType and s.eVar44', function () {
+        it('should assign the page-view-type to s._articleViewType and s.eVar44 if page is of type article', function () {
             const anyViewType = 'any-view-type';
             isArticlePageMock.mockReturnValue(true);
             getViewTypeByTrackingPropertyMock.mockReturnValue(anyViewType);
@@ -634,48 +624,80 @@ describe('articleViewType()', () => {
             expect(s._articleViewType).toBeUndefined();
             expect(s.eVar44).toBeUndefined();
 
-            s._articleViewTypeObj.setArticleViewType(s);
+            s._articleViewTypeObj.setViewTypes(s);
 
             expect(s._articleViewType).toBe(anyViewType);
             expect(s.eVar44).toBe(anyViewType);
         });
 
-        it('should call setPageSourceAndAgeForCheckout() function', function () {
+        it('should NOT assign the page-view-type to s._articleViewType and s.eVar44 if page is NOT of type article', function () {
+            const anyViewType = 'any-view-type';
+            isArticlePageMock.mockReturnValue(false);
+            getViewTypeByTrackingPropertyMock.mockReturnValue(anyViewType);
+
+            expect(s._articleViewType).toBeUndefined();
+            expect(s.eVar44).toBeUndefined();
+
+            s._articleViewTypeObj.setViewTypes(s);
+
+            expect(s._articleViewType).toBeUndefined();
+            expect(s.eVar44).toBeUndefined();
+        });
+
+        it('should call setPageSourceAndAgeForCheckout() function if page is of type article', function () {
             isArticlePageMock.mockReturnValue(true);
 
-            s._articleViewTypeObj.setArticleViewType(s);
+            s._articleViewTypeObj.setViewTypes(s);
             expect(setPageSourceAndAgeForCheckoutMock).toHaveBeenCalled();
         });
 
-        it('should call s._eventsObj.addEvent() with article-view-type as the argument', function () {
+        it('should NOT call setPageSourceAndAgeForCheckout() function if page is NOT of type article', function () {
+            isArticlePageMock.mockReturnValue(false);
+
+            s._articleViewTypeObj.setViewTypes(s);
+            expect(setPageSourceAndAgeForCheckoutMock).not.toHaveBeenCalled();
+        });
+
+        it('should call s._eventsObj.addEvent() with pag-view-type as the argument if page is of type article', function () {
             const anyViewType = 'any-view-type';
             isArticlePageMock.mockReturnValue(true);
             getViewTypeByTrackingPropertyMock.mockReturnValue(anyViewType);
 
-            s._articleViewTypeObj.setArticleViewType(s);
+            s._articleViewTypeObj.setViewTypes(s);
 
             expect(addEventMock).toHaveBeenCalledWith(anyViewType);
         });
+
+        it('should NOT call s._eventsObj.addEvent() with pag-view-type as the argument if page is NOT of type article', function () {
+            const anyViewType = 'any-view-type';
+            isArticlePageMock.mockReturnValue(false);
+            getViewTypeByTrackingPropertyMock.mockReturnValue(anyViewType);
+
+            s._articleViewTypeObj.setViewTypes(s);
+
+            expect(addEventMock).not.toHaveBeenCalled();
+        });
+
+        it('should call s._eventsObj.addEvent() with event20 as the argument if page was viewed after the homepage (homepage teaser click)', function () {
+            const anyViewType = 'any-view-type';
+            isPageViewFromHomeMock.mockReturnValue(true);
+            getViewTypeByReferrerMock.mockReturnValue(anyViewType);
+
+            s._articleViewTypeObj.setViewTypes(s);
+
+            expect(addEventMock).toHaveBeenCalledWith('event20');
+        });
+
+        it('should NOT call s._eventsObj.addEvent() with event20 as the argument if page was NOT viewed after the homepage (homepage teaser click)', function () {
+            const anyViewType = 'any-view-type';
+            isPageViewFromHomeMock.mockReturnValue(false);
+            getViewTypeByReferrerMock.mockReturnValue(anyViewType);
+
+            s._articleViewTypeObj.setViewTypes(s);
+
+            expect(addEventMock).not.toHaveBeenCalled();
+        });
+
     });
 
-    describe('setViewTypes', () => {
-        let setPageAfterHomeTypeMock;
-        let setArticleViewTypeMock;
-
-        beforeEach(() => {
-            setPageAfterHomeTypeMock = jest.spyOn(s._articleViewTypeObj, 'setPageAfterHomeType').mockImplementation();
-            setArticleViewTypeMock = jest.spyOn(s._articleViewTypeObj, 'setArticleViewType').mockImplementation();
-        });
-
-        it('should call setPageAfterHomeType(s)', () => {
-            s._articleViewTypeObj.setViewTypes(s);
-            expect(setPageAfterHomeTypeMock).toHaveBeenCalledTimes(1);
-        });
-
-        it('should call setArticleViewType(s)', () => {
-            s._articleViewTypeObj.setViewTypes(s);
-            expect(setArticleViewTypeMock).toHaveBeenCalledTimes(1);
-        });
-
-    });
 });

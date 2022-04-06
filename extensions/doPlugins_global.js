@@ -245,10 +245,8 @@ s._articleViewTypeObj = {
         } else if (this.isFromSocial(referrer)) {
             return 'event25'; //Social
         } else if (this.isFromBild(referringDomain) && this.isFromHome(referrer)) {
-            s._homeTeaserTrackingObj.setEvars(s);
             return 'event76'; // Bild home
         } else if (this.isFromBildMobile(referringDomain) && this.isFromHome(referrer)) {
-            s._homeTeaserTrackingObj.setEvars(s);
             return 'event77'; // Bild mobile home
         } else {
             return 'event27';
@@ -309,25 +307,24 @@ s._articleViewTypeObj = {
         window.utag.data['cp.utag_main_pa'] = pageAge;
     },
 
-    setPageAfterHomeType: function(){
-        const referrer = this.getReferrerFromLocationHash() || window.document.referrer;
-        if (this.isFromHome(referrer)) {
-            s._eventsObj.addEvent('event20');
-        }
-    },
-
-    setArticleViewType: function (s) {
-        if (s._utils.isArticlePage()) {
-            s._articleViewType = window.document.referrer ? this.getViewTypeByReferrer() : this.getViewTypeByTrackingProperty();
-            s.eVar44 = s._articleViewType;
-            s._eventsObj.addEvent(s._articleViewType);
-            this.setPageSourceAndAgeForCheckout(s);
-        }
+    isPageViewFromHome: function (pageViewType) {
+        const viewTypesFromHome = ['event22', 'event76', 'event77'];
+        return viewTypesFromHome.includes(pageViewType);
     },
 
     setViewTypes: function (s) {
-        this.setPageAfterHomeType(s);// Todo: naming: pageViewFromHome
-        this.setArticleViewType(s);
+        const pageViewType = window.document.referrer ? this.getViewTypeByReferrer() : this.getViewTypeByTrackingProperty();
+
+        if (s._utils.isArticlePage()) {
+            s._articleViewType = s.eVar44 = pageViewType;
+            s._eventsObj.addEvent(pageViewType);
+            this.setPageSourceAndAgeForCheckout(s);
+        }
+
+        if (this.isPageViewFromHome(pageViewType)) {
+            s._eventsObj.addEvent('event20');
+            s._homeTeaserTrackingObj.setHomeTeaserProperties(s);
+        }
     }
 };
 
@@ -437,10 +434,8 @@ s._homeTeaserTrackingObj = {
     },
 
     setHomeTeaserProperties: function (s) {
-        if (s._eventsObj.hasHomeTeaserEvent()) {
-            this.setEvars(s);
-            this.deleteTrackingValuesFromCookie();
-        }
+        this.setEvars(s);
+        this.deleteTrackingValuesFromCookie();
     }
 };
 
@@ -634,16 +629,6 @@ s._eventsObj = {
     addEvent: function (eventName) {
         this.events.push(eventName);
     },
-    hasHomeTeaserEvent: function () {
-        const pageAfterHomeEvents = [
-            'event20',
-            'event22',
-            'event76',
-            'event77'
-        ];
-        const foundEvents = this.events.filter(event => pageAfterHomeEvents.includes(event));
-        return !!foundEvents.length;
-    },
     setEventsProperty: function (s) {
         const eventsString = this.events.join(',');
         if (eventsString) {
@@ -728,7 +713,6 @@ s._doPluginsGlobal = function (s) {
     // Some functions are not allowed on the first page view (before consent is given).
     if (!s._utils.isFirstPageView()) {
         s._scrollDepthObj.setScrollDepthProperties(s);
-        s._homeTeaserTrackingObj.setHomeTeaserProperties(s);
     }
 
     s._eventsObj.setEventsProperty(s);

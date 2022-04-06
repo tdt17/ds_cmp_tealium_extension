@@ -76,28 +76,18 @@ describe('_homeTeaserTrackingObj', () => {
     });
 
     describe('setHomeTeaserProperties', () => {
-        let hasHomeTeaserEventMock;
         let setEvarsMock;
         let deleteTrackingValuesFromCookieMock;
 
         beforeEach(() => {
-            hasHomeTeaserEventMock = jest.spyOn(s._eventsObj, 'hasHomeTeaserEvent').mockImplementation();
             setEvarsMock = jest.spyOn(s._homeTeaserTrackingObj, 'setEvars').mockImplementation();
             deleteTrackingValuesFromCookieMock = jest.spyOn(s._homeTeaserTrackingObj, 'deleteTrackingValuesFromCookie').mockImplementation();
         });
 
-        it('should call this.setEvars(s) and this.deleteTrackingValuesFromCookie() if article-view is of type home', function () {
-            hasHomeTeaserEventMock.mockReturnValue(true);
+        it('should call this.setEvars(s) and this.deleteTrackingValuesFromCookie()', function () {
             s._homeTeaserTrackingObj.setHomeTeaserProperties(s);
             expect(setEvarsMock).toHaveBeenCalledTimes(1);
             expect(deleteTrackingValuesFromCookieMock).toHaveBeenCalledTimes(1);
-        });
-
-        it('should NOT call this.setEvars(s) and this.deleteTrackingValuesFromCookie() if article-view is NOT of type home', function () {
-            hasHomeTeaserEventMock.mockReturnValue(false);
-            s._homeTeaserTrackingObj.setHomeTeaserProperties(s);
-            expect(setEvarsMock).not.toHaveBeenCalled();
-            expect(deleteTrackingValuesFromCookieMock).not.toHaveBeenCalled();
         });
     });
 });

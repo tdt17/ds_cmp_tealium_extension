@@ -259,7 +259,9 @@ s._articleViewTypeObj = {
             referrerFromHash = window.location.hash.replace('###wt_ref=', '');
             referrerFromHash = decodeURIComponent(referrerFromHash);
         }
-        return this.isValidURL(referrerFromHash) ? referrerFromHash : '';
+        // exclude Outbrain URL
+        return (this.isValidURL(referrerFromHash) && !referrerFromHash.includes('https://traffic.outbrain.com'))
+            ? referrerFromHash : '';
     },
 
     getViewTypeByReferrer: function () {
@@ -428,7 +430,7 @@ s._homeTeaserTrackingObj = {
         const trackingValue = this.getTrackingValue();
         if (trackingValue) {
             s.eVar66 = trackingValue;
-            s.eVar92 = trackingValue + '|' + s.eVar1;
+            s.eVar92 = trackingValue + '|' + window.utag.data.page_id;
             s.eVar97 = window.utag.data['cp.utag_main_tb'] || '';
         }
     },

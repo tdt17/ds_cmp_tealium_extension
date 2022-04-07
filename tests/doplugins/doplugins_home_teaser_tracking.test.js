@@ -56,12 +56,13 @@ describe('_homeTeaserTrackingObj', () => {
     describe('setEvars', () => {
         it('should assign teaser tracking values to certain eVars', function () {
             const anyTrackingValue = 'any-tracking-value';
-            s.eVar1 = 'any-eVar1';
+            const anyPageId = '123456';
+            window.utag.data.page_id = anyPageId;
             window.utag.data['cp.utag_main_tb'] = 'any-teaser-block';
             jest.spyOn(s._homeTeaserTrackingObj, 'getTrackingValue').mockImplementation().mockReturnValue(anyTrackingValue);
             s._homeTeaserTrackingObj.setEvars(s);
             expect(s.eVar66).toBe(anyTrackingValue);
-            expect(s.eVar92).toBe(anyTrackingValue + '|' + s.eVar1);
+            expect(s.eVar92).toBe(anyTrackingValue + '|' + anyPageId);
             expect(s.eVar97).toBe(window.utag.data['cp.utag_main_tb']);
         });
     });

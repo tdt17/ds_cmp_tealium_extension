@@ -63,7 +63,7 @@ describe('CW time format: CW {week} {year} {first DOW} - {last DOW}', () => {
         });
 
         it('should return concatenated return values of leadingZero function', () => {
-            const mockDate = new Date(2022, 0, 1);
+            const mockDate = new Date(2022, 0, 1)
             const anyValue = 'any-value';
 
             leadingZeroMock = jest.spyOn(cw, 'leadingZero').mockImplementation();
@@ -80,8 +80,9 @@ describe('CW time format: CW {week} {year} {first DOW} - {last DOW}', () => {
 
         it('should return the date of first DOW based on given date', () => {
             const mockDate = new Date(2022, 0, 1);
+            const expectedDate = new Date(2021,11,27);
 
-            expect(cw.getDayOfWeek(mockDate,1).toString()).toBe('Mon Dec 27 2021 00:00:00 GMT+0100 (Central European Standard Time)');
+            expect(cw.getDayOfWeek(mockDate,1).toString()).toBe(expectedDate.toString());
 
         });
 

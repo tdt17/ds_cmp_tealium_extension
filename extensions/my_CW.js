@@ -20,8 +20,8 @@ const _myCW = {
 
     getDayOfWeek: function(date, day) {
         const dow = date.getDate() - date.getDay() + day;
-        const newDate = new Date(date.valueOf())
-        return new Date(newDate.setDate(dow))
+        const newDate = new Date(date.valueOf());
+        return new Date(newDate.setDate(dow));
     },
 
     getWeek: function(date) {
@@ -38,8 +38,8 @@ const _myCW = {
 
     getCW: function() {
         currentDate = new Date();
-        firstDOW = this.getDayOfWeek(currentDate, 1)
-        lastDOW = this.getDayOfWeek(currentDate, 7)
+        firstDOW = this.getDayOfWeek(currentDate, 1);
+        lastDOW = this.getDayOfWeek(currentDate, 7);
 
         return 'CW' + ' ' 
         + this.getWeek(currentDate) + ' ' 

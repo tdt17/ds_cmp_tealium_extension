@@ -1,3 +1,4 @@
+const { getMonthDay } = require("../extensions/my_CW");
 const myCW = require("../extensions/my_CW");
 
 describe('CW time format: CW {week} {year} {first DOW} - {last DOW}', () => {
@@ -48,28 +49,16 @@ describe('CW time format: CW {week} {year} {first DOW} - {last DOW}', () => {
         });
     });
 
+    describe('getMnthDay', () => {
 
-    describe('getYear', () => {
-
-        it('should return year of the first DOW based on given date', () => {
-            const mockDate1 = new Date(2022, 0, 1);
-
-            expect(cw.getYear(mockDate1)).toBe('2021') 
-        });
-
-    });
-
-    describe('getDayOfWeek', () => {
-
-        it('should return first DOW based on given date', () => {
+        it('should return mm.dd from a given date', () => {
             const mockDate = new Date(2022, 0, 1);
 
             leadingZeroMock = jest.spyOn(cw, 'leadingZero');
 
-
-            expect(cw.getDayOfWeek(mockDate,1)).toBe('12.27');
-            expect(leadingZeroMock).toHaveBeenCalledWith(12);
-            expect(leadingZeroMock).toHaveBeenCalledWith(27);
+            expect(cw.getMonthDay(mockDate)).toBe('01.01');
+            expect(leadingZeroMock).toHaveBeenCalledWith(1);
+            expect(leadingZeroMock).toHaveBeenCalledWith(1);
 
         });
 
@@ -80,46 +69,47 @@ describe('CW time format: CW {week} {year} {first DOW} - {last DOW}', () => {
             leadingZeroMock = jest.spyOn(cw, 'leadingZero').mockImplementation();
             leadingZeroMock.mockReturnValue(anyValue);
 
-            expect(cw.getDayOfWeek(mockDate)).toBe(anyValue+'.'+anyValue);
+            expect(cw.getMonthDay(mockDate)).toBe(anyValue+'.'+anyValue);
 
         });
 
+    });
 
+ 
+    describe('getDayOfWeek', () => {
+
+        it('should return the date of first DOW based on given date', () => {
+            const mockDate = new Date(2022, 0, 1);
+
+            expect(cw.getDayOfWeek(mockDate,1).toString()).toBe('Mon Dec 27 2021 00:00:00 GMT+0100 (Central European Standard Time)');
+
+        });
 
     });
+
+
 
     describe('getCW', () => {
 
         it('should return the CW date format', () => {
             const mockDate = new Date(2022,0,1);
+            const mockDate1 = new Date (2021,11,27);
+            const mockDate2 = new Date (2022, 0, 2)
+
+            dateMock = jest.spyOn(global, 'Date').mockImplementation();
+            dateMock.mockReturnValue(mockDate);
+            getDayOfWeekMock = jest.spyOn(cw, 'getDayOfWeek').mockImplementation();
+            getDayOfWeekMock.mockReturnValueOnce(mockDate1);
+            getDayOfWeekMock.mockReturnValueOnce(mockDate2);
 
             getWeekMock = jest.spyOn(cw, 'getWeek');
-            getYearMock = jest.spyOn(cw, 'getYear');
-            getDayOfWeekMock = jest.spyOn(cw, 'getDayOfWeek');
+            getMonthDayMock = jest.spyOn(cw, 'getMonthDay');
+            toStringMock = jest.spyOn(global, 'toString');
+
+
     
             expect(cw.getCW(mockDate)).toBe('CW 01 2021.12.27. - 01.02.');
 
-            expect(getWeekMock).toHaveBeenCalledWith(mockDate);
-            expect(getYearMock).toHaveBeenCalledWith(mockDate);
-            expect(getDayOfWeekMock).toHaveBeenCalledWith(mockDate,1);
-            expect(getDayOfWeekMock).toHaveBeenCalledWith(mockDate,7); 
-        });
-
-        it('should return the concatenated return values of mocked functions', () => {
-            const mockDate = new Date(2022,0,1);
-            const anyValue1 = 'any-value1';
-            const anyValue2 = 'any-value2';
-            const anyValue3 = 'any-value3';
-
-            getWeekMock = jest.spyOn(cw, 'getWeek').mockImplementation();
-            getYearMock = jest.spyOn(cw, 'getYear').mockImplementation();
-            getDayOfWeekMock = jest.spyOn(cw, 'getDayOfWeek').mockImplementation();
-            getWeekMock.mockReturnValue(anyValue1);
-            getYearMock.mockReturnValue(anyValue2);
-            getDayOfWeekMock.mockReturnValue(anyValue3);
-    
-            expect(cw.getCW(mockDate)).toBe('CW'+' '+anyValue1+' '+anyValue2+'.'
-                                            +anyValue3+'.'+' - '+anyValue3+'.');
         });
 
 

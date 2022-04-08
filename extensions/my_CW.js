@@ -18,32 +18,34 @@ const _myCW = {
 
     },
 
+    getDayOfWeek: function(date, day) {
+        const dow = date.getDate() - date.getDay() + day;
+        const newDate = new Date(date.valueOf())
+        return new Date(newDate.setDate(dow))
+    },
+
     getWeek: function(date) {
         const oneJan = new Date(date.getFullYear(),0,1);
         const numberOfDays = Math.floor((date - oneJan) / (24 * 60 * 60 * 1000));
         return this.leadingZero(Math.ceil(( date.getDay() + 1 + numberOfDays) / 7));
     },
 
-    getYear: function(date) {
-        const dow = date.getDate() - date.getDay() + 1;
-        const newDate = new Date(date.setDate(dow));
-        return newDate.getFullYear().toString();
-    },
-
-    getDayOfWeek: function(date, day) {
-        const dow = date.getDate() - date.getDay() + day;
-        const newDate = new Date(date.setDate(dow));
-        return this.leadingZero(newDate.getMonth()+1) + '.' + this.leadingZero(newDate.getDate());
+    //date=Mon Jan 27 2021... returns 01.27
+    getMonthDay: function(date) {
+        return this.leadingZero(date.getMonth()+1) + '.' + this.leadingZero(date.getDate());
     },
 
 
-    getCW: function(date) {
-        //const currentDate = new Date();
+    getCW: function() {
+        currentDate = new Date();
+        firstDOW = this.getDayOfWeek(currentDate, 1)
+        lastDOW = this.getDayOfWeek(currentDate, 7)
+
         return 'CW' + ' ' 
-        + this.getWeek(date) + ' ' 
-        + this.getYear(date) + '.' 
-        + this.getDayOfWeek(date, 1) + '.' + ' - ' 
-        + this.getDayOfWeek(date, 7) + '.';
+        + this.getWeek(currentDate) + ' ' 
+        + firstDOW.getFullYear().toString() + '.' 
+        + this.getMonthDay(firstDOW) + '.' + ' - ' 
+        + this.getMonthDay(lastDOW) + '.';
         
     },
 

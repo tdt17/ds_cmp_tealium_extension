@@ -37,9 +37,9 @@ const _myCW = {
 
 
     getCW: function() {
-        currentDate = new Date();
-        firstDOW = this.getDayOfWeek(currentDate, 1);
-        lastDOW = this.getDayOfWeek(currentDate, 7);
+        const currentDate = new Date();
+        const firstDOW = this.getDayOfWeek(currentDate, 1);
+        const lastDOW = this.getDayOfWeek(currentDate, 7);
 
         return 'CW' + ' ' 
         + this.getWeek(currentDate) + ' ' 

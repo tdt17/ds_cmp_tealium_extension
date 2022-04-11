@@ -21,7 +21,8 @@ const _myCW = {
     getDayOfWeek: function(date, day) {
         const dow = date.getDate() - date.getDay() + day;
         const newDate = new Date(date.valueOf());
-        return new Date(newDate.setDate(dow));
+        newDate.setDate(dow)
+        return newDate;
     },
 
     getWeek: function(date) {
@@ -30,12 +31,12 @@ const _myCW = {
         return this.leadingZero(Math.ceil(( date.getDay() + 1 + numberOfDays) / 7));
     },
 
-    //date=Mon Jan 27 2021... returns 01.27
+    //date=Wed Jan 27 2021... returns 01.27
     getMonthDay: function(date) {
         return this.leadingZero(date.getMonth()+1) + '.' + this.leadingZero(date.getDate());
     },
 
-
+    //date=Wed Jan 27 2021... CW 2021.01.25. - 01.31.
     getCW: function() {
         const currentDate = new Date();
         const firstDOW = this.getDayOfWeek(currentDate, 1);

@@ -49,7 +49,7 @@ describe('CW time format: CW {week} {year} {first DOW} - {last DOW}', () => {
         });
     });
 
-    describe('getMnthDay', () => {
+    describe('getMonthDay', () => {
 
         it('should return mm.dd from a given date', () => {
             const mockDate = new Date(2022, 0, 1);

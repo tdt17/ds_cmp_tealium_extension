@@ -21,7 +21,7 @@ const _myCW = {
     getDayOfWeek: function(date, day) {
         const dow = date.getDate() - date.getDay() + day;
         const newDate = new Date(date.valueOf());
-        newDate.setDate(dow)
+        newDate.setDate(dow);
         return newDate;
     },
 

@@ -57,8 +57,8 @@ describe('CW time format: CW {week} {year} {first DOW} - {last DOW}', () => {
             leadingZeroMock = jest.spyOn(cw, 'leadingZero');
 
             expect(cw.getMonthDay(mockDate)).toBe('01.01');
-            expect(leadingZeroMock).toHaveBeenCalledWith(1);
-            expect(leadingZeroMock).toHaveBeenCalledWith(1);
+            expect(leadingZeroMock).toHaveBeenNthCalledWith(1, 1);
+            expect(leadingZeroMock).toHaveBeenNthCalledWith(2, 1);
 
         });
 
@@ -97,19 +97,20 @@ describe('CW time format: CW {week} {year} {first DOW} - {last DOW}', () => {
             const mockDate1 = new Date (2021,11,27);
             const mockDate2 = new Date (2022, 0, 2);
 
-            dateMock = jest.spyOn(global, 'Date').mockImplementation();
-            dateMock.mockReturnValue(mockDate);
+            jest.spyOn(global, 'Date').mockImplementation().mockReturnValue(mockDate);
             getDayOfWeekMock = jest.spyOn(cw, 'getDayOfWeek').mockImplementation();
             getDayOfWeekMock.mockReturnValueOnce(mockDate1);
             getDayOfWeekMock.mockReturnValueOnce(mockDate2);
 
             getWeekMock = jest.spyOn(cw, 'getWeek');
             getMonthDayMock = jest.spyOn(cw, 'getMonthDay');
-            toStringMock = jest.spyOn(global, 'toString');
-
 
     
             expect(cw.getCW(mockDate)).toBe('CW 01 2021.12.27. - 01.02.');
+
+            expect(getWeekMock).toHaveBeenCalledWith(mockDate);
+            expect(getMonthDayMock).toHaveBeenNthCalledWith(1, mockDate1);
+            expect(getMonthDayMock).toHaveBeenNthCalledWith(2, mockDate2);
 
         });
 

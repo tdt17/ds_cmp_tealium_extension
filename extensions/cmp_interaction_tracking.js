@@ -120,24 +120,17 @@
         }
     }
 
-    function setCookieDomain () {
-        if (location.hostname){
-            //cookieDomain must be without m., www. or subdomain (.bild.de, .welt.de)
-            const hostCookie = location.hostname.split('.');
-
-            if(hostCookie.length == 3){
-            cookieDomain = hostCookie.slice(1).join('.');
-            }
-        }  
-
     function onUserConsent() {
         if (window.cmp && window.cmp._scrollDepthObj) {
             // Calling setScrollDepthProperties() will make the current page trackable as the _ppvPreviousPage of the next page view.
             window.cmp._scrollDepthObj.setScrollDepthProperties(window.cmp);
         }
-        if (window.cmp. && window.cmp._campaignObj) {
-            window.cmp._campaignObj.getAdobeCamaign();
-            document.cookie = "s_ev0=" + utag.data.adobe_campaign + ";" + ";path=/;domain=" + cookieDomain; 
+        if (window.cmp && window.cmp._campaignObj && window.utag.data && window.utag.data.adobe_campaign) {
+
+            //cookieDomain must be without m., www. or subdomain (.bild.de, .welt.de)        
+            window.hostCookie = location.hostname.split('.').slice(1).join('.');
+
+            document.cookie = 's_ev0=' + window.utag.data.adobe_campaign + ';' + ';path=/;domain=' + window.hostCookie; 
         }
     }
 

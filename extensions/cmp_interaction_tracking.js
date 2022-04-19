@@ -99,7 +99,13 @@
         const defaultVendorList = 'adobe_cmp,';
         const hasVendors = !!window.utag.data.consentedVendors && window.utag.data.consentedVendors !== defaultVendorList;
 
-        return hasCMPAfterCookie || hasVendors;
+        // sportbild.bild.de needs special treatment because of sub-domain issues.
+        if (window.utag.data['ut.profile'] === 'bild-sportbild.de') {
+            // hasCMPAfterCookie cannot be used here because it shares cookie with base domain bild.de
+            return hasVendors;
+        } else {
+            return hasCMPAfterCookie || hasVendors;
+        }
     }
 
     function hasUserDeclinedConsent() {

@@ -5,10 +5,15 @@ describe('CW time format: CW {week} {year} {first DOW} - {last DOW}', () => {
 
     let cw;
     let leadingZeroMock;
+    cw = {...myCW};
 
-    beforeEach(() => {
-        cw = {...myCW}; 
+    beforeEach(() => { 
         jest.clearAllMocks();
+    });
+
+    afterEach(() => {
+        jest.restoreAllMocks();
+
     });
 
     describe('leadingZero', () => {
@@ -63,7 +68,7 @@ describe('CW time format: CW {week} {year} {first DOW} - {last DOW}', () => {
         });
 
         it('should return concatenated return values of leadingZero function', () => {
-            const mockDate = new Date(2022, 0, 1)
+            const mockDate = new Date(2022, 0, 1);
             const anyValue = 'any-value';
 
             leadingZeroMock = jest.spyOn(cw, 'leadingZero').mockImplementation();

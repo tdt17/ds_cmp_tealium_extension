@@ -7,7 +7,7 @@ function _getAdobeObject() {
         adobeObject = window.cmp;
     }
     return adobeObject;
-}
+};
 
 const s = _getAdobeObject();
 
@@ -55,6 +55,9 @@ const _myCW = {
 if (typeof exports === 'object') {
     // Export s-object with all functions for unit testing
     module.exports = _myCW;
-} 
+}; 
 
-s._myCW = _myCW;
+window = window || {};
+window.utag = window.utag || {};
+window.utag.data = window.utag.data || {};
+window.utag.data.myCW = _myCW.getCW;

@@ -51,4 +51,20 @@ describe('s.doPlugins()', () => {
         expect(orderViaArticleMock).toHaveBeenCalledWith(s);
     });
 
+    it('should call s._setPageAgeForCheckout()', () => {
+        const setPageAgeForCheckoutMock = jest.spyOn(s, '_setPageAgeForCheckout');
+
+        s.doPlugins(s);
+
+        expect(setPageAgeForCheckoutMock).toHaveBeenCalled();
+    });
+
+    it('should call s._setPageCmsPathWithoutBild()', () => {
+        const setPageCmsPathWithoutBildMock = jest.spyOn(s, '_setPageCmsPathWithoutBild');
+
+        s.doPlugins(s);
+
+        expect(setPageCmsPathWithoutBildMock).toHaveBeenCalledWith(s);
+    });
+
 });

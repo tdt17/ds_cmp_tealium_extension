@@ -66,17 +66,12 @@ s._orderViaArticle = function (s) {
 };
 
 s._setPageCmsPathWithoutBild = function (s) {
-    if (window.utag.data['ut.profile'] === 'bild-app.android'
-        || window.utag.data['ut.profile'] === 'bild-app.iphone'
-        || window.utag.data['ut.profile'] === 'bild-app.ipad') {
+    if (typeof window.utag.data.page_cms_path !== 'undefined'
+        && window.utag.data.page_cms_path.indexOf('/BILD/') !== -1) {
 
-        if (typeof window.utag.data.page_cms_path !== 'undefined'
-            && window.utag.data.page_cms_path.indexOf('/BILD/') > -1) {
-
-            window.utag.data.page_cms_path = window.utag.data.page_cms_path.replace('/BILD/', '');
-            s.eVar4 = window.utag.data.page_cms_path;
-            s.prop4 = window.utag.data.page_cms_path;
-        }
+        s.eVar4 = window.utag.data.page_cms_path.replace('/BILD/', '');
+        s.prop4 = window.utag.data.page_cms_path.replace('/BILD/', '');
+        window.utag.data.page_cms_path = window.utag.data.page_cms_path.replace('/BILD/', '');
     }
 };
 
@@ -91,8 +86,6 @@ s._bildAppsInit = function (s) {
         s.eVar94 = window.screen.width + 'x' + window.screen.height;
     }
 
-    s._setPageAgeForCheckout();
-    s._setPageCmsPathWithoutBild(s);
 };
 
 s.doPlugins = function (s) {
@@ -108,7 +101,8 @@ s.doPlugins = function (s) {
 
     s._bildAppsPageNameObj.setAppsPageName(s);
     s._orderViaArticle(s);
-
+    s._setPageCmsPathWithoutBild(s);
+    s._setPageAgeForCheckout();
 };
 
 // Evaluate runtime environment

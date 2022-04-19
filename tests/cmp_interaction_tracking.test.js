@@ -241,7 +241,6 @@ describe('CMP Interaction Tracking', () => {
 
         it('should return false if utag_main_cmp_after cookie is set to true and profile name is bild-sportbild.de', function () {
             window.utag.data['cp.utag_main_cmp_after'] = 'true';
-            window.utag.data.consentedVendors = '';
             window.utag.data['ut.profile'] = 'bild-sportbild.de';
             const result = cmpInteractionTracking.isAfterCMP();
             expect(result).toBe(false);

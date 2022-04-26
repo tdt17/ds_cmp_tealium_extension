@@ -1,4 +1,4 @@
-function _getAdobeObject() {
+/*function _getAdobeObject() {
     let adobeObject = {};
     // Check if global variables contain the Adobe object or something else.
     if (window.s && window.s.version) {
@@ -7,7 +7,7 @@ function _getAdobeObject() {
         adobeObject = window.cmp;
     }
     return adobeObject;
-}
+}*/
 
 const _myCW = {
 

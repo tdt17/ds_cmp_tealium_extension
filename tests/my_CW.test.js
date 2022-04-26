@@ -1,5 +1,6 @@
 const { getMonthDay } = require("../extensions/my_CW");
 const myCW = require("../extensions/my_CW");
+const {createWindowMock} = require('./mocks/browserMocks');
 
 describe('CW time format: CW {week} {year} {first DOW} - {last DOW}', () => {
 
@@ -8,7 +9,9 @@ describe('CW time format: CW {week} {year} {first DOW} - {last DOW}', () => {
     cw = {...myCW};
 
     beforeEach(() => { 
-        jest.clearAllMocks();
+        const windowMock = createWindowMock();
+        jest.spyOn(global, 'window', 'get')
+            .mockImplementation(() => (windowMock));
     });
 
     afterEach(() => {
@@ -118,6 +121,23 @@ describe('CW time format: CW {week} {year} {first DOW} - {last DOW}', () => {
             expect(getMonthDayMock).toHaveBeenNthCalledWith(2, mockDate2);
 
         });
+
+
+
+
+    });
+
+    describe('init', () => {
+
+        it('should set window.utag.data.myCW to the result of _myCW.getCW()', () => {
+            const returnValue = 'any-value';
+            getCWMock = jest.spyOn(cw, 'getCW').mockImplementation().mockReturnValue(returnValue);
+            cw.init();
+
+            expect(window.utag.data.myCW).toBe(returnValue);
+
+        });
+
 
 
 

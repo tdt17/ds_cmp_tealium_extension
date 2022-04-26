@@ -1,4 +1,4 @@
-/* function _getAdobeObject() {
+function _getAdobeObject() {
     let adobeObject = {};
     // Check if global variables contain the Adobe object or something else.
     if (window.s && window.s.version) {
@@ -8,8 +8,6 @@
     }
     return adobeObject;
 }
-*/
-
 
 const _myCW = {
 
@@ -50,11 +48,19 @@ const _myCW = {
         
     },
 
+    init: function() {
+        window.utag.data.myCW = this.getCW();
+    },
+
 };
 
 if (typeof exports === 'object') {
-    // Export s-object with all functions for unit testing
+    // Export object with all functions for unit testing
     module.exports = _myCW;
 }
+else {
+    _myCW.init();
+}
 
-window.utag.data.myCW = _myCW.getCW;
+
+

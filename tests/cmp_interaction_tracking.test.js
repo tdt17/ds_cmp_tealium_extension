@@ -297,10 +297,26 @@ describe('CMP Interaction Tracking', () => {
             window.cmp = {
                 _scrollDepthObj: {
                     setScrollDepthProperties: jest.fn()
+                },
+                _campaignObj: {
+                    setCampaignVariableAndCookie: jest.fn()
                 }
             };
             cmpInteractionTracking.onUserConsent();
             expect(window.cmp._scrollDepthObj.setScrollDepthProperties).toHaveBeenCalled();
+        });
+
+        it('should call _campaignObj.setCampaignVariableAndCookie() of the doPlugins extension', function () {
+            window.cmp = {
+                _scrollDepthObj: {
+                    setScrollDepthProperties: jest.fn()
+                },
+                _campaignObj: {
+                    setCampaignVariableAndCookie: jest.fn()
+                }
+            };
+            cmpInteractionTracking.onUserConsent();
+            expect(window.cmp._campaignObj.setCampaignVariableAndCookie).toHaveBeenCalledWith(window.cmp);
         });
     });
 

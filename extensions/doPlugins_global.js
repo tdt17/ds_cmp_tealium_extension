@@ -519,6 +519,10 @@ s._campaignObj = {
         }
     },
 
+    setCampaignVariableAndCookie: function(s) {
+        s.campaign = s.getValOnce(s.eVar88, 's_ev0', 0, 'm');
+    },
+
     setCampaignVariables: function (s) {
         window.utag.data.adobe_campaign = this.getAdobeCampaign();
         //To be updated to a single assignment option after it is unified in tealium
@@ -532,7 +536,7 @@ s._campaignObj = {
             s.campaign = adobeCampaign;
         } else {
             // getValOnce() uses cookies and therefore is not allowed before consent.
-            s.campaign = s.getValOnce(adobeCampaign, 's_ev0', 0, 'm');
+            this.setCampaignVariableAndCookie(s);
         }
     },
 };

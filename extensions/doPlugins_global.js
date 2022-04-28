@@ -272,7 +272,7 @@ s._articleViewTypeObj = {
     },
 
     setViewType: function (s) {
-        if (s._utils.isArticlePage()) {
+        if (s._utils.isArticlePage() && window.utag.data.adobe_doc_type != 'ad wall') {
             s._articleViewType = window.document.referrer ? this.getViewTypeByReferrer() : this.getViewTypeByTrackingProperty();
             s.eVar44 = s._articleViewType;
             s._eventsObj.addEvent(s._articleViewType);

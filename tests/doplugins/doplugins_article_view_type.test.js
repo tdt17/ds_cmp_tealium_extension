@@ -529,6 +529,13 @@ describe('articleViewType()', () => {
             expect(getViewTypeByTrackingPropertyMock).not.toHaveBeenCalled();
         });
 
+        it('should NOT evaluate the article-view-type when ad blocker is on', function () {
+            window.utag.data.adobe_doc_type = 'ad wall';
+
+            s._articleViewTypeObj.setViewType(s);
+            expect(getViewTypeByTrackingPropertyMock).not.toHaveBeenCalled();
+        });
+
         it('should evaluate referrer URL when available to determine article-view-type', function () {
             isArticlePageMock.mockReturnValue(true);
             window.document.referrer = 'any-referrer-url';

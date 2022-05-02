@@ -67,6 +67,43 @@ describe('articleViewType()', () => {
         });
     });
 
+    describe('isFromInternal()', function () {
+        const anyReferrer = 'https://any-domain.com/any-path';
+        let getDomainFromURLStringMock;
+
+        beforeEach(() => {
+            getDomainFromURLStringMock = jest.spyOn(s._utils, 'getDomainFromURLString').mockReturnValue('');
+        });
+
+        it('should call s._utils.getDomainFromURLString(referrer)', function () {
+            s._articleViewTypeObj.isFromInternal(anyReferrer);
+            expect(getDomainFromURLStringMock).toHaveBeenLastCalledWith(anyReferrer);
+        });
+
+        it('should return TRUE if referring domain is from the same domain', function () {
+            const anyDomain = 'any-domain.com';
+            window.document.domain = anyDomain;
+            getDomainFromURLStringMock.mockReturnValue(anyDomain);
+            const result = s._articleViewTypeObj.isFromInternal(anyReferrer);
+            expect(result).toBe(true);
+        });
+
+        it('should return FALSE if referring domain is NOT from the same domain', function () {
+            window.document.domain = 'any-domain.com';
+            getDomainFromURLStringMock.mockReturnValue('any-other-domain.com');
+            const result = s._articleViewTypeObj.isFromInternal(anyReferrer);
+            expect(result).toBe(false);
+        });
+
+        it('should return TRUE if referring domain is from sub domain', function () {
+            const anyDomain = 'any-domain.com';
+            window.document.domain = anyDomain;
+            getDomainFromURLStringMock.mockReturnValue(`any-sub-domain.${anyDomain}`);
+            const result = s._articleViewTypeObj.isFromInternal(anyReferrer);
+            expect(result).toBe(true);
+        });
+    });
+
     describe('isFromBild()', () => {
         it('should return TRUE if referrer is www.bild.de', () => {
             const referringDomain = 'www.bild.de';
@@ -92,74 +129,6 @@ describe('articleViewType()', () => {
             const referringDomain = 'any-domain.de';
             const result = s._articleViewTypeObj.isFromBildMobile(referringDomain);
             expect(result).toBe(false);
-        });
-    });
-
-    describe('isFromBildHomeWithTaboola()', () => {
-        it('should return TRUE if referrer is https://trc.taboola.com/bilddedt/ and location.search has param wtmc', () => {
-            const referrer = 'https://trc.taboola.com/bilddedt/any-path';
-            const search = '?wtmc=any-value';
-            const result = s._articleViewTypeObj.isFromBildHomeWithTaboola(referrer, search);
-            expect(result).toBe(true);
-        });
-
-        it('should NOT return TRUE if referrer is NOT https://trc.taboola.com/bilddedt/ and location.search has param wtmc', () => {
-            const referrer = 'https://any-domain.com';
-            const search = '?wtmc=any-value';
-            const result = s._articleViewTypeObj.isFromBildHomeWithTaboola(referrer, search);
-            expect(result).toBe(false);
-        });
-
-        it('should NOT return TRUE if referrer is https://trc.taboola.com/bilddedt/ and location.search has NOT param wtmc', () => {
-            const referrer = 'https://trc.taboola.com/bilddedt/any-path';
-            const search = '?any-param=any-value';
-            const result = s._articleViewTypeObj.isFromBildHomeWithTaboola(referrer, search);
-            expect(result).toBe(false);
-        });
-    });
-
-    describe('isFromBildMobileHomeWithTaboola()', () => {
-        it('should return TRUE if referrer is https://trc.taboola.com/bilddemw/ and location.search has param wtmc', () => {
-            const referrer = 'https://trc.taboola.com/bilddemw/any-path';
-            const search = '?wtmc=any-value';
-            const result = s._articleViewTypeObj.isFromBildMobileHomeWithTaboola(referrer, search);
-            expect(result).toBe(true);
-        });
-
-        it('should NOT return TRUE if referrer is NOT https://trc.taboola.com/bilddemw/ and location.search has param wtmc', () => {
-            const referrer = 'https://any-domain.com';
-            const search = '?wtmc=any-value';
-            const result = s._articleViewTypeObj.isFromBildMobileHomeWithTaboola(referrer, search);
-            expect(result).toBe(false);
-        });
-
-        it('should NOT return TRUE if referrer is https://trc.taboola.com/bilddemw/ and location.search has NOT param wtmc', () => {
-            const referrer = 'https://trc.taboola.com/bilddemw/any-path';
-            const search = '?any-param=any-value';
-            const result = s._articleViewTypeObj.isFromBildMobileHomeWithTaboola(referrer, search);
-            expect(result).toBe(false);
-        });
-    });
-
-    describe('isFromInternal()', function () {
-        it('should return TRUE if referring domain is from the same domain', function () {
-            const anyDomain = 'any-domain.com';
-            const result = s._articleViewTypeObj.isFromInternal(anyDomain, anyDomain);
-            expect(result).toBe(true);
-        });
-
-        it('should return FALSE if referring domain is NOT from the same domain', function () {
-            const anyDomain = 'any-domain.com';
-            const anyOtherDomain = 'any-other-domain.com';
-            const result = s._articleViewTypeObj.isFromInternal(anyDomain, anyOtherDomain);
-            expect(result).toBe(false);
-        });
-
-        it('should return TRUE if referring domain is from sub domain', function () {
-            const anyDomain = 'any-domain.de';
-            const referringDomain = `any-sub-domain.${anyDomain}`;
-            const result = s._articleViewTypeObj.isFromInternal(referringDomain, anyDomain);
-            expect(result).toBe(true);
         });
     });
 
@@ -219,28 +188,208 @@ describe('articleViewType()', () => {
         });
     });
 
-    describe('isFromTaboola()', () => {
+    describe('isFromRecommendation', () => {
+        const anyReferrer = 'https://any-referrer-domain.com/any-path';
+        const recommendationDomain = 'traffic.outbrain.com';
+        let getDomainFromURLStringMock;
+
+        beforeEach(() => {
+            getDomainFromURLStringMock = jest.spyOn(s._utils, 'getDomainFromURLString').mockReturnValue('');
+        });
+
+        it('should return TRUE if referrer is from recommendation service', function () {
+            getDomainFromURLStringMock.mockReturnValue(recommendationDomain);
+            const result = s._articleViewTypeObj.isFromRecommendation(anyReferrer);
+            expect(getDomainFromURLStringMock).toHaveBeenLastCalledWith(anyReferrer);
+            expect(result).toBe(true);
+        });
+
+        it('should return FALSE if referrer is NOT from recommendation service', function () {
+            getDomainFromURLStringMock.mockReturnValue('any-other-domain.com');
+            const result = s._articleViewTypeObj.isFromRecommendation(anyReferrer);
+            expect(getDomainFromURLStringMock).toHaveBeenLastCalledWith(anyReferrer);
+            expect(result).toBe(false);
+        });
+    });
+
+    describe('isFromArticleWithReco()', () => {
         let getTrackingValueMock;
         beforeEach(() => {
             getTrackingValueMock = jest.spyOn(s._articleViewTypeObj, 'getTrackingValue');
         });
 
-        afterEach(() => {
-            jest.restoreAllMocks();
-        });
-
-        it('should return TRUE if referrer is from Taboola context', function () {
-            const taboolaTrackingValue = 'kooperation.reco.taboola.any-text';
-            getTrackingValueMock.mockReturnValue(taboolaTrackingValue);
-            const result = s._articleViewTypeObj.isFromTaboola();
+        it('should return TRUE if article URL contains recommendation parameter', function () {
+            const outbrainTrackingValue = 'kooperation.article.outbrain.anything';
+            getTrackingValueMock.mockReturnValue(outbrainTrackingValue);
+            const result = s._articleViewTypeObj.isFromArticleWithReco();
             expect(result).toBe(true);
         });
 
-        it('should return FALSE if referrer is NOT from Taboola context', function () {
+        it('should return FALSE if article URL NOT contains recommendation parameter', function () {
             const anyTrackingValue = 'any-tracking-value';
             getTrackingValueMock.mockReturnValue(anyTrackingValue);
-            const result = s._articleViewTypeObj.isFromTaboola();
+            const result = s._articleViewTypeObj.isFromArticleWithReco();
             expect(result).toBe(false);
+        });
+    });
+
+    describe('isFromHomeDesktopWithReco()', () => {
+        let getTrackingValueMock;
+        beforeEach(() => {
+            getTrackingValueMock = jest.spyOn(s._articleViewTypeObj, 'getTrackingValue');
+        });
+
+        it('should return TRUE if article URL contains recommendation parameter (home/desktop)', function () {
+            const outbrainTrackingValue = 'kooperation.home.outbrain.desktop';
+            getTrackingValueMock.mockReturnValue(outbrainTrackingValue);
+            const result = s._articleViewTypeObj.isFromHomeDesktopWithReco();
+            expect(result).toBe(true);
+        });
+
+        it('should return FALSE if article URL NOT contains recommendation parameter (home/desktop)', function () {
+            const anyTrackingValue = 'any-tracking-value';
+            getTrackingValueMock.mockReturnValue(anyTrackingValue);
+            const result = s._articleViewTypeObj.isFromHomeDesktopWithReco();
+            expect(result).toBe(false);
+        });
+    });
+
+    describe('isFromHomeMobileWithReco()', () => {
+        let getTrackingValueMock;
+        beforeEach(() => {
+            getTrackingValueMock = jest.spyOn(s._articleViewTypeObj, 'getTrackingValue');
+        });
+
+        it('should return TRUE if article URL contains recommendation parameter (home/desktop)', function () {
+            const outbrainTrackingValue = 'kooperation.home.outbrain.mobile';
+            getTrackingValueMock.mockReturnValue(outbrainTrackingValue);
+            const result = s._articleViewTypeObj.isFromHomeMobileWithReco();
+            expect(result).toBe(true);
+        });
+
+        it('should return FALSE if article URL NOT contains recommendation parameter (home/desktop)', function () {
+            const anyTrackingValue = 'any-tracking-value';
+            getTrackingValueMock.mockReturnValue(anyTrackingValue);
+            const result = s._articleViewTypeObj.isFromHomeMobileWithReco();
+            expect(result).toBe(false);
+        });
+    });
+
+    describe('getInternalType()', () => {
+        let isFromHomeMock;
+
+        beforeEach(() => {
+            isFromHomeMock = jest.spyOn(s._articleViewTypeObj, 'isFromHome').mockReturnValue(false);
+        });
+
+        it('should return event22 if referrer is a home page', function () {
+            const anyReferrer = 'http://www.any-domain.de';
+            isFromHomeMock.mockReturnValue(true);
+            const result = s._articleViewTypeObj.getInternalType('http://www.any-domain.de');
+            expect(isFromHomeMock).toHaveBeenCalledWith(anyReferrer);
+            expect(result).toBe('event22');
+        });
+
+        it('should return event23 if referrer is NOT a home page', function () {
+            const anyReferrer = 'http://www.any-domain.de';
+            isFromHomeMock.mockReturnValue(false);
+            const result = s._articleViewTypeObj.getInternalType(anyReferrer);
+            expect(isFromHomeMock).toHaveBeenCalledWith(anyReferrer);
+            expect(result).toBe('event23');
+        });
+    });
+
+    describe('getRecommendationType()', () => {
+        let isFromHomeDesktopWithRecoMock;
+        let isFromHomeMobileWithRecoMock;
+        let isFromArticleWithRecoMock;
+
+        beforeEach(() => {
+            isFromHomeDesktopWithRecoMock = jest.spyOn(s._articleViewTypeObj, 'isFromHomeDesktopWithReco').mockReturnValue(false);
+            isFromHomeMobileWithRecoMock = jest.spyOn(s._articleViewTypeObj, 'isFromHomeMobileWithReco').mockReturnValue(false);
+            isFromArticleWithRecoMock = jest.spyOn(s._articleViewTypeObj, 'isFromArticleWithReco').mockReturnValue(false);
+        });
+
+        it('should return event76 if referrer is from desktop homepage recommendation teaser', function () {
+            isFromHomeDesktopWithRecoMock.mockReturnValue(true);
+            const result = s._articleViewTypeObj.getRecommendationType();
+            expect(isFromHomeDesktopWithRecoMock).toHaveBeenCalled();
+            expect(result).toBe('event76');
+        });
+
+        it('should return event77 if referrer is from mobile homepage recommendation teaser', function () {
+            isFromHomeMobileWithRecoMock.mockReturnValue(true);
+            const result = s._articleViewTypeObj.getRecommendationType();
+            expect(isFromHomeMobileWithRecoMock).toHaveBeenCalled();
+            expect(result).toBe('event77');
+        });
+
+        it('should return event102 if referrer is from article recommendation teaser', function () {
+            isFromArticleWithRecoMock.mockReturnValue(true);
+            const result = s._articleViewTypeObj.getRecommendationType();
+            expect(isFromArticleWithRecoMock).toHaveBeenCalled();
+            expect(result).toBe('event102');
+        });
+
+        it('should return event27 (other external) in any other cases', function () {
+            const result = s._articleViewTypeObj.getRecommendationType();
+            expect(result).toBe('event27');
+        });
+    });
+
+    describe('getExternalType()', () => {
+        const anyReferrerDomain = 'www.any-domain.com';
+        const anyReferrer = 'https://www.any-domain.com';
+        let isFromSearchMock;
+        let isFromSocialMock;
+        let isFromBildMock;
+        let isFromBildMobileMock;
+        let isFromHomeMock;
+
+        beforeEach(() => {
+            jest.spyOn(s._utils, 'getDomainFromURLString').mockReturnValue(anyReferrerDomain);
+            isFromSearchMock = jest.spyOn(s._articleViewTypeObj, 'isFromSearch').mockReturnValue(false);
+            isFromSocialMock = jest.spyOn(s._articleViewTypeObj, 'isFromSocial').mockReturnValue(false);
+            isFromBildMock = jest.spyOn(s._articleViewTypeObj, 'isFromBild').mockReturnValue(false);
+            isFromBildMobileMock = jest.spyOn(s._articleViewTypeObj, 'isFromBildMobile').mockReturnValue(false);
+            isFromHomeMock = jest.spyOn(s._articleViewTypeObj, 'isFromHome').mockReturnValue(false);
+        });
+
+        it('should return event24 if referrer is from search engine', function () {
+            isFromSearchMock.mockReturnValue(true);
+            const result = s._articleViewTypeObj.getExternalType(anyReferrer);
+            expect(isFromSearchMock).toHaveBeenCalledWith(anyReferrerDomain);
+            expect(result).toBe('event24');
+        });
+
+        it('should return event25 if referrer is from social media', function () {
+            isFromSocialMock.mockReturnValue(true);
+            const result = s._articleViewTypeObj.getExternalType(anyReferrer);
+            expect(isFromSocialMock).toHaveBeenCalledWith(anyReferrer);
+            expect(result).toBe('event25');
+        });
+
+        it('should return event76 if referrer is Bild desktop homepage', function () {
+            isFromBildMock.mockReturnValue(true);
+            isFromHomeMock.mockReturnValue(true);
+            const result = s._articleViewTypeObj.getExternalType(anyReferrer);
+            expect(isFromBildMock).toHaveBeenCalledWith(anyReferrerDomain);
+            expect(isFromHomeMock).toHaveBeenCalledWith(anyReferrer);
+            expect(result).toBe('event76');
+        });
+
+        it('should return event77 if referrer is Bild mobile homepage', function () {
+            isFromBildMobileMock.mockReturnValue(true);
+            isFromHomeMock.mockReturnValue(true);
+            const result = s._articleViewTypeObj.getExternalType(anyReferrer);
+            expect(isFromBildMobileMock).toHaveBeenCalledWith(anyReferrerDomain);
+            expect(isFromHomeMock).toHaveBeenCalledWith(anyReferrer);
+            expect(result).toBe('event77');
+        });
+
+        it('should return event27 (other external) in any other cases', function () {
+            const result = s._articleViewTypeObj.getExternalType(anyReferrer);
+            expect(result).toBe('event27');
         });
     });
 
@@ -264,123 +413,57 @@ describe('articleViewType()', () => {
     });
 
     describe('getViewTypeByReferrer()', () => {
-        let isFromSearchMock;
-        let isFromSocialMock;
         let isFromInternalMock;
-        let isFromHomeMock;
-        let isFromTaboolaMock;
-        let isFromBildMock;
-        let isFromBildHomeWithTaboolaMock;
-        let isFromBildMobileMock;
-        let isFromBildHomeMobileWithTaboolaMock;
+        let isFromRecommendationMock;
+        let getInternalTypeMock;
+        let getRecommendationTypeMock;
+        let getExternalTypeMock;
         let getReferrerFromLocationHashMock;
-        let getDomainFromURLStringMock;
+
 
         beforeEach(() => {
-            isFromSearchMock = jest.spyOn(s._articleViewTypeObj, 'isFromSearch').mockReturnValue(false);
-            isFromSocialMock = jest.spyOn(s._articleViewTypeObj, 'isFromSocial').mockReturnValue(false);
             isFromInternalMock = jest.spyOn(s._articleViewTypeObj, 'isFromInternal').mockReturnValue(false);
-            isFromHomeMock = jest.spyOn(s._articleViewTypeObj, 'isFromHome').mockReturnValue(false);
-            isFromTaboolaMock = jest.spyOn(s._articleViewTypeObj, 'isFromTaboola').mockReturnValue(false);
-            isFromBildMock = jest.spyOn(s._articleViewTypeObj, 'isFromBild').mockReturnValue(false);
-            isFromBildMobileMock = jest.spyOn(s._articleViewTypeObj, 'isFromBildMobile').mockReturnValue(false);
-            isFromBildHomeWithTaboolaMock = jest.spyOn(s._articleViewTypeObj, 'isFromBildHomeWithTaboola').mockReturnValue(false);
-            isFromBildHomeMobileWithTaboolaMock = jest.spyOn(s._articleViewTypeObj, 'isFromBildMobileHomeWithTaboola').mockReturnValue(false);
+            isFromRecommendationMock = jest.spyOn(s._articleViewTypeObj, 'isFromRecommendation').mockReturnValue(false);
+            getInternalTypeMock = jest.spyOn(s._articleViewTypeObj, 'getInternalType').mockReturnValue(false);
+            getRecommendationTypeMock = jest.spyOn(s._articleViewTypeObj, 'getRecommendationType').mockReturnValue(false);
+            getExternalTypeMock = jest.spyOn(s._articleViewTypeObj, 'getExternalType').mockReturnValue(false);
             getReferrerFromLocationHashMock = jest.spyOn(s._articleViewTypeObj, 'getReferrerFromLocationHash').mockReturnValue('');
-            getDomainFromURLStringMock = jest.spyOn(s._utils, 'getDomainFromURLString').mockReturnValue('');
-        });
-
-        afterEach(() => {
-            jest.restoreAllMocks();
         });
 
         it('should use the URL from the location hash as the referrer if available', () => {
             const anyReferrerFromHash = 'any-referrer-from-hash';
             getReferrerFromLocationHashMock.mockReturnValue(anyReferrerFromHash);
             s._articleViewTypeObj.getViewTypeByReferrer();
-            expect(getDomainFromURLStringMock).toHaveBeenCalledWith(anyReferrerFromHash);
+            expect(isFromInternalMock).toHaveBeenCalledWith(anyReferrerFromHash);
         });
 
         it('should use the document referrer if the location hash is NOT available', () => {
             window.document.referrer = 'any-document-referrer';
             s._articleViewTypeObj.getViewTypeByReferrer();
-            expect(getDomainFromURLStringMock).toHaveBeenCalledWith(window.document.referrer);
+            expect(isFromInternalMock).toHaveBeenCalledWith(window.document.referrer);
         });
 
-        it('should return the right event name if referrer is of type: Other External', () => {
-            const result = s._articleViewTypeObj.getViewTypeByReferrer();
-            expect(result).toBe('event27');
-        });
-
-        it('should return the right event name if referrer is of type: Search', () => {
-            isFromSearchMock.mockReturnValue(true);
-            const result = s._articleViewTypeObj.getViewTypeByReferrer();
-            expect(result).toBe('event24');
-        });
-
-        it('should return the right event name if referrer is of type: Social', () => {
-            isFromSocialMock.mockReturnValue(true);
-            const result = s._articleViewTypeObj.getViewTypeByReferrer();
-            expect(result).toBe('event25');
-        });
-
-        it('should return the right event name if referrer is of type: Taboola', () => {
-            isFromTaboolaMock.mockReturnValue(true);
+        it('should call getInternalType(referrer) and return its result if referrer is from internal (same domain)', () => {
+            const anyInternalType = 'any-internal-type';
+            isFromInternalMock.mockReturnValue(true);
+            getInternalTypeMock.mockReturnValue(anyInternalType);
             let result = s._articleViewTypeObj.getViewTypeByReferrer();
-            expect(result).toBe('event102');
-
-            isFromTaboolaMock.mockReturnValue(false);
-            result = s._articleViewTypeObj.getViewTypeByReferrer();
-            expect(result).not.toBe('event102');
+            expect(result).toBe(anyInternalType);
         });
 
-        it('should return the right event name if referrer is of type: Home', () => {
-            isFromInternalMock.mockReturnValue(true);
-            isFromHomeMock.mockReturnValue(true);
+        it('should call getRecommendationType(referrer) and return its result if referrer is from recommendation service (Outbrain)', () => {
+            const anyRecommendationType = 'any-reco-type';
+            isFromRecommendationMock.mockReturnValue(true);
+            getRecommendationTypeMock.mockReturnValue(anyRecommendationType);
             let result = s._articleViewTypeObj.getViewTypeByReferrer();
-            expect(result).toBe('event22');
-
-            isFromInternalMock.mockReturnValue(false);
-            isFromHomeMock.mockReturnValue(true);
-            result = s._articleViewTypeObj.getViewTypeByReferrer();
-            expect(result).not.toBe('event22');
-
-            isFromInternalMock.mockReturnValue(true);
-            isFromHomeMock.mockReturnValue(false);
-            result = s._articleViewTypeObj.getViewTypeByReferrer();
-            expect(result).not.toBe('event22');
+            expect(result).toBe(anyRecommendationType);
         });
 
-        it('should return the right event name if referrer is of type: Other Internal', () => {
-            isFromInternalMock.mockReturnValue(true);
-            const result = s._articleViewTypeObj.getViewTypeByReferrer();
-            expect(result).toBe('event23');
-        });
-
-        it('should return the right event name if referrer is of type: Bild Homepage', () => {
-            isFromBildMock.mockReturnValue(true);
-            isFromHomeMock.mockReturnValue(true);
-            const result = s._articleViewTypeObj.getViewTypeByReferrer();
-            expect(result).toBe('event76');
-        });
-
-        it('should return the right event name if referrer is of type: Bild Homepage', () => {
-            isFromBildHomeWithTaboolaMock.mockReturnValue(true);
-            const result = s._articleViewTypeObj.getViewTypeByReferrer();
-            expect(result).toBe('event76');
-        });
-
-        it('should return the right event name if referrer is of type: Bild Mobile Homepage', () => {
-            isFromBildMobileMock.mockReturnValue(true);
-            isFromHomeMock.mockReturnValue(true);
-            const result = s._articleViewTypeObj.getViewTypeByReferrer();
-            expect(result).toBe('event77');
-        });
-
-        it('should return the right event name if referrer is of type: Bild Mobile Homepage', () => {
-            isFromBildHomeMobileWithTaboolaMock.mockReturnValue(true);
-            const result = s._articleViewTypeObj.getViewTypeByReferrer();
-            expect(result).toBe('event77');
+        it('should call getExternalType(referrer) and return its result if referrer is from an external domain', () => {
+            const anyExternalType = 'any-external-type';
+            getExternalTypeMock.mockReturnValue(anyExternalType);
+            let result = s._articleViewTypeObj.getViewTypeByReferrer();
+            expect(result).toBe(anyExternalType);
         });
     });
 
@@ -496,12 +579,36 @@ describe('articleViewType()', () => {
         });
     });
 
-    describe('setViewType()', () => {
+    describe('isPageViewFromHome', () => {
+        it('should return TRUE if page-view-type is event22', function () {
+            const result = s._articleViewTypeObj.isPageViewFromHome('event22');
+            expect(result).toBe(true);
+        });
+
+        it('should return TRUE if page-view-type is event76', function () {
+            const result = s._articleViewTypeObj.isPageViewFromHome('event22');
+            expect(result).toBe(true);
+        });
+
+        it('should return TRUE if page-view-type is event77', function () {
+            const result = s._articleViewTypeObj.isPageViewFromHome('event22');
+            expect(result).toBe(true);
+        });
+
+        it('should return FALSE if page-view-type is NOT event22, event76 orevent77', function () {
+            const result = s._articleViewTypeObj.isPageViewFromHome('event123');
+            expect(result).toBe(false);
+        });
+    });
+
+    describe('setViewTypes()', () => {
         let isArticlePageMock;
         let getViewTypeByReferrerMock;
         let getViewTypeByTrackingPropertyMock;
         let setPageSourceAndAgeForCheckoutMock;
         let addEventMock;
+        let isPageViewFromHomeMock;
+        let setHomeTeaserPropertiesMock;
 
         beforeEach(() => {
             isArticlePageMock = jest.spyOn(s._utils, 'isArticlePage');
@@ -509,48 +616,29 @@ describe('articleViewType()', () => {
             getViewTypeByTrackingPropertyMock = jest.spyOn(s._articleViewTypeObj, 'getViewTypeByTrackingProperty').mockImplementation();
             setPageSourceAndAgeForCheckoutMock = jest.spyOn(s._articleViewTypeObj, 'setPageSourceAndAgeForCheckout').mockImplementation();
             addEventMock = jest.spyOn(s._eventsObj, 'addEvent').mockImplementation();
+            isPageViewFromHomeMock = jest.spyOn(s._articleViewTypeObj, 'isPageViewFromHome').mockImplementation();
+            setHomeTeaserPropertiesMock = jest.spyOn(s._homeTeaserTrackingObj, 'setHomeTeaserProperties').mockImplementation();
         });
 
         afterEach(() => {
             jest.restoreAllMocks();
         });
 
-        it('should evaluate the article-view-type on article pages', function () {
-            isArticlePageMock.mockReturnValue(true);
-
-            s._articleViewTypeObj.setViewType(s);
-            expect(getViewTypeByTrackingPropertyMock).toHaveBeenCalled();
-        });
-
-        it('should NOT evaluate the article-view-type on NON article pages', function () {
-            isArticlePageMock.mockReturnValue(false);
-
-            s._articleViewTypeObj.setViewType(s);
-            expect(getViewTypeByTrackingPropertyMock).not.toHaveBeenCalled();
-        });
-
-        it('should NOT evaluate the article-view-type when ad blocker is on', function () {
-            window.utag.data.adobe_doc_type = 'ad wall';
-
-            s._articleViewTypeObj.setViewType(s);
-            expect(getViewTypeByTrackingPropertyMock).not.toHaveBeenCalled();
-        });
-
         it('should evaluate referrer URL when available to determine article-view-type', function () {
             isArticlePageMock.mockReturnValue(true);
             window.document.referrer = 'any-referrer-url';
-            s._articleViewTypeObj.setViewType(s);
+            s._articleViewTypeObj.setViewTypes(s);
             expect(getViewTypeByReferrerMock).toHaveBeenCalled();
         });
 
         it('should evaluate tracking URL param when referrer is NOT available', function () {
             isArticlePageMock.mockReturnValue(true);
             window.document.referrer = '';
-            s._articleViewTypeObj.setViewType(s);
+            s._articleViewTypeObj.setViewTypes(s);
             expect(getViewTypeByTrackingPropertyMock).toHaveBeenCalled();
         });
 
-        it('should assign the article-view-type to s._articleViewType and s.eVar44', function () {
+        it('should assign the page-view-type to s._articleViewType and s.eVar44 if page is of type article', function () {
             const anyViewType = 'any-view-type';
             isArticlePageMock.mockReturnValue(true);
             getViewTypeByTrackingPropertyMock.mockReturnValue(anyViewType);
@@ -558,28 +646,95 @@ describe('articleViewType()', () => {
             expect(s._articleViewType).toBeUndefined();
             expect(s.eVar44).toBeUndefined();
 
-            s._articleViewTypeObj.setViewType(s);
+            s._articleViewTypeObj.setViewTypes(s);
 
             expect(s._articleViewType).toBe(anyViewType);
             expect(s.eVar44).toBe(anyViewType);
         });
 
-        it('should call setPageSourceAndAgeForCheckout() function', function () {
+        it('should NOT evaluate the article-view-type when ad blocker is on', function () {
+            window.utag.data.adobe_doc_type = 'ad wall';
+
+            s._articleViewTypeObj.setViewTypes(s);
+            expect(s._articleViewType).toBeUndefined();
+        });
+
+        it('should NOT assign the page-view-type to s._articleViewType and s.eVar44 if page is NOT of type article', function () {
+            const anyViewType = 'any-view-type';
+            isArticlePageMock.mockReturnValue(false);
+            getViewTypeByTrackingPropertyMock.mockReturnValue(anyViewType);
+
+            expect(s._articleViewType).toBeUndefined();
+            expect(s.eVar44).toBeUndefined();
+
+            s._articleViewTypeObj.setViewTypes(s);
+
+            expect(s._articleViewType).toBeUndefined();
+            expect(s.eVar44).toBeUndefined();
+        });
+
+        it('should call setPageSourceAndAgeForCheckout() function if page is of type article', function () {
             isArticlePageMock.mockReturnValue(true);
 
-            s._articleViewTypeObj.setViewType(s);
+            s._articleViewTypeObj.setViewTypes(s);
             expect(setPageSourceAndAgeForCheckoutMock).toHaveBeenCalled();
         });
 
-        it('should call s._eventsObj.addEvent() with article-view-type as the argument', function () {
+        it('should NOT call setPageSourceAndAgeForCheckout() function if page is NOT of type article', function () {
+            isArticlePageMock.mockReturnValue(false);
+
+            s._articleViewTypeObj.setViewTypes(s);
+            expect(setPageSourceAndAgeForCheckoutMock).not.toHaveBeenCalled();
+        });
+
+        it('should call s._eventsObj.addEvent() with pag-view-type as the argument if page is of type article', function () {
             const anyViewType = 'any-view-type';
             isArticlePageMock.mockReturnValue(true);
             getViewTypeByTrackingPropertyMock.mockReturnValue(anyViewType);
 
-            s._articleViewTypeObj.setViewType(s);
+            s._articleViewTypeObj.setViewTypes(s);
 
             expect(addEventMock).toHaveBeenCalledWith(anyViewType);
         });
+
+        it('should NOT call s._eventsObj.addEvent() with pag-view-type as the argument if page is NOT of type article', function () {
+            const anyViewType = 'any-view-type';
+            isArticlePageMock.mockReturnValue(false);
+            getViewTypeByTrackingPropertyMock.mockReturnValue(anyViewType);
+
+            s._articleViewTypeObj.setViewTypes(s);
+
+            expect(addEventMock).not.toHaveBeenCalled();
+        });
+
+        it('should call s._eventsObj.addEvent() with event20 as the argument if page was viewed after the homepage (homepage teaser click)', function () {
+            isPageViewFromHomeMock.mockReturnValue(true);
+            s._articleViewTypeObj.setViewTypes(s);
+
+            expect(addEventMock).toHaveBeenCalledWith('event20');
+        });
+
+        it('should NOT call s._eventsObj.addEvent() with event20 as the argument if page was NOT viewed after the homepage (homepage teaser click)', function () {
+            isPageViewFromHomeMock.mockReturnValue(false);
+            s._articleViewTypeObj.setViewTypes(s);
+
+            expect(addEventMock).not.toHaveBeenCalled();
+        });
+
+        it('should set the homepage teaser tracking properties if page was viewed after the homepage (homepage teaser click)', function () {
+            isPageViewFromHomeMock.mockReturnValue(true);
+            s._articleViewTypeObj.setViewTypes(s);
+
+            expect(setHomeTeaserPropertiesMock).toHaveBeenCalled();
+        });
+
+        it('should NOT set the homepage teaser tracking properties if page was NOT viewed after the homepage (homepage teaser click)', function () {
+            isPageViewFromHomeMock.mockReturnValue(false);
+            s._articleViewTypeObj.setViewTypes(s);
+
+            expect(setHomeTeaserPropertiesMock).not.toHaveBeenCalled();
+        });
+
     });
 
 });

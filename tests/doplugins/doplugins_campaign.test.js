@@ -63,40 +63,47 @@ describe('campaign', () => {
         });
     });
 
-    describe('setCampaignVariables', () => {
-        let getValOnceMock;
+    describe('setCampaignVariableAndCookie', ()=> {
         beforeEach(() => {
-            getValOnceMock = jest.spyOn(s, 'getValOnce').mockImplementation();
+            jest.spyOn(s, 'getValOnce').mockImplementation();
         });
 
         afterEach(() => {
             jest.restoreAllMocks();
         });
 
+        it('should call s.getValOnce() with correct arguments', ()=> {
+            s.eVar88 = 'any-value';
+            s._campaignObj.setCampaignVariableAndCookie(s);
+            expect(s.getValOnce).toHaveBeenCalledWith(s.eVar88, 's_ev0', 0, 'm');
+        });
+    });
+
+    describe('setCampaignVariables', () => {
         it('should get adobe campaign and set correct data', () => {
+            jest.spyOn(s._utils, 'isFirstPageView').mockImplementation().mockReturnValue(true);
             jest.spyOn(s._campaignObj, 'getAdobeCampaign').mockReturnValue('cid=cid.test');
-            getValOnceMock.mockReturnValue('cid=cid.test');
 
             s._campaignObj.setCampaignVariables(s);
 
             expect(window.utag.data.adobe_campaign).toBe('cid=cid.test');
+            expect(s.eVar88).toBe('cid=cid.test');
             expect(s.campaign).toBe('cid=cid.test');
-            expect(s.eVar88).toBe(window.utag.data.adobe_campaign);
-            expect(s.getValOnce).toHaveBeenCalledWith('cid=cid.test', 's_ev0', 0, 'm');
         });
 
-        it('should NOT use plugin getValOnce in first page view context (before consent)', () => {
-            jest.spyOn(s._campaignObj, 'getAdobeCampaign').mockReturnValue('cid=cid.test');
-            jest.spyOn(s._utils, 'isFirstPageView').mockReturnValue(true);
-            getValOnceMock.mockReturnValue('cid=cid.test');
-
-
+        it('should call setCampaignVariableAndCookie() in first page view context (before consent)', () => {
+            jest.spyOn(s._utils, 'isFirstPageView').mockImplementation().mockReturnValue(false);
+            jest.spyOn(s._campaignObj, 'setCampaignVariableAndCookie').mockImplementation();
             s._campaignObj.setCampaignVariables(s);
+            expect(s._campaignObj.setCampaignVariableAndCookie).toHaveBeenCalledWith(s);
+            expect(s.campaign).toBeUndefined();
+        });
 
-            expect(window.utag.data.adobe_campaign).toBe('cid=cid.test');
-            expect(s.campaign).toBe('cid=cid.test');
-            expect(s.eVar88).toBe(window.utag.data.adobe_campaign);
-            expect(s.getValOnce).not.toHaveBeenCalled();
+        it('should NOT call setCampaignVariableAndCookie() with user consent (CMP)', () => {
+            jest.spyOn(s._utils, 'isFirstPageView').mockImplementation().mockReturnValue(true);
+            jest.spyOn(s._campaignObj, 'setCampaignVariableAndCookie').mockImplementation();
+            s._campaignObj.setCampaignVariables(s);
+            expect(s._campaignObj.setCampaignVariableAndCookie).not.toHaveBeenCalled();
         });
 
     });

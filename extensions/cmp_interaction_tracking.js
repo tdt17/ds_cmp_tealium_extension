@@ -99,7 +99,13 @@
         const defaultVendorList = 'adobe_cmp,';
         const hasVendors = !!window.utag.data.consentedVendors && window.utag.data.consentedVendors !== defaultVendorList;
 
-        return hasCMPAfterCookie || hasVendors;
+        // sportbild.bild.de needs special treatment because of sub-domain issues.
+        if (window.utag.data['ut.profile'] === 'bild-sportbild.de') {
+            // hasCMPAfterCookie cannot be used here because it shares cookie with base domain bild.de
+            return hasVendors;
+        } else {
+            return hasCMPAfterCookie || hasVendors;
+        }
     }
 
     function hasUserDeclinedConsent() {
@@ -125,6 +131,7 @@
             // Calling setScrollDepthProperties() will make the current page trackable as the _ppvPreviousPage of the next page view.
             window.cmp._scrollDepthObj.setScrollDepthProperties(window.cmp);
         }
+        window.cmp._campaignObj.setCampaignVariableAndCookie(window.cmp);
     }
 
     function sendFirstPageViewEvent() {

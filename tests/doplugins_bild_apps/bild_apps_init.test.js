@@ -36,21 +36,4 @@ describe('s._bildAppsInit()', () => {
 
         expect(s.eVar94).toBe(`${anyScreenSize}x${anyScreenSize}`);
     });
-
-    it('should call s._setPageAgeForCheckout()', () => {
-        const setPageAgeForCheckoutMock = jest.spyOn(s, '_setPageAgeForCheckout');
-
-        s._bildAppsInit(s);
-
-        expect(setPageAgeForCheckoutMock).toHaveBeenCalled();
-    });
-
-    it('should call s._setPageCmsPathWithoutBild()', () => {
-        const setPageCmsPathWithoutBildMock = jest.spyOn(s, '_setPageCmsPathWithoutBild');
-
-        s._bildAppsInit(s);
-
-        expect(setPageCmsPathWithoutBildMock).toHaveBeenCalledWith(s);
-    });
-
 });

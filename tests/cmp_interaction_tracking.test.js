@@ -238,6 +238,13 @@ describe('CMP Interaction Tracking', () => {
             const result = cmpInteractionTracking.isAfterCMP();
             expect(result).toBe(false);
         });
+
+        it('should return false if utag_main_cmp_after cookie is set to true and profile name is bild-sportbild.de', function () {
+            window.utag.data['cp.utag_main_cmp_after'] = 'true';
+            window.utag.data['ut.profile'] = 'bild-sportbild.de';
+            const result = cmpInteractionTracking.isAfterCMP();
+            expect(result).toBe(false);
+        });
     });
 
     describe('hasUserDeclinedConsent()', () => {
@@ -290,10 +297,26 @@ describe('CMP Interaction Tracking', () => {
             window.cmp = {
                 _scrollDepthObj: {
                     setScrollDepthProperties: jest.fn()
+                },
+                _campaignObj: {
+                    setCampaignVariableAndCookie: jest.fn()
                 }
             };
             cmpInteractionTracking.onUserConsent();
             expect(window.cmp._scrollDepthObj.setScrollDepthProperties).toHaveBeenCalled();
+        });
+
+        it('should call _campaignObj.setCampaignVariableAndCookie() of the doPlugins extension', function () {
+            window.cmp = {
+                _scrollDepthObj: {
+                    setScrollDepthProperties: jest.fn()
+                },
+                _campaignObj: {
+                    setCampaignVariableAndCookie: jest.fn()
+                }
+            };
+            cmpInteractionTracking.onUserConsent();
+            expect(window.cmp._campaignObj.setCampaignVariableAndCookie).toHaveBeenCalledWith(window.cmp);
         });
     });
 

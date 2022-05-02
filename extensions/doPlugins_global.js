@@ -317,16 +317,21 @@ s._articleViewTypeObj = {
     setViewTypes: function (s) {
         const pageViewType = window.document.referrer ? this.getViewTypeByReferrer() : this.getViewTypeByTrackingProperty();
 
-        if (s._utils.isArticlePage()) {
-            s._articleViewType = s.eVar44 = pageViewType;
-            s._eventsObj.addEvent(pageViewType);
-            this.setPageSourceAndAgeForCheckout(s);
+        if (window.utag.data.adobe_doc_type != 'ad wall') {
+
+            if (s._utils.isArticlePage()) {
+                s._articleViewType = s.eVar44 = pageViewType;
+                s._eventsObj.addEvent(pageViewType);
+                this.setPageSourceAndAgeForCheckout(s);
+            }
+    
+            if (this.isPageViewFromHome(pageViewType)) {
+                s._eventsObj.addEvent('event20');
+                s._homeTeaserTrackingObj.setHomeTeaserProperties(s);
+            }
         }
 
-        if (this.isPageViewFromHome(pageViewType)) {
-            s._eventsObj.addEvent('event20');
-            s._homeTeaserTrackingObj.setHomeTeaserProperties(s);
-        }
+        
     }
 };
 

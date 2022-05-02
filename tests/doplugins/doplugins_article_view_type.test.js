@@ -652,6 +652,13 @@ describe('articleViewType()', () => {
             expect(s.eVar44).toBe(anyViewType);
         });
 
+        it('should NOT evaluate the article-view-type when ad blocker is on', function () {
+            window.utag.data.adobe_doc_type = 'ad wall';
+
+            s._articleViewTypeObj.setViewTypes(s);
+            expect(s._articleViewType).toBeUndefined();
+        });
+
         it('should NOT assign the page-view-type to s._articleViewType and s.eVar44 if page is NOT of type article', function () {
             const anyViewType = 'any-view-type';
             isArticlePageMock.mockReturnValue(false);

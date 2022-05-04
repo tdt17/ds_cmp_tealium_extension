@@ -522,26 +522,18 @@ s._campaignObj = {
         if (typeof window.utag.data['qp.wt_mc'] !== 'undefined') {
             return ('wt_mc=' + window.utag.data['qp.wt_mc']);
         }
+        return '';
     },
 
-    setCampaignVariableAndCookie: function(s) {
-        s.campaign = s.getValOnce(s.eVar88, 's_ev0', 0, 'm');
-    },
+    setCampaignVariables: function (s, onUserConsent) {
+        const adobeCampaign = this.getAdobeCampaign();
+        s.eVar88 = window.utag.data.adobe_campaign = adobeCampaign;
 
-    setCampaignVariables: function (s) {
-        window.utag.data.adobe_campaign = this.getAdobeCampaign();
-        //To be updated to a single assignment option after it is unified in tealium
-        const adobeCampaign = s.campaign
-            || window.utag.data['adobe_campaign']
-            || window.utag.data['campaign_value']
-            || '';
-
-        s.eVar88 = adobeCampaign;
-        if (s._utils.isFirstPageView()) {
+        if (s._utils.isFirstPageView() && !onUserConsent) {
             s.campaign = adobeCampaign;
         } else {
             // getValOnce() uses cookies and therefore is not allowed before consent.
-            this.setCampaignVariableAndCookie(s);
+            s.campaign = s.getValOnce(adobeCampaign, 's_ev0', 0, 'm');
         }
     },
 };

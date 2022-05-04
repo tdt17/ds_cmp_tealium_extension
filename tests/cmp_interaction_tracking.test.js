@@ -299,24 +299,24 @@ describe('CMP Interaction Tracking', () => {
                     setScrollDepthProperties: jest.fn()
                 },
                 _campaignObj: {
-                    setCampaignVariableAndCookie: jest.fn()
+                    setCampaignVariables: jest.fn()
                 }
             };
             cmpInteractionTracking.onUserConsent();
             expect(window.cmp._scrollDepthObj.setScrollDepthProperties).toHaveBeenCalled();
         });
 
-        it('should call _campaignObj.setCampaignVariableAndCookie() of the doPlugins extension', function () {
+        it('should call _campaignObj.setCampaignVariables() of the doPlugins extension', function () {
             window.cmp = {
                 _scrollDepthObj: {
                     setScrollDepthProperties: jest.fn()
                 },
                 _campaignObj: {
-                    setCampaignVariableAndCookie: jest.fn()
+                    setCampaignVariables: jest.fn()
                 }
             };
             cmpInteractionTracking.onUserConsent();
-            expect(window.cmp._campaignObj.setCampaignVariableAndCookie).toHaveBeenCalledWith(window.cmp);
+            expect(window.cmp._campaignObj.setCampaignVariables).toHaveBeenCalledWith(window.cmp, true);
         });
     });
 

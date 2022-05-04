@@ -131,7 +131,7 @@
             // Calling setScrollDepthProperties() will make the current page trackable as the _ppvPreviousPage of the next page view.
             window.cmp._scrollDepthObj.setScrollDepthProperties(window.cmp);
         }
-        window.cmp._campaignObj.setCampaignVariableAndCookie(window.cmp);
+        window.cmp._campaignObj.setCampaignVariables(window.cmp, true);
     }
 
     function sendFirstPageViewEvent() {

@@ -132,6 +132,24 @@ describe('articleViewType()', () => {
         });
     });
 
+    describe('isFromSecureMypass()', () => {
+        it('should return TRUE if referrer is secure.mypass.de (login/register)', () => {
+            const socialDomains = ['secure.mypass.de'];
+
+            socialDomains.forEach((item) => {
+                const referrer = `https://${item}/any-path`;
+                const result = s._articleViewTypeObj.isFromSecureMypass(referrer);
+                expect(result).toBe(true);
+            });
+        });
+
+        it('should return FALSE if referrer is NOT secure.mypass.de (login/register)', function () {
+            const referrer = 'https://any-domain/any-path';
+            const result = s._articleViewTypeObj.isFromSocial(referrer);
+            expect(result).toBe(false);
+        });
+    });    
+
     describe('isHomepageSubdomain()', () => {
         it('it should return TRUE for sub domains which can be considered as home pages', () => {
             const homepageSubDomains = [
@@ -345,6 +363,7 @@ describe('articleViewType()', () => {
         let isFromBildMock;
         let isFromBildMobileMock;
         let isFromHomeMock;
+        let isFromSecureMypassMock;
 
         beforeEach(() => {
             jest.spyOn(s._utils, 'getDomainFromURLString').mockReturnValue(anyReferrerDomain);
@@ -353,6 +372,7 @@ describe('articleViewType()', () => {
             isFromBildMock = jest.spyOn(s._articleViewTypeObj, 'isFromBild').mockReturnValue(false);
             isFromBildMobileMock = jest.spyOn(s._articleViewTypeObj, 'isFromBildMobile').mockReturnValue(false);
             isFromHomeMock = jest.spyOn(s._articleViewTypeObj, 'isFromHome').mockReturnValue(false);
+            isFromSecureMypassMock = jest.spyOn(s._articleViewTypeObj, 'isFromSecureMypass').mockReturnValue(false);
         });
 
         it('should return event24 if referrer is from search engine', function () {
@@ -386,6 +406,13 @@ describe('articleViewType()', () => {
             expect(isFromHomeMock).toHaveBeenCalledWith(anyReferrer);
             expect(result).toBe('event77');
         });
+
+        it('should return event23 if referrer is from secure mypass (login/register)', function () {
+            isFromSecureMypassMock.mockReturnValue(true);
+            const result = s._articleViewTypeObj.getExternalType(anyReferrer);
+            expect(isFromSecureMypassMock).toHaveBeenCalledWith(anyReferrer);
+            expect(result).toBe('event23');
+        });    
 
         it('should return event27 (other external) in any other cases', function () {
             const result = s._articleViewTypeObj.getExternalType(anyReferrer);

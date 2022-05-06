@@ -186,6 +186,11 @@ s._articleViewTypeObj = {
         return trackingValue;
     },
 
+    isFromSecureMypass: function (referrer) {
+        const referringDomain = s._utils.getDomainFromURLString(referrer);
+        return referringDomain === 'secure.mypass.de';
+    },
+
     isFromRecommendation: function (referrer) {
         const referringDomain = s._utils.getDomainFromURLString(referrer);
         return referringDomain === 'traffic.outbrain.com';
@@ -248,7 +253,9 @@ s._articleViewTypeObj = {
             return 'event76'; // Bild home
         } else if (this.isFromBildMobile(referringDomain) && this.isFromHome(referrer)) {
             return 'event77'; // Bild mobile home
-        } else {
+        } else if (this.isFromSecureMypass(referrer)) {
+            return 'event23'; // Login via secure.mypass
+        }else {
             return 'event27';
         }
     },

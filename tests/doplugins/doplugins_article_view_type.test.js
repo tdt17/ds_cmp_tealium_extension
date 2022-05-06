@@ -141,14 +141,14 @@ describe('articleViewType()', () => {
             getDomainFromURLStringMock = jest.spyOn(s._utils, 'getDomainFromURLString').mockReturnValue('');
         });
 
-        it('should return TRUE if referrer is from recommendation service', function () {
+        it('should return TRUE if referrer is from secure mypass (login/register)', function () {
             getDomainFromURLStringMock.mockReturnValue(secureMypassDomains);
             const result = s._articleViewTypeObj.isFromSecureMypass(anyReferrer);
             expect(getDomainFromURLStringMock).toHaveBeenLastCalledWith(anyReferrer);
             expect(result).toBe(true);
         });
 
-        it('should return FALSE if referrer is NOT from recommendation service', function () {
+        it('should return FALSE if referrer is NOT from secure mypass (login/register)', function () {
             getDomainFromURLStringMock.mockReturnValue('any-other-domain.com');
             const result = s._articleViewTypeObj.isFromSecureMypass(anyReferrer);
             expect(getDomainFromURLStringMock).toHaveBeenLastCalledWith(anyReferrer);

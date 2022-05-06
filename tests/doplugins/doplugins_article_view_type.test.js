@@ -132,23 +132,29 @@ describe('articleViewType()', () => {
         });
     });
 
-    describe('isFromSecureMypass()', () => {
-        it('should return TRUE if referrer is secure.mypass.de (login/register)', () => {
-            const socialDomains = ['secure.mypass.de'];
+    describe('isFromSecureMypass', () => {
+        const anyReferrer = 'https://any-referrer-domain.com/any-path';
+        const secureMypassDomains = 'secure.mypass.de';
+        let getDomainFromURLStringMock;
 
-            socialDomains.forEach((item) => {
-                const referrer = `https://${item}/any-path`;
-                const result = s._articleViewTypeObj.isFromSecureMypass(referrer);
-                expect(result).toBe(true);
-            });
+        beforeEach(() => {
+            getDomainFromURLStringMock = jest.spyOn(s._utils, 'getDomainFromURLString').mockReturnValue('');
         });
 
-        it('should return FALSE if referrer is NOT secure.mypass.de (login/register)', function () {
-            const referrer = 'https://any-domain/any-path';
-            const result = s._articleViewTypeObj.isFromSocial(referrer);
+        it('should return TRUE if referrer is from recommendation service', function () {
+            getDomainFromURLStringMock.mockReturnValue(secureMypassDomains);
+            const result = s._articleViewTypeObj.isFromSecureMypass(anyReferrer);
+            expect(getDomainFromURLStringMock).toHaveBeenLastCalledWith(anyReferrer);
+            expect(result).toBe(true);
+        });
+
+        it('should return FALSE if referrer is NOT from recommendation service', function () {
+            getDomainFromURLStringMock.mockReturnValue('any-other-domain.com');
+            const result = s._articleViewTypeObj.isFromSecureMypass(anyReferrer);
+            expect(getDomainFromURLStringMock).toHaveBeenLastCalledWith(anyReferrer);
             expect(result).toBe(false);
         });
-    });    
+    });
 
     describe('isHomepageSubdomain()', () => {
         it('it should return TRUE for sub domains which can be considered as home pages', () => {

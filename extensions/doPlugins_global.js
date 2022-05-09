@@ -498,12 +498,12 @@ s._bildPageNameObj = {
             s.eVar5 = 'home';
             s.pageName = 'home : ' + window.utag.data['page_id'];
         } else if (this.isLive()) {
-            window.utag.page_mapped_doctype_for_pagename = 'live';
+            window.utag.data.page_mapped_doctype_for_pagename = 'live';
             s.eVar3 = 'live';
             s.prop3 = 'live';
             s.pageName = 'live : ' + window.utag.data['page_id'];
         } else if (this.isLiveSport()) {
-            window.utag.page_mapped_doctype_for_pagename = 'live-sport';
+            window.utag.data.page_mapped_doctype_for_pagename = 'live-sport';
             s.eVar3 = 'live-sport';
             s.prop3 = 'live-sport';
             s.pageName = 'live-sport : ' + window.utag.data['page_id'];

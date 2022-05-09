@@ -66,6 +66,7 @@ describe('_bildPageNameObj', () => {
     describe('isAdWall', () => {
         it('should be false if pageName is incorrect', () => {
             s.pageName = 'test-12345678';
+            window.utag.data['dom.pathname'] = 'any-value';
             const returnValue = s._bildPageNameObj.isAdWall(s);
             expect(returnValue).toBe(false);
         });

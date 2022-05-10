@@ -86,7 +86,6 @@ describe('s_utils', () => {
                 'page_type',
                 'page_document_type',
                 'adobe_docType',
-                'adobe_doc_type',
                 'ad_page_document_type',
                 'page_mapped_doctype_for_pagename'];
 

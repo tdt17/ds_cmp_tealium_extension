@@ -24,14 +24,14 @@ describe('_bildPageNameObj', () => {
             getDocTypeMock = jest.spyOn(s._utils, 'getDocType').mockImplementation();
         });
 
-        it('should be false if adobe_doc_type is not article', () => {
+        it('should be false if page_mapped_doctype_for_pagename is not article', () => {
             getDocTypeMock.mockReturnValue('any-non-article-type');
 
             const returnValue = s._bildPageNameObj.isDocTypeArticle();
             expect(returnValue).toBe(false);
         });
 
-        it('should be true if adobe_doc_type is article', () => {
+        it('should be true if page_mapped_doctype_for_pagename is article', () => {
             getDocTypeMock.mockReturnValue('article');
 
             const returnValue = s._bildPageNameObj.isDocTypeArticle();
@@ -66,6 +66,7 @@ describe('_bildPageNameObj', () => {
     describe('isAdWall', () => {
         it('should be false if pageName is incorrect', () => {
             s.pageName = 'test-12345678';
+            window.utag.data['dom.pathname'] = 'any-value';
             const returnValue = s._bildPageNameObj.isAdWall(s);
             expect(returnValue).toBe(false);
         });
@@ -82,12 +83,18 @@ describe('_bildPageNameObj', () => {
             expect(returnValue).toBe(true);
         });
 
+        it('should be true if utag.data.dom.pathname contains adblockwall.html', () => {
+            window.utag.data['dom.pathname'] = 'adblockwall.html';
+            const returnValue = s._bildPageNameObj.isAdWall(s);
+            expect(returnValue).toBe(true);
+        });
+
     });
 
     describe('isLive', () => {
-        it('should be false if adobe_doc_type is not article', () => {
+        it('should be false if page_mapped_doctype_for_pagename is not article', () => {
             window.utag.data.page_cms_path = 'test/im-live-ticker';
-            window.utag.data.adobe_doc_type = 'home';
+            window.utag.data.page_mapped_doctype_for_pagename = 'home';
 
             const returnValue = s._bildPageNameObj.isLive();
             expect(returnValue).toBe(false);
@@ -95,15 +102,15 @@ describe('_bildPageNameObj', () => {
 
         it('should be false if page_cms_path is not correct', () => {
             window.utag.data.page_cms_path = 'test/imliveticker';
-            window.utag.data.adobe_doc_type = 'article';
+            window.utag.data.page_mapped_doctype_for_pagename = 'article';
 
             const returnValue = s._bildPageNameObj.isLive();
             expect(returnValue).toBe(false);
         });
 
-        it('should be true if adobe_doc_type is article and page_cms_path contains im-live-ticker', () => {
+        it('should be true if page_mapped_doctype_for_pagename is article and page_cms_path contains im-live-ticker', () => {
             window.utag.data.page_cms_path = 'test/im-live-ticker';
-            window.utag.data.adobe_doc_type = 'article';
+            window.utag.data.page_mapped_doctype_for_pagename = 'article';
 
             const returnValue = s._bildPageNameObj.isLive();
             expect(returnValue).toBe(true);
@@ -111,9 +118,9 @@ describe('_bildPageNameObj', () => {
     });
 
     describe('isLiveSport', () => {
-        it('should be false if adobe_doc_type is not article', () => {
+        it('should be false if page_mapped_doctype_for_pagename is not article', () => {
             window.utag.data.page_cms_path = 'test/im-liveticker';
-            window.utag.data.adobe_doc_type = 'home';
+            window.utag.data.page_mapped_doctype_for_pagename = 'home';
 
             const returnValue = s._bildPageNameObj.isLiveSport();
             expect(returnValue).toBe(false);
@@ -121,24 +128,24 @@ describe('_bildPageNameObj', () => {
 
         it('should be false if page_cms_path is not correct', () => {
             window.utag.data.page_cms_path = 'test/imliveticker';
-            window.utag.data.adobe_doc_type = 'article';
+            window.utag.data.page_mapped_doctype_for_pagename = 'article';
 
             const returnValue = s._bildPageNameObj.isLiveSport();
             expect(returnValue).toBe(false);
         });
 
 
-        it('should be true if adobe_doc_type is article and page_cms_path contains im-liveticker', () => {
+        it('should be true if page_mapped_doctype_for_pagename is article and page_cms_path contains im-liveticker', () => {
             window.utag.data.page_cms_path = 'test/im-liveticker';
-            window.utag.data.adobe_doc_type = 'article';
+            window.utag.data.page_mapped_doctype_for_pagename = 'article';
 
             const returnValue = s._bildPageNameObj.isLiveSport();
             expect(returnValue).toBe(true);
         });
 
-        it('should be true if adobe_doc_type is article and page_cms_path contains /liveticker/', () => {
+        it('should be true if page_mapped_doctype_for_pagename is article and page_cms_path contains /liveticker/', () => {
             window.utag.data.page_cms_path = 'test/liveticker/';
-            window.utag.data.adobe_doc_type = 'article';
+            window.utag.data.page_mapped_doctype_for_pagename = 'article';
 
             const returnValue = s._bildPageNameObj.isLiveSport();
             expect(returnValue).toBe(true);
@@ -165,7 +172,6 @@ describe('_bildPageNameObj', () => {
         it('should not set any data if isAdWall, isHome, isLive, isLiveSport are all false', () => {
             s._bildPageNameObj.setPageName(s);
 
-            expect(window.utag.data.adobe_doc_type).toBeUndefined();
             expect(window.utag.data.page_mapped_doctype_for_pagename).toBeUndefined();
             expect(s.pageName).toBeUndefined();
             expect(s.eVar3).toBeUndefined();
@@ -178,7 +184,7 @@ describe('_bildPageNameObj', () => {
             isAdWall.mockReturnValue(true);
             s._bildPageNameObj.setPageName(s);
 
-            expect(window.utag.data.adobe_doc_type).toBe('ad wall');
+            expect(window.utag.data.page_mapped_doctype_for_pagename).toBe('ad wall');
             expect(s.pageName).toBe('ad wall : ' + s.eVar1);
             expect(s.eVar3).toBe('ad wall');
             expect(s.prop3).toBe('ad wall');
@@ -203,7 +209,7 @@ describe('_bildPageNameObj', () => {
             isLive.mockReturnValue(true);
             s._bildPageNameObj.setPageName(s);
 
-            expect(window.utag.data.adobe_doc_type).toBe('live');
+            expect(window.utag.data.page_mapped_doctype_for_pagename).toBe('live');
             expect(s.eVar3).toBe('live');
             expect(s.prop3).toBe('live');
             expect(s.pageName).toBe('live : ' + window.utag.data.page_id);
@@ -214,7 +220,7 @@ describe('_bildPageNameObj', () => {
             isLiveSport.mockReturnValue(true);
             s._bildPageNameObj.setPageName(s);
 
-            expect(window.utag.data.adobe_doc_type).toBe('live-sport');
+            expect(window.utag.data.page_mapped_doctype_for_pagename).toBe('live-sport');
             expect(s.eVar3).toBe('live-sport');
             expect(s.prop3).toBe('live-sport');
             expect(s.pageName).toBe('live-sport : ' + window.utag.data.page_id);

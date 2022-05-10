@@ -26,28 +26,28 @@ describe('_scrollDepthObj', () => {
         });
 
         it('should return true if doc_type is article', () => {
-            window.utag.data.adobe_doc_type = 'article';
+            window.utag.data.page_mapped_doctype_for_pagename = 'article';
             const result = s._scrollDepthObj.isValidDocType(s);
 
             expect(result).toBe(true);
         });
 
         it('should return true if doc_type is video', () => {
-            window.utag.data.adobe_doc_type = 'video';
+            window.utag.data.page_mapped_doctype_for_pagename = 'video';
             const result = s._scrollDepthObj.isValidDocType(s);
 
             expect(result).toBe(true);
         });
 
         it('should return true if doc_type is single', () => {
-            window.utag.data.adobe_doc_type = 'single';
+            window.utag.data.page_mapped_doctype_for_pagename = 'single';
             const result = s._scrollDepthObj.isValidDocType(s);
 
             expect(result).toBe(true);
         });
 
         it('should return true if doc_type is post', () => {
-            window.utag.data.adobe_doc_type = 'post';
+            window.utag.data.page_mapped_doctype_for_pagename = 'post';
             const result = s._scrollDepthObj.isValidDocType(s);
 
             expect(result).toBe(true);

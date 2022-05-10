@@ -54,7 +54,6 @@ s._utils = {
         return window.utag.data.page_type
             || window.utag.data.page_mapped_doctype_for_pagename
             || window.utag.data.page_document_type
-            || window.utag.data.adobe_doc_type
             || window.utag.data.adobe_docType
             || window.utag.data.ad_page_document_type
             || '';
@@ -324,7 +323,7 @@ s._articleViewTypeObj = {
     setViewTypes: function (s) {
         const pageViewType = window.document.referrer ? this.getViewTypeByReferrer() : this.getViewTypeByTrackingProperty();
 
-        if (window.utag.data.adobe_doc_type != 'ad wall') {
+        if (window.utag.data.page_mapped_doctype_for_pagename != 'ad wall') {
 
             if (s._utils.isArticlePage()) {
                 s._articleViewType = s.eVar44 = pageViewType;
@@ -470,15 +469,15 @@ s._bildPageNameObj = {
     },
 
     isAdWall: function (s) {
-        return !!s.pageName && (s.pageName.indexOf('42925516') !== -1
-            || s.pageName.indexOf('54578900') !== -1);
+        return (!!s.pageName && (s.pageName.indexOf('42925516') !== -1
+            || s.pageName.indexOf('54578900') !== -1) || window.utag.data['dom.pathname'].indexOf('adblockwall.html') !== -1);
     },
 
     isLive: function () {
         return !!this.isDocTypeArticle() && !!window.utag.data.page_cms_path
             && window.utag.data.page_cms_path.indexOf('im-live-ticker') !== -1;
     },
-
+ 
     isLiveSport: function () {
         return !!this.isDocTypeArticle() && !!window.utag.data.page_cms_path
             && (window.utag.data.page_cms_path.indexOf('im-liveticker') !== -1
@@ -487,7 +486,7 @@ s._bildPageNameObj = {
 
     setPageName: function (s) {
         if (this.isAdWall(s)) {
-            window.utag.data.adobe_doc_type = 'ad wall';
+            window.utag.data.page_mapped_doctype_for_pagename = 'ad wall';
             s.pageName = 'ad wall : ' + s.eVar1;
             s.eVar3 = 'ad wall';
             s.prop3 = 'ad wall';
@@ -499,12 +498,12 @@ s._bildPageNameObj = {
             s.eVar5 = 'home';
             s.pageName = 'home : ' + window.utag.data['page_id'];
         } else if (this.isLive()) {
-            window.utag.data.adobe_doc_type = 'live';
+            window.utag.data.page_mapped_doctype_for_pagename = 'live';
             s.eVar3 = 'live';
             s.prop3 = 'live';
             s.pageName = 'live : ' + window.utag.data['page_id'];
         } else if (this.isLiveSport()) {
-            window.utag.data.adobe_doc_type = 'live-sport';
+            window.utag.data.page_mapped_doctype_for_pagename = 'live-sport';
             s.eVar3 = 'live-sport';
             s.prop3 = 'live-sport';
             s.pageName = 'live-sport : ' + window.utag.data['page_id'];

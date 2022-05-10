@@ -24,14 +24,14 @@ describe('_bildPageNameObj', () => {
             getDocTypeMock = jest.spyOn(s._utils, 'getDocType').mockImplementation();
         });
 
-        it('should be false if adobe_doc_type is not article', () => {
+        it('should be false if page_mapped_doctype_for_pagename is not article', () => {
             getDocTypeMock.mockReturnValue('any-non-article-type');
 
             const returnValue = s._bildPageNameObj.isDocTypeArticle();
             expect(returnValue).toBe(false);
         });
 
-        it('should be true if adobe_doc_type is article', () => {
+        it('should be true if page_mapped_doctype_for_pagename is article', () => {
             getDocTypeMock.mockReturnValue('article');
 
             const returnValue = s._bildPageNameObj.isDocTypeArticle();
@@ -92,7 +92,7 @@ describe('_bildPageNameObj', () => {
     });
 
     describe('isLive', () => {
-        it('should be false if adobe_doc_type is not article', () => {
+        it('should be false if page_mapped_doctype_for_pagename is not article', () => {
             window.utag.data.page_cms_path = 'test/im-live-ticker';
             window.utag.data.page_mapped_doctype_for_pagename = 'home';
 
@@ -108,7 +108,7 @@ describe('_bildPageNameObj', () => {
             expect(returnValue).toBe(false);
         });
 
-        it('should be true if adobe_doc_type is article and page_cms_path contains im-live-ticker', () => {
+        it('should be true if page_mapped_doctype_for_pagename is article and page_cms_path contains im-live-ticker', () => {
             window.utag.data.page_cms_path = 'test/im-live-ticker';
             window.utag.data.page_mapped_doctype_for_pagename = 'article';
 
@@ -118,7 +118,7 @@ describe('_bildPageNameObj', () => {
     });
 
     describe('isLiveSport', () => {
-        it('should be false if adobe_doc_type is not article', () => {
+        it('should be false if page_mapped_doctype_for_pagename is not article', () => {
             window.utag.data.page_cms_path = 'test/im-liveticker';
             window.utag.data.page_mapped_doctype_for_pagename = 'home';
 
@@ -135,7 +135,7 @@ describe('_bildPageNameObj', () => {
         });
 
 
-        it('should be true if adobe_doc_type is article and page_cms_path contains im-liveticker', () => {
+        it('should be true if page_mapped_doctype_for_pagename is article and page_cms_path contains im-liveticker', () => {
             window.utag.data.page_cms_path = 'test/im-liveticker';
             window.utag.data.page_mapped_doctype_for_pagename = 'article';
 
@@ -143,7 +143,7 @@ describe('_bildPageNameObj', () => {
             expect(returnValue).toBe(true);
         });
 
-        it('should be true if adobe_doc_type is article and page_cms_path contains /liveticker/', () => {
+        it('should be true if page_mapped_doctype_for_pagename is article and page_cms_path contains /liveticker/', () => {
             window.utag.data.page_cms_path = 'test/liveticker/';
             window.utag.data.page_mapped_doctype_for_pagename = 'article';
 
@@ -172,7 +172,6 @@ describe('_bildPageNameObj', () => {
         it('should not set any data if isAdWall, isHome, isLive, isLiveSport are all false', () => {
             s._bildPageNameObj.setPageName(s);
 
-            //expect(window.utag.data.adobe_doc_type).toBeUndefined();
             expect(window.utag.data.page_mapped_doctype_for_pagename).toBeUndefined();
             expect(s.pageName).toBeUndefined();
             expect(s.eVar3).toBeUndefined();

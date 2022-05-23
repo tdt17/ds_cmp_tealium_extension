@@ -328,7 +328,7 @@ s._articleViewTypeObj = {
                 s._articleViewType = s.eVar44 = pageViewType;
                 s._eventsObj.addEvent(pageViewType);
                 this.setPageSourceAndAgeForCheckout(s);
-             }
+            }
         
             if (this.isPageViewFromHome(pageViewType)) {
                 s._eventsObj.addEvent('event20');

@@ -474,8 +474,8 @@ s._bildPageNameObj = {
     },
 
     isLive: function () {
-        return !!this.isDocTypeArticle() && !!window.utag.data.page_cms_path
-            && window.utag.data.page_cms_path.indexOf('im-live-ticker') !== -1;
+        return !!this.isDocTypeArticle() && !!window.utag.data.is_page_live_article
+            && window.utag.data.is_page_live_article === '1';
     },
  
     isLiveSport: function () {

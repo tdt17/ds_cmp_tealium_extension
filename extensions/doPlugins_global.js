@@ -323,7 +323,7 @@ s._articleViewTypeObj = {
     setViewTypes: function (s) {
         const pageViewType = window.document.referrer ? this.getViewTypeByReferrer() : this.getViewTypeByTrackingProperty();
 
-        if (window.utag.data.customer_adblock.indexOf('false')!=-1) {
+        if (window.utag.data.customer_adblock.indexOf('true')==-1) {
             if (s._utils.isArticlePage()) {
                 s._articleViewType = s.eVar44 = pageViewType;
                 s._eventsObj.addEvent(pageViewType);

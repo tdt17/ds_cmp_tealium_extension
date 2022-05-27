@@ -323,7 +323,7 @@ s._articleViewTypeObj = {
     setViewTypes: function (s) {
         const pageViewType = window.document.referrer ? this.getViewTypeByReferrer() : this.getViewTypeByTrackingProperty();
 
-        if (window.utag.data.customer_adblock.indexOf('true')==-1) {
+        if (!s._bildPageNameObj.isAdWall(s)) {
             if (s._utils.isArticlePage()) {
                 s._articleViewType = s.eVar44 = pageViewType;
                 s._eventsObj.addEvent(pageViewType);
@@ -697,6 +697,7 @@ s._init = function (s) {
         s.eVar94 = window.screen.width + 'x' + window.screen.height;
     }
     
+    s._bildPageNameObj.setPageName(s);
     s._articleViewTypeObj.setViewTypes(s); // Todo: rename s._pageViewTypesObj
     s._ICIDTracking.setVariables(s);
     s._campaignObj.setCampaignVariables(s);

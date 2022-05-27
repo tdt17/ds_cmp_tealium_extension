@@ -651,6 +651,7 @@ describe('articleViewType()', () => {
             addEventMock = jest.spyOn(s._eventsObj, 'addEvent').mockImplementation();
             isPageViewFromHomeMock = jest.spyOn(s._articleViewTypeObj, 'isPageViewFromHome').mockImplementation();
             setHomeTeaserPropertiesMock = jest.spyOn(s._homeTeaserTrackingObj, 'setHomeTeaserProperties').mockImplementation();
+            isAdWallMock = jest.spyOn(s._bildPageNameObj, 'isAdWall').mockImplementation();
         });
 
         afterEach(() => {
@@ -659,23 +660,23 @@ describe('articleViewType()', () => {
 
         it('should evaluate referrer URL when available to determine article-view-type', function () {
             isArticlePageMock.mockReturnValue(true);
+            isAdWallMock.mockReturnValue(false);
             window.document.referrer = 'any-referrer-url';
-            window.utag.data.customer_adblock = 'any-false-value';
             s._articleViewTypeObj.setViewTypes(s);
             expect(getViewTypeByReferrerMock).toHaveBeenCalled();
         });
 
         it('should evaluate tracking URL param when referrer is NOT available', function () {
             isArticlePageMock.mockReturnValue(true);
+            isAdWallMock.mockReturnValue(false);
             window.document.referrer = '';
-            window.utag.data.customer_adblock = 'any-false-value';
             s._articleViewTypeObj.setViewTypes(s);
             expect(getViewTypeByTrackingPropertyMock).toHaveBeenCalled();
         });
 
         it('should assign the page-view-type to s._articleViewType and s.eVar44 if page is of type article', function () {
             const anyViewType = 'any-view-type';
-            window.utag.data.customer_adblock = 'any-false-value';
+            isAdWallMock.mockReturnValue(false);
             isArticlePageMock.mockReturnValue(true);
             getViewTypeByTrackingPropertyMock.mockReturnValue(anyViewType);
 
@@ -689,7 +690,7 @@ describe('articleViewType()', () => {
         });
 
         it('should NOT evaluate the article-view-type when ad blocker is on', function () {
-            window.utag.data.customer_adblock = 'any-true-value';
+            isAdWallMock.mockReturnValue(true);
 
             s._articleViewTypeObj.setViewTypes(s);
             expect(s._articleViewType).toBeUndefined();
@@ -697,7 +698,7 @@ describe('articleViewType()', () => {
 
         it('should NOT assign the page-view-type to s._articleViewType and s.eVar44 if page is NOT of type article', function () {
             const anyViewType = 'any-view-type';
-            window.utag.data.customer_adblock = 'any-false-value';
+            isAdWallMock.mockReturnValue(false);
             isArticlePageMock.mockReturnValue(false);
             getViewTypeByTrackingPropertyMock.mockReturnValue(anyViewType);
 
@@ -711,7 +712,7 @@ describe('articleViewType()', () => {
         });
 
         it('should call setPageSourceAndAgeForCheckout() function if page is of type article', function () {
-            window.utag.data.customer_adblock = 'any-false-value';
+            isAdWallMock.mockReturnValue(false);
             isArticlePageMock.mockReturnValue(true);
 
             s._articleViewTypeObj.setViewTypes(s);
@@ -719,7 +720,7 @@ describe('articleViewType()', () => {
         });
 
         it('should NOT call setPageSourceAndAgeForCheckout() function if page is NOT of type article', function () {
-            window.utag.data.customer_adblock = 'any-false-value';
+            isAdWallMock.mockReturnValue(false);
             isArticlePageMock.mockReturnValue(false);
 
             s._articleViewTypeObj.setViewTypes(s);
@@ -728,7 +729,7 @@ describe('articleViewType()', () => {
 
         it('should call s._eventsObj.addEvent() with pag-view-type as the argument if page is of type article', function () {
             const anyViewType = 'any-view-type';
-            window.utag.data.customer_adblock = 'any-false-value';
+            isAdWallMock.mockReturnValue(false);
             isArticlePageMock.mockReturnValue(true);
             getViewTypeByTrackingPropertyMock.mockReturnValue(anyViewType);
 
@@ -739,7 +740,7 @@ describe('articleViewType()', () => {
 
         it('should NOT call s._eventsObj.addEvent() with pag-view-type as the argument if page is NOT of type article', function () {
             const anyViewType = 'any-view-type';
-            window.utag.data.customer_adblock = 'any-false-value';
+            isAdWallMock.mockReturnValue(false);
             isArticlePageMock.mockReturnValue(false);
             getViewTypeByTrackingPropertyMock.mockReturnValue(anyViewType);
 
@@ -749,7 +750,7 @@ describe('articleViewType()', () => {
         });
 
         it('should call s._eventsObj.addEvent() with event20 as the argument if page was viewed after the homepage (homepage teaser click)', function () {
-            window.utag.data.customer_adblock = 'any-false-value';
+            isAdWallMock.mockReturnValue(false);
             isPageViewFromHomeMock.mockReturnValue(true);
             s._articleViewTypeObj.setViewTypes(s);
 
@@ -757,7 +758,7 @@ describe('articleViewType()', () => {
         });
 
         it('should NOT call s._eventsObj.addEvent() with event20 as the argument if page was NOT viewed after the homepage (homepage teaser click)', function () {
-            window.utag.data.customer_adblock = 'any-false-value';
+            isAdWallMock.mockReturnValue(false);
             isPageViewFromHomeMock.mockReturnValue(false);
             s._articleViewTypeObj.setViewTypes(s);
 
@@ -765,7 +766,7 @@ describe('articleViewType()', () => {
         });
 
         it('should set the homepage teaser tracking properties if page was viewed after the homepage (homepage teaser click)', function () {
-            window.utag.data.customer_adblock = 'any-false-value';
+            isAdWallMock.mockReturnValue(false);
             isPageViewFromHomeMock.mockReturnValue(true);
             s._articleViewTypeObj.setViewTypes(s);
 
@@ -773,7 +774,7 @@ describe('articleViewType()', () => {
         });
 
         it('should NOT set the homepage teaser tracking properties if page was NOT viewed after the homepage (homepage teaser click)', function () {
-            window.utag.data.customer_adblock = 'any-false-value';
+            isAdWallMock.mockReturnValue(false);
             isPageViewFromHomeMock.mockReturnValue(false);
             s._articleViewTypeObj.setViewTypes(s);
 

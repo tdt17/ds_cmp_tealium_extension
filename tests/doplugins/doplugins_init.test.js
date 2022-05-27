@@ -23,7 +23,6 @@ describe('init()', () => {
         setICIDTrackingVariablesMock = jest.spyOn(s._ICIDTracking, 'setVariables').mockImplementation();
         setDensityMock = jest.spyOn(s._plusDensityObj, 'setDensity').mockImplementation();
         setExternalReferringDomainEventsMock = jest.spyOn(s, '_setExternalReferringDomainEvents').mockImplementation();
-        setPageNameMock = jest.spyOn(s._bildPageNameObj, 'setPageName').mockImplementation();
     });
 
     afterEach(() => {
@@ -68,12 +67,6 @@ describe('init()', () => {
 
         s._init(s);
         expect(setCampaignVariablesMock).toHaveBeenCalledWith(s);
-    });
-
-    it('should call s._bildPageNameObj.setPageName(s);', () => {
-
-        s._init(s);
-        expect(setPageNameMock).toHaveBeenCalledWith(s);
     });
 
     it('should call s._articleViewTypeObj.setArticleViewType(s)', () => {

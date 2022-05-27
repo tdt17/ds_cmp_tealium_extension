@@ -651,7 +651,7 @@ describe('articleViewType()', () => {
             addEventMock = jest.spyOn(s._eventsObj, 'addEvent').mockImplementation();
             isPageViewFromHomeMock = jest.spyOn(s._articleViewTypeObj, 'isPageViewFromHome').mockImplementation();
             setHomeTeaserPropertiesMock = jest.spyOn(s._homeTeaserTrackingObj, 'setHomeTeaserProperties').mockImplementation();
-            isAdWallMock = jest.spyOn(s._bildPageNameObj, 'isAdWall').mockImplementation();
+            isAdWallMock = jest.spyOn(s._utils, 'isAdWall').mockImplementation();
         });
 
         afterEach(() => {

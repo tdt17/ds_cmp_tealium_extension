@@ -156,6 +156,7 @@ describe('_bildPageNameObj', () => {
         let isHome;
         let isAdWall;
         let isLive;
+        let isSport;
         let isLiveSport;
 
         beforeEach(() => {
@@ -217,6 +218,7 @@ describe('_bildPageNameObj', () => {
 
         it('should set relevant data if isLiveSport is true', () => {
             window.utag.data.page_id = '12345678';
+            isLive.mockReturnValue(false);
             isLiveSport.mockReturnValue(true);
             s._bildPageNameObj.setPageName(s);
 

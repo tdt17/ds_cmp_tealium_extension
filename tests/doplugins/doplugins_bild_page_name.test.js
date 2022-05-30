@@ -156,7 +156,6 @@ describe('_bildPageNameObj', () => {
         let isHome;
         let isAdWall;
         let isLive;
-        let isSport;
         let isLiveSport;
 
         beforeEach(() => {

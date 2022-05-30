@@ -143,13 +143,6 @@ s._articleViewTypeObj = {
         return referringDomainSegments[referringDomainSegments.length - 2] === documentDomainSegments[documentDomainSegments.length - 2];
     },
 
-    isSport: function (domain) {
-        const sportDomains = ['m.sportdaten.bild.de', 'sportdaten.bild.de', 'm.sport.bild.de', 'sport.bild.de', 'sportdaten.welt.de'];
-
-        return sportDomains.some(item => {
-            return domain.indexOf(item) !== -1;
-        });
-    },
     //Only certain subdomains are considered as homepages: eg. www.bild.de, m.bild.de, sportbild.bild.de
     //Other special subdomains should not be considered: eg. sport.bild.de, online.welt.de
     isHomepageSubdomain: function (domain) {
@@ -489,7 +482,8 @@ s._bildPageNameObj = {
         return !!this.isDocTypeArticle()
             &&!!window.utag.data.page_cms_path
             && (window.utag.data.page_cms_path.indexOf('im-liveticker') !== -1
-                || window.utag.data.page_cms_path.indexOf('/liveticker/') !== -1);
+                || window.utag.data.page_cms_path.indexOf('/liveticker/') !== -1)
+            && !this.isLive();
     },
 
     setPageName: function (s) {
@@ -510,7 +504,7 @@ s._bildPageNameObj = {
             s.eVar3 = 'live';
             s.prop3 = 'live';
             s.pageName = 'live : ' + window.utag.data['page_id'];
-        } else if (this.isLiveSport() && !this.isLive()) {
+        } else if (this.isLiveSport()) {
             window.utag.data.page_mapped_doctype_for_pagename = 'live-sport';
             s.eVar3 = 'live-sport';
             s.prop3 = 'live-sport';

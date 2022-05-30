@@ -93,23 +93,23 @@ describe('_bildPageNameObj', () => {
 
     describe('isLive', () => {
         it('should be false if page_mapped_doctype_for_pagename is not article', () => {
-            window.utag.data.page_cms_path = 'test/im-live-ticker';
+            window.utag.data.is_page_live_article = '1';
             window.utag.data.page_mapped_doctype_for_pagename = 'home';
 
             const returnValue = s._bildPageNameObj.isLive();
             expect(returnValue).toBe(false);
         });
 
-        it('should be false if page_cms_path is not correct', () => {
-            window.utag.data.page_cms_path = 'test/imliveticker';
+        it('should be false if is_page_live_article is not correct', () => {
+            window.utag.data.is_page_live_article = '0';
             window.utag.data.page_mapped_doctype_for_pagename = 'article';
 
             const returnValue = s._bildPageNameObj.isLive();
             expect(returnValue).toBe(false);
         });
 
-        it('should be true if page_mapped_doctype_for_pagename is article and page_cms_path contains im-live-ticker', () => {
-            window.utag.data.page_cms_path = 'test/im-live-ticker';
+        it('should be true if page_mapped_doctype_for_pagename is article and is_page_live_article is 1', () => {
+            window.utag.data.is_page_live_article = '1';
             window.utag.data.page_mapped_doctype_for_pagename = 'article';
 
             const returnValue = s._bildPageNameObj.isLive();
@@ -217,6 +217,7 @@ describe('_bildPageNameObj', () => {
 
         it('should set relevant data if isLiveSport is true', () => {
             window.utag.data.page_id = '12345678';
+            isLive.mockReturnValue(false);
             isLiveSport.mockReturnValue(true);
             s._bildPageNameObj.setPageName(s);
 

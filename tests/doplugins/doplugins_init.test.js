@@ -33,6 +33,7 @@ describe('init()', () => {
     it('should set global configuration properties of the Adobe s-object', () => {
         window.document.referrer = 'any_referrer';
         window.navigator.userAgent = 'any-user-agent';
+        window.utag.data['dom.pathname'] = 'any-pathname';
         s._init(s);
 
         expect(s.currencyCode).toBe('EUR');
@@ -49,6 +50,7 @@ describe('init()', () => {
         const anyScreenSize = 111;
         window.screen.width = window.screen.height = anyScreenSize;
         window.navigator.userAgent = 'Mozilla/5.0 (iPhone; CPU iPhone OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148';
+        
 
         s._init(s);
 
@@ -56,31 +58,37 @@ describe('init()', () => {
     });
 
     it('should NOT set eVar94 when not viewed on iPhones', () => {
+
         s._init(s);
         expect(s.eVar94).toBeUndefined();
     });
 
     it('should call s._campaignObj.setCampaignVariables(s)', () => {
+
         s._init(s);
         expect(setCampaignVariablesMock).toHaveBeenCalledWith(s);
     });
 
     it('should call s._articleViewTypeObj.setArticleViewType(s)', () => {
+
         s._init(s);
         expect(setViewTypesMock).toHaveBeenCalledWith(s);
     });
 
     it('should call s._ICIDTracking.setVariables(s)', () => {
+
         s._init(s);
         expect(setICIDTrackingVariablesMock).toHaveBeenCalledWith(s);
     });
 
     it('should call s._plusDensityObj.setDensity(s)', () => {
+
         s._init(s);
         expect(setDensityMock).toHaveBeenCalledWith(s);
     });
 
     it('should call s._setExternalReferringDomainEvents(s)', () => {
+
         s._init(s);
         expect(setExternalReferringDomainEventsMock).toHaveBeenCalledWith(s);
     });

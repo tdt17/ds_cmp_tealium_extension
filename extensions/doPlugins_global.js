@@ -58,6 +58,13 @@ s._utils = {
             || window.utag.data.ad_page_document_type
             || '';
     },
+
+    isAdWall: function (s) {
+        return (!!s.pageName && (s.pageName.indexOf('42925516') !== -1
+            || s.pageName.indexOf('54578900') !== -1) 
+            || window.utag.data['dom.pathname'].indexOf('adblockwall.html') !== -1);
+    },
+
     isArticlePage: function () {
         const ARTICLE_TYPES = [
             'article',
@@ -323,19 +330,20 @@ s._articleViewTypeObj = {
     setViewTypes: function (s) {
         const pageViewType = window.document.referrer ? this.getViewTypeByReferrer() : this.getViewTypeByTrackingProperty();
 
-        if (window.utag.data.page_mapped_doctype_for_pagename != 'ad wall') {
-
+        if (!s._utils.isAdWall(s)) {
             if (s._utils.isArticlePage()) {
                 s._articleViewType = s.eVar44 = pageViewType;
                 s._eventsObj.addEvent(pageViewType);
                 this.setPageSourceAndAgeForCheckout(s);
             }
-    
+        
             if (this.isPageViewFromHome(pageViewType)) {
                 s._eventsObj.addEvent('event20');
                 s._homeTeaserTrackingObj.setHomeTeaserProperties(s);
             }
         }
+        
+        
 
         
     }
@@ -469,8 +477,7 @@ s._bildPageNameObj = {
     },
 
     isAdWall: function (s) {
-        return (!!s.pageName && (s.pageName.indexOf('42925516') !== -1
-            || s.pageName.indexOf('54578900') !== -1) || window.utag.data['dom.pathname'].indexOf('adblockwall.html') !== -1);
+        return s._utils.isAdWall(s);
     },
 
     isLive: function () {
@@ -697,7 +704,7 @@ s._init = function (s) {
     if (window.navigator.userAgent.indexOf('iPhone') > -1) {
         s.eVar94 = window.screen.width + 'x' + window.screen.height;
     }
-
+    
     s._articleViewTypeObj.setViewTypes(s); // Todo: rename s._pageViewTypesObj
     s._ICIDTracking.setVariables(s);
     s._campaignObj.setCampaignVariables(s);

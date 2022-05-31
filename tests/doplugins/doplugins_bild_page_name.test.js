@@ -73,6 +73,7 @@ describe('_bildPageNameObj', () => {
 
         it('should be true if pageName contains 42925516', () => {
             s.pageName = 'test-42925516';
+            window.utag.data['dom.pathname'] = 'any-value';
             const returnValue = s._bildPageNameObj.isAdWall(s);
             expect(returnValue).toBe(true);
         });

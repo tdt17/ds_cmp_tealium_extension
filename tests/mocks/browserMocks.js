@@ -19,7 +19,10 @@ function createWindowMock() {
     return {
         document: {
             referrer: '',
-            domain: ''
+            domain: '',
+            location: {
+                pathname: ''
+            }
         },
         navigator: {
             userAgent: ''

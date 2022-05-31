@@ -9,7 +9,7 @@ The various features of this extension are provided as a collection of Javascrip
 Adobe Analytics 's-object'. A common practice and already existing pattern. 
 
 ## Tracking Features
-* [Marketing Channels / Article View Types](#marketing-channels--article-view-typeas-s_articleviewtypeobj)
+* [Page View Events](#page-view-types-s_articleviewtypeobj)
 * [External Referrer Events](#external-referrer-events-s_setexternalreferringdomainevents)
 * [Kameleoon Tracking](#kameleoon-s_setkameleoontracking)
 * [Homepage Teaser Tracking](#homepage-teaser-tracking-s_setteasertrackingevars)
@@ -20,34 +20,40 @@ Adobe Analytics 's-object'. A common practice and already existing pattern.
 * [Plusdichte Tracking](#plusdicht-tracking-s_plusdensityobj)
 
 
-### Marketing Channels / Article View Types (s._articleViewTypeObj)
-This feature sets certain marketing channels (events) according to the referring context of an article view.
+### Page View Types (s._articleViewTypeObj)
+This feature sets page-view events according to the referring context of an article view.
 It tracks from where (from which sources/URLs) the readers of articles are coming from. These sources are grouped and 
-categorized and in the end assigned to a certain view-type events (eg. event22, event27, etc.).
+categorized and in the end assigned to a certain page-view events (eg. event22, event27, etc.).
 
-There are two main groups of marketing channels:
+There are two ways of evaluating the event type:
 
-    1. Direct Channels
-    2. Online Channels
+    1. By tracking value
+    2. By document referrer
 
-#### Direct Channels
-Users who are lead to articles by non-online campaigns (eg. email campaigns). These users are not following a link from
-another website. This means no referring URL will be available when viewing an article.
+#### View events by tracking value
+Tracking values are added to article URLs as query parameters (cid, wtrid, wtmc). They are provided in context of 
+marketing campaigns and should be used for setting the event type when there is no document referrer 
+available (e.g. email campaigns).
 
-Direct channel events are:
+Events which can be set by tracking values:
 * event23 (other internal)
 * event24 (search engines)
 * event25 (social media)
 * event26 (dark social / unknown)
 
-The evaluation of the direct view type is done by one of the existing campaign properties (cid, wtrid, wtmc) which is
-provided as query parameters of the article URL.
 
-#### Online Channels
-All article views which happen whenever a user clicks on a page link to an article. Either on internal organic links from 
-within the same site (e.g. teasers from homepages) or from external sites like search pages, social media etc.
+#### View events by document referrer
+The referring page URL (document.location.referrer) is analysed against various criteria in order to determine the correct view event.
+Important criteria are:
+* Is from same or different domain
+* Is from homepage
+* Is from internal recommendation system (Outbrain)
+* Is from search engine result list
+* Is from social media
+* Is from Bild
+* Is from login page
 
-Online channel events are:
+Events which can be set by referrer:
 * event22 (homepage)
 * event23 (other internal)
 * event24 (search engines)
@@ -57,15 +63,6 @@ Online channel events are:
 * event77 (Bilde homepage mobile)
 * event102 (article recommendation)
 
-The online channels are determined by analysing the referring page URL (document.location.referrer).
-Important criteria are:
-* Is from same or different domain
-* Is from homepage
-* Is from internal recommendation system (Outbrain)
-* Is from search engine result list
-* Is from social media 
-* Is from Bild
-* Is from login page
 
 There are special cases in which the document referrer does not contain the correct referring URL. These cases are
 caused by automated re-directs after:

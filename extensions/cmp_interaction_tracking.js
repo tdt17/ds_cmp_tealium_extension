@@ -176,7 +176,7 @@
             // Ensure that view event gets processed before link event by adding a delay.
             setTimeout(() => {
                 exportedFunctions.sendLinkEvent(TCFAPI_COMMON_EVENTS.CMP_UI_SHOWN);
-            }, 500);
+            }, 1000);
         }
     }
 

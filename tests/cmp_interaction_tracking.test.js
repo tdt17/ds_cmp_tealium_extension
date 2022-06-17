@@ -20,6 +20,7 @@ const TEALIUM_PROFILES = [
     {profileName: 'bz-bz-berlin.de', tagId: 9},
     {profileName: 'cbo-computerbild.de', tagId: 25},
     {profileName: 'shop.bild', tagId: 181},
+    {profileName: 'spring-premium', tagId: 135},
     {profileName: 'welt', tagId: 233},
     {profileName: 'welt-shop.welt.de', tagId: 28}
 ];

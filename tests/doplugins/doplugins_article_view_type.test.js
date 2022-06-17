@@ -299,11 +299,35 @@ describe('articleViewType()', () => {
         });
     });
 
+    describe('isSamePageRedirect', () => {
+        const bildBaseURL = 'https://www.bild.de';
+        const anyPathname = '/any-path-name';
+
+        it('should return TRUE if referring page is the same as current page (independent of viewport versions)', function () {
+            // We only need to fake the location pathname for the test.
+            window.document.location.pathname = anyPathname;
+            const referrer = bildBaseURL + anyPathname;
+
+            const result = s._articleViewTypeObj.isSamePageRedirect(referrer);
+            expect(result).toBe(true);
+        });
+
+        it('should return FALSE if referring page is NOT the same as current page', function () {
+            window.document.location.pathname = anyPathname;
+            const referrer = bildBaseURL + anyPathname + 'something-different';
+
+            const result = s._articleViewTypeObj.isSamePageRedirect(referrer);
+            expect(result).toBe(false);
+        });
+    });
+
     describe('getInternalType()', () => {
         let isFromHomeMock;
+        let isSamePageRedirectMock;
 
         beforeEach(() => {
             isFromHomeMock = jest.spyOn(s._articleViewTypeObj, 'isFromHome').mockReturnValue(false);
+            isSamePageRedirectMock = jest.spyOn(s._articleViewTypeObj, 'isSamePageRedirect').mockReturnValue(false);
         });
 
         it('should return event22 if referrer is a home page', function () {
@@ -320,6 +344,13 @@ describe('articleViewType()', () => {
             const result = s._articleViewTypeObj.getInternalType(anyReferrer);
             expect(isFromHomeMock).toHaveBeenCalledWith(anyReferrer);
             expect(result).toBe('event23');
+        });
+
+        it('should return an empty string in case of same page redirects', function () {
+            const anyReferrer = 'http://www.any-domain.de';
+            isSamePageRedirectMock.mockReturnValue(true);
+            const result = s._articleViewTypeObj.getInternalType(anyReferrer);
+            expect(result).toBe('');
         });
     });
 
@@ -418,7 +449,7 @@ describe('articleViewType()', () => {
             const result = s._articleViewTypeObj.getExternalType(anyReferrer);
             expect(isFromSecureMypassMock).toHaveBeenCalledWith(anyReferrer);
             expect(result).toBe('event23');
-        });    
+        });
 
         it('should return event27 (other external) in any other cases', function () {
             const result = s._articleViewTypeObj.getExternalType(anyReferrer);

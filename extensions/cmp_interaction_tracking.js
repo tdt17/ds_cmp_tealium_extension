@@ -34,6 +34,7 @@
         'bz-bz-berlin.de': 9,
         'cbo-computerbild.de': 25,
         'shop.bild': 181,
+        'spring-premium' : 135,
         'welt': 233,
         'welt-shop.welt.de': 28
     };
@@ -175,7 +176,7 @@
             // Ensure that view event gets processed before link event by adding a delay.
             setTimeout(() => {
                 exportedFunctions.sendLinkEvent(TCFAPI_COMMON_EVENTS.CMP_UI_SHOWN);
-            }, 500);
+            }, 1000);
         }
     }
 

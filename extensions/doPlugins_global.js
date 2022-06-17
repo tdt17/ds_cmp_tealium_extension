@@ -61,7 +61,7 @@ s._utils = {
 
     isAdWall: function (s) {
         return (!!s.pageName && (s.pageName.indexOf('42925516') !== -1
-            || s.pageName.indexOf('54578900') !== -1
+            || s.pageName.indexOf('54578900') !== -1)
             || window.location.toString().indexOf('unangemeldet-42925516') !== -1
             || window.location.toString().indexOf('unangemeldet-54578900') !== -1) 
             || window.utag.data['dom.pathname'].indexOf('adblockwall.html') !== -1);
@@ -230,7 +230,17 @@ s._articleViewTypeObj = {
         return true;
     },
 
+    isSamePageRedirect: function (referrerString) {
+        const referrerPathname = new URL(referrerString).pathname;
+        return window.document.location.pathname === referrerPathname;
+    },
+
     getInternalType: function (referrer) {
+        // Check if page view was caused by a viewport switch
+        if (this.isSamePageRedirect(referrer)) {
+            return '';
+        }
+
         if (this.isFromHome(referrer)) {
             return 'event22'; //Home
         } else {
@@ -263,7 +273,7 @@ s._articleViewTypeObj = {
             return 'event77'; // Bild mobile home
         } else if (this.isFromSecureMypass(referrer)) {
             return 'event23'; // Login via secure.mypass
-        }else {
+        } else {
             return 'event27';
         }
     },
@@ -338,16 +348,14 @@ s._articleViewTypeObj = {
                 s._eventsObj.addEvent(pageViewType);
                 this.setPageSourceAndAgeForCheckout(s);
             }
-        
+
             if (this.isPageViewFromHome(pageViewType)) {
                 s._eventsObj.addEvent('event20');
                 s._homeTeaserTrackingObj.setHomeTeaserProperties(s);
             }
         }
-        
-        
 
-        
+
     }
 };
 
@@ -483,14 +491,16 @@ s._bildPageNameObj = {
     },
 
     isLive: function () {
-        return !!this.isDocTypeArticle() && !!window.utag.data.page_cms_path
-            && window.utag.data.page_cms_path.indexOf('im-live-ticker') !== -1;
+        return !!this.isDocTypeArticle() && !!window.utag.data.is_page_live_article
+            && window.utag.data.is_page_live_article === '1';
     },
- 
+
     isLiveSport: function () {
-        return !!this.isDocTypeArticle() && !!window.utag.data.page_cms_path
+        return !!this.isDocTypeArticle()
+            && !!window.utag.data.page_cms_path
             && (window.utag.data.page_cms_path.indexOf('im-liveticker') !== -1
-                || window.utag.data.page_cms_path.indexOf('/liveticker/') !== -1);
+                || window.utag.data.page_cms_path.indexOf('/liveticker/') !== -1)
+            && !this.isLive();
     },
 
     setPageName: function (s) {
@@ -704,7 +714,7 @@ s._init = function (s) {
     if (window.navigator.userAgent.indexOf('iPhone') > -1) {
         s.eVar94 = window.screen.width + 'x' + window.screen.height;
     }
-    
+
     s._articleViewTypeObj.setViewTypes(s); // Todo: rename s._pageViewTypesObj
     s._ICIDTracking.setVariables(s);
     s._campaignObj.setCampaignVariables(s);

@@ -301,7 +301,8 @@ describe('articleViewType()', () => {
 
     describe('isSamePageRedirect', () => {
         const bildBaseURL = 'https://www.bild.de';
-        const anyPathname = '/any-path-name';
+        const anyPathname = '/any-path-name.bild.html';
+        const anyOtherPathname = '/anyOther-path-name.bild.html';
 
         it('should return TRUE if referring page is the same as current page (independent of viewport versions)', function () {
             // We only need to fake the location pathname for the test.
@@ -314,7 +315,7 @@ describe('articleViewType()', () => {
 
         it('should return FALSE if referring page is NOT the same as current page', function () {
             window.document.location.pathname = anyPathname;
-            const referrer = bildBaseURL + anyPathname + 'something-different';
+            const referrer = bildBaseURL + anyOtherPathname ;
 
             const result = s._articleViewTypeObj.isSamePageRedirect(referrer);
             expect(result).toBe(false);

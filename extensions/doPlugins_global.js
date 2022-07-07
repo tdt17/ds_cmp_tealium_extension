@@ -230,10 +230,12 @@ s._articleViewTypeObj = {
         return true;
     },
 
-    isSamePageRedirect: function (referrerString) {
-        const referrerPathname = new URL(referrerString).pathname;
-        return window.document.location.pathname === referrerPathname;
-    },
+    isSamePageRedirect: function (referrerString) {        
+        const referrerPathnameSegments = new URL(referrerString).pathname.split('.');        
+        const urlPathnameSegments = window.document.location.pathname.split('.');
+        if (referrerPathnameSegments.length > 0 && urlPathnameSegments.length > 0) {
+            return urlPathnameSegments[0] === referrerPathnameSegments[0];    }
+    }, 
 
     getInternalType: function (referrer) {
         // Check if page view was caused by a viewport switch

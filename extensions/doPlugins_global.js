@@ -342,7 +342,6 @@ s._articleViewTypeObj = {
     },
 
     setViewTypes: function (s) {
-        //const pageViewType = window.document.referrer ? this.getViewTypeByReferrer() : this.getViewTypeByTrackingProperty();
         const trackingValue = this.getTrackingValue();
         const pageViewType = trackingValue ? this.getViewTypeByTrackingProperty() : this.getViewTypeByReferrer();
 

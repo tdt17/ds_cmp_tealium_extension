@@ -701,7 +701,7 @@ describe('articleViewType()', () => {
         it('should evaluate tracking URL param when referrer is NOT available', function () {
             isArticlePageMock.mockReturnValue(true);
             isAdWallMock.mockReturnValue(false);
-            window.document.referrer = '';
+            window.location.search = 'cid=any-cid';
             s._articleViewTypeObj.setViewTypes(s);
             expect(getViewTypeByTrackingPropertyMock).toHaveBeenCalled();
         });
@@ -710,6 +710,7 @@ describe('articleViewType()', () => {
             const anyViewType = 'any-view-type';
             isAdWallMock.mockReturnValue(false);
             isArticlePageMock.mockReturnValue(true);
+            window.location.search = 'cid=any-cid';
             getViewTypeByTrackingPropertyMock.mockReturnValue(anyViewType);
 
             expect(s._articleViewType).toBeUndefined();
@@ -763,6 +764,7 @@ describe('articleViewType()', () => {
             const anyViewType = 'any-view-type';
             isAdWallMock.mockReturnValue(false);
             isArticlePageMock.mockReturnValue(true);
+            window.location.search = 'cid=any-cid';
             getViewTypeByTrackingPropertyMock.mockReturnValue(anyViewType);
 
             s._articleViewTypeObj.setViewTypes(s);

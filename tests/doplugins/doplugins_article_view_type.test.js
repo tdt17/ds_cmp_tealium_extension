@@ -156,6 +156,30 @@ describe('articleViewType()', () => {
         });
     });
 
+    describe('isFromPaypal', () => {
+        const anyReferrer = 'https://any-referrer-domain.com/any-path';
+        const paypalDomains = 'paypal.com';
+        let getDomainFromURLStringMock;
+    
+        beforeEach(() => {
+            getDomainFromURLStringMock = jest.spyOn(s._utils, 'getDomainFromURLString').mockReturnValue('');
+        });
+    
+        it('should return TRUE if referrer is from paypal (came back after payment)', function () {
+            getDomainFromURLStringMock.mockReturnValue(paypalDomains);
+            const result = s._articleViewTypeObj.isFromPaypal(anyReferrer);
+            expect(getDomainFromURLStringMock).toHaveBeenLastCalledWith(anyReferrer);
+            expect(result).toBe(true);
+        });
+    
+        it('should return FALSE if referrer is NOT from paypal (came back after payment)', function () {
+            getDomainFromURLStringMock.mockReturnValue('any-other-domain.com');
+            const result = s._articleViewTypeObj.isFromPaypal(anyReferrer);
+            expect(getDomainFromURLStringMock).toHaveBeenLastCalledWith(anyReferrer);
+            expect(result).toBe(false);
+        });
+    });
+       
     describe('isHomepageSubdomain()', () => {
         it('it should return TRUE for sub domains which can be considered as home pages', () => {
             const homepageSubDomains = [

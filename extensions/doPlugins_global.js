@@ -199,6 +199,11 @@ s._articleViewTypeObj = {
         return referringDomain === 'secure.mypass.de';
     },
 
+    isFromPaypal: function (referrer) {
+        const referringDomain = s._utils.getDomainFromURLString(referrer);
+        return referringDomain === 'paypal.com';
+    },
+
     isFromRecommendation: function (referrer) {
         const referringDomain = s._utils.getDomainFromURLString(referrer);
         return referringDomain === 'traffic.outbrain.com';
@@ -275,6 +280,8 @@ s._articleViewTypeObj = {
             return 'event77'; // Bild mobile home
         } else if (this.isFromSecureMypass(referrer)) {
             return 'event23'; // Login via secure.mypass
+        } else if (this.isFromPaypal(referrer)) {
+            return 'event23'; // After Payment via Paypal
         } else {
             return 'event27';
         }

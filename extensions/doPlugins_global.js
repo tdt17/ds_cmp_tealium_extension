@@ -212,13 +212,17 @@ s._articleViewTypeObj = {
 
     isFromHomeDesktopWithReco: function () {
         const trackingValue = this.getTrackingValue();
+        const desktopRecoCid = ['kooperation.home.outbrain.desktop','kooperation.home.outbrain.tablet'];
 
-        return trackingValue.includes('kooperation.home.outbrain.desktop');
+        return desktopRecoCid.some(item =>{
+            return trackingValue.indexOf(item) !== -1;
+        });
+    
     },
 
     isFromHomeMobileWithReco: function () {
         const trackingValue = this.getTrackingValue();
-        return trackingValue.includes('kooperation.home.outbrain.mobile');
+        return trackingValue.includes('kooperation.home.outbrain.mobil');
     },
 
     isValidURL: function (urlString) {

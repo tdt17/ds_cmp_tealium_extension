@@ -264,8 +264,6 @@ s._articleViewTypeObj = {
             return 'event76'; // Bild home desktop recommendation
         } else if (this.isFromHomeMobileWithReco()) {
             return 'event77'; // Bild home mobile recommendation
-        } else if (this.isFromArticleWithReco()) {
-            return 'event102'; // Article recommendation
         } else {
             return 'event27';
         }
@@ -328,8 +326,8 @@ s._articleViewTypeObj = {
             articleViewType = 'event24'; // Search
         } else if (trackingValue.startsWith('social')) {
             articleViewType = 'event25'; //Social
-        } else if (trackingValue.startsWith('kooperation') || trackingValue.startsWith('affiliate')) {
-            articleViewType = 'event23'; //Other Internal
+        } else if (trackingValue.startsWith('kooperation.article.outbrain.')) {
+            articleViewType = 'event102'; //Outbrain Reco at Articles
         }
         return articleViewType;
     },

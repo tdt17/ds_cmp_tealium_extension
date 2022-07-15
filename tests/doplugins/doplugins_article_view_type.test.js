@@ -404,13 +404,6 @@ describe('articleViewType()', () => {
             expect(result).toBe('event77');
         });
 
-        it('should return event102 if referrer is from article recommendation teaser', function () {
-            isFromArticleWithRecoMock.mockReturnValue(true);
-            const result = s._articleViewTypeObj.getRecommendationType();
-            expect(isFromArticleWithRecoMock).toHaveBeenCalled();
-            expect(result).toBe('event102');
-        });
-
         it('should return event27 (other external) in any other cases', function () {
             const result = s._articleViewTypeObj.getRecommendationType();
             expect(result).toBe('event27');
@@ -615,14 +608,11 @@ describe('articleViewType()', () => {
             expect(result).toBe('event25');
         });
 
-        it('it should return the right event name if tracking value is of type: Other Internal', () => {
-            getTrackingValueMock.mockReturnValue('kooperation');
+        it('it should return the right event name if tracking value is of type: Outbrain Article Recommendation', () => {
+            getTrackingValueMock.mockReturnValue('kooperation.article.outbrain.');
             let result = s._articleViewTypeObj.getViewTypeByTrackingProperty();
-            expect(result).toBe('event23');
+            expect(result).toBe('event102');
 
-            getTrackingValueMock.mockReturnValue('affiliate');
-            result = s._articleViewTypeObj.getViewTypeByTrackingProperty();
-            expect(result).toBe('event23');
         });
     });
 

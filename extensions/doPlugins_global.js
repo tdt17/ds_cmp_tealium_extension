@@ -442,8 +442,8 @@ s._setKameleoonTracking = function (s) {
 };
 
 s._setAdvertisingBranch = function (s){
-    s.eVar219 = (window.ASCDP && ASCDP.pageSet.branch) || "noAdlib";
- };
+    s.eVar219 = (window.ASCDP && window.ASCDP.pageSet.branch) || 'noAdlib';
+};
 
 /**
  * Homepage teaser tracking

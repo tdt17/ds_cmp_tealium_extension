@@ -441,6 +441,10 @@ s._setKameleoonTracking = function (s) {
     }
 };
 
+s._setAdvertisingBranch = function (s){
+    s.eVar219 = (window.ASCDP && window.ASCDP.pageSet.branch) || 'noAdlib';
+};
+
 /**
  * Homepage teaser tracking
  */
@@ -757,6 +761,7 @@ s._doPluginsGlobal = function (s) {
 
     s._eventsObj.setEventsProperty(s);
     s._setKameleoonTracking(s);
+    s._setAdvertisingBranch(s);
 };
 
 // Evaluate runtime environment

@@ -110,7 +110,7 @@ describe('_bildPageNameObj', () => {
         });
 
         it('should be false if page_sub_type is not correct', () => {
-            window.utag.data.page_sub_type = 'any-entry';
+            window.utag.data.page_sub_type = 'any-non-Liveticker';
             window.utag.data.page_mapped_doctype_for_pagename = 'article';
 
             const returnValue = s._bildPageNameObj.isLive();

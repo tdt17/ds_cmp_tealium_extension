@@ -507,8 +507,9 @@ s._bildPageNameObj = {
     },
 
     isLive: function () {
-        return !!this.isDocTypeArticle() && !!window.utag.data.is_page_live_article
-            && window.utag.data.is_page_live_article === '1';
+        return !!this.isDocTypeArticle() 
+            && (!!window.utag.data.is_page_live_article && window.utag.data.is_page_live_article === '1' 
+            || !!window.utag.data.page_sub_type && window.utag.data.page_sub_type === 'LIVETICKER'); 
     },
 
     isLiveSport: function () {

@@ -709,6 +709,53 @@ s._plusDensityObj = {
 };
 
 /**
+ * Outbrain direct order
+ */
+s._directOutbrainOrderObj = {
+    saveToCookie: (otb) => {
+        window.utag.loader.SC('utag_main', {'otb': otb + ';exp-session'});
+    },
+    deleteFromCookie: () => {
+        window.utag.loader.SC('utag_main', {'otb': '' + ';exp-session'});
+    },
+    getTealiumProfile: function () {
+        return window.utag.data.tealium_profile || window.utag.data['ut.profile'];
+    },
+
+    getSubscriptionStatus: function () {
+        return window.utag.data.user_statusValidAbo_String || window.utag.data.is_subscriber;
+    },
+
+    getPagePremiumStatus: function () {
+        return window.utag.data.is_status_premium || window.utag.data.page_isPremium || window.utag.data.screen_isPremium;
+    },
+
+    getPageVisibility: function () {
+        const subscription_status = this.getSubscriptionStatus();
+        const page_is_premium = s._scrollDepthObj.getPagePremiumStatus(s);
+
+        return ((subscription_status +  page_is_premium === 'falsetrue') ? 'true' : '' );
+    },
+
+    setOutbrain: function (s) {
+        const documentType = s._utils.getDocType(s);
+        const pageVisibility = this.getPageVisibility(s);
+        const page_is_ps_team = this.getTealiumProfile(s);
+        if (documentType === 'article' && pageVisibility === 'true' ) {
+            const outbrain = s._articleViewTypeObj.isFromArticleWithReco(s);
+            const otb = s._campaignObj.getAdobeCampaign(s);
+
+            if (outbrain && otb) {
+                s.eVar113 = otb;
+                this.saveToCookie(otb);
+            } 
+        }else if (page_is_ps_team !== 'spring-premium') {
+            this.deleteFromCookie();
+        }
+    }
+};
+
+/**
  * Starting point of extension
  */
 s._init = function (s) {
@@ -737,6 +784,7 @@ s._init = function (s) {
     s._campaignObj.setCampaignVariables(s);
     s._setExternalReferringDomainEvents(s);
     s._plusDensityObj.setDensity(s);
+    s._directOutbrainOrderObj.setOutbrain(s);
 };
 
 /**

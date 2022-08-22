@@ -12,24 +12,21 @@ describe('s.doPlugins()', () => {
 
         // Provide a fresh copy of the s-object for each test.
         s = { ...sObject };
+        jest.spyOn(s, 'getPreviousValue').mockImplementation(jest.fn());
     });
 
     afterEach(() => {
         jest.restoreAllMocks();
     });
 
-    it('should check if the getPercentagePageViewed function is defined in s object', () => {
-        expect(s.getPreviousValue).toBeInstanceOf(Function);
-    });
-
-    it('should assign values to eVar 181, 184 and 185', () => {
+    it('should assign values to eVars and props', () => {
         window.utag.data.myCW = 'test_cw';
         s.version = 'test_version';
         s.visitor = {
             version: 'test_visitor_version'
         };
 
-        jest.spyOn(s, 'getPreviousValue').mockImplementation(jest.fn());
+        s.getPreviousValue.mockReturnValue('test_value');
         
         s.doPlugins(s);
 
@@ -39,6 +36,9 @@ describe('s.doPlugins()', () => {
         expect(s.eVar184.length).toBeGreaterThanOrEqual(1);
         expect(s.eVar181.length).toBeGreaterThanOrEqual(1);
         expect(s.eVar185).toBe(window.utag.data.myCW);
+        expect(s.prop61).toBe('test_value');
+        expect(s.eVar33).toBe('test_value');
+
     });
 
     it('should call s._bildAppsPageNameObj.setAppsPageName()', () => {

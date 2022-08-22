@@ -18,12 +18,18 @@ describe('s.doPlugins()', () => {
         jest.restoreAllMocks();
     });
 
+    it('should check if the getPercentagePageViewed function is defined in s object', () => {
+        expect(s.getPreviousValue).toBeInstanceOf(Function);
+    });
+
     it('should assign values to eVar 181, 184 and 185', () => {
         window.utag.data.myCW = 'test_cw';
         s.version = 'test_version';
         s.visitor = {
             version: 'test_visitor_version'
         };
+
+        jest.spyOn(s, 'getPreviousValue').mockImplementation(jest.fn());
         
         s.doPlugins(s);
 
@@ -38,6 +44,8 @@ describe('s.doPlugins()', () => {
     it('should call s._bildAppsPageNameObj.setAppsPageName()', () => {
         const setAppsPageNameMock = jest.spyOn(s._bildAppsPageNameObj, 'setAppsPageName');
 
+        jest.spyOn(s, 'getPreviousValue').mockImplementation(jest.fn());
+
         s.doPlugins(s);
 
         expect(setAppsPageNameMock).toHaveBeenCalledWith(s);
@@ -45,6 +53,8 @@ describe('s.doPlugins()', () => {
 
     it('should call s._orderViaArticle()', () => {
         const orderViaArticleMock = jest.spyOn(s, '_orderViaArticle');
+
+        jest.spyOn(s, 'getPreviousValue').mockImplementation(jest.fn());
 
         s.doPlugins(s);
 
@@ -54,6 +64,8 @@ describe('s.doPlugins()', () => {
     it('should call s._setPageAgeForCheckout()', () => {
         const setPageAgeForCheckoutMock = jest.spyOn(s, '_setPageAgeForCheckout');
 
+        jest.spyOn(s, 'getPreviousValue').mockImplementation(jest.fn());
+
         s.doPlugins(s);
 
         expect(setPageAgeForCheckoutMock).toHaveBeenCalled();
@@ -61,6 +73,8 @@ describe('s.doPlugins()', () => {
 
     it('should call s._setPageCmsPathWithoutBild()', () => {
         const setPageCmsPathWithoutBildMock = jest.spyOn(s, '_setPageCmsPathWithoutBild');
+
+        jest.spyOn(s, 'getPreviousValue').mockImplementation(jest.fn());
 
         s.doPlugins(s);
 

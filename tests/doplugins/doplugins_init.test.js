@@ -8,6 +8,7 @@ describe('init()', () => {
     let setICIDTrackingVariablesMock;
     let setDensityMock;
     let setExternalReferringDomainEventsMock;
+    let setOutbrainMock;
 
     beforeEach(() => {
         // Create a fresh window mock for each test.
@@ -23,6 +24,7 @@ describe('init()', () => {
         setICIDTrackingVariablesMock = jest.spyOn(s._ICIDTracking, 'setVariables').mockImplementation();
         setDensityMock = jest.spyOn(s._plusDensityObj, 'setDensity').mockImplementation();
         setExternalReferringDomainEventsMock = jest.spyOn(s, '_setExternalReferringDomainEvents').mockImplementation();
+        setOutbrainMock = jest.spyOn(s._directOutbrainOrderObj, 'setOutbrain').mockImplementation();
     });
 
     afterEach(() => {
@@ -93,5 +95,10 @@ describe('init()', () => {
         expect(setExternalReferringDomainEventsMock).toHaveBeenCalledWith(s);
     });
 
+    it('should call s.s._directOutbrainOrderObj.setOutbrain(s)', () => {
+
+        s._init(s);
+        expect(setOutbrainMock).toHaveBeenCalledWith(s);
+    });
 
 });

@@ -4,6 +4,7 @@ const {createWindowMock} = require('../mocks/browserMocks');
 describe('directOutbrainOrderObj', () => {
     let s;
     beforeEach(() => {
+
         // Create a fresh window mock for each test.
         const windowMock = createWindowMock();
         jest.spyOn(global, 'window', 'get')
@@ -14,6 +15,10 @@ describe('directOutbrainOrderObj', () => {
         };
         window.utag.loader.SC = jest.fn();
         jest.spyOn(s._utils, 'getDocType');
+        jest.spyOn(s._directOutbrainOrderObj, 'getTealiumProfile');
+        jest.spyOn(s._directOutbrainOrderObj, 'isPaywall');
+        jest.spyOn(s._campaignObj,'getAdobeCampaign');
+        jest.spyOn(s._articleViewTypeObj, 'isFromArticleWithReco');
     });
 
     afterEach(() => {
@@ -47,44 +52,48 @@ describe('directOutbrainOrderObj', () => {
         it('should evaluate the document type by calling s._utils.getDocType()', function () {
             s._directOutbrainOrderObj.setOutbrain(s);
             expect(s._utils.getDocType).toHaveBeenCalled();
-            //expect(s._directOutbrainOrderObj.getPageVisibility).toHaveBeenCalled();
-            //expect(s._directOutbrainOrderObj.getTealiumProfile).toHaveBeenCalled();
         });
 
         it('should assign adobe campaign value of data layer to eVar113 on plus article pages when paywall is shown', function () {
             s._utils.getDocType.mockReturnValue('article');
-            s._directOutbrainOrderObj.getPageVisibility.mockReturnValue('true');
-            window.utag.data['qp.cid'] = 'kooperation.article.outbrain.anything';
+            s._directOutbrainOrderObj.isPaywall.mockReturnValue('true');
+            s._articleViewTypeObj.isFromArticleWithReco.mockReturnValue('true');
+            s._campaignObj.getAdobeCampaign.mockReturnValue('cid=kooperation.article.outbrain.A_23');
             s._directOutbrainOrderObj.setOutbrain(s);
-            expect(s.eVar113).toEqual(window.utag.data['qp.cid']);
+            expect(s.eVar113).toEqual('cid=kooperation.article.outbrain.A_23');
         });
 
         it('should store adobe campaign value in utag_main cookie on plus article pages when paywall is shown', function () {
             s._utils.getDocType.mockReturnValue('article');
-            s._directOutbrainOrderObj.getPageVisibility.mockReturnValue('true');
-            window.utag.data['qp.cid'] = 'kooperation.article.outbrain.anything';
+            s._articleViewTypeObj.isFromArticleWithReco.mockReturnValue('true');
+            s._directOutbrainOrderObj.isPaywall.mockReturnValue('true');
+            s._campaignObj.getAdobeCampaign.mockReturnValue('cid=kooperation.article.outbrain.A_23');
             s._directOutbrainOrderObj.setOutbrain(s);
-            expect(saveToCookieMock).toHaveBeenCalledWith(window.utag.data['qp.cid']);
+            expect(saveToCookieMock).toHaveBeenCalledWith('cid=kooperation.article.outbrain.A_23');
         });
 
         it('should NOT store adobe campaign value in utag_main cookie on plus article pages when content of page is shown', function () {
             s._utils.getDocType.mockReturnValue('article');
-            s._directOutbrainOrderObj.getPageVisibility.mockReturnValue('false');
-            window.utag.data['qp.cid'] = 'any-otb';
+            s._directOutbrainOrderObj.isPaywall.mockReturnValue('false');
+            s._campaignObj.getAdobeCampaign.mockReturnValue('cid=kooperation.article.outbrain.A_23');
             s._directOutbrainOrderObj.setOutbrain(s);
-            expect(saveToCookieMock).toHaveBeenCalledWith(window.utag.data['qp.cid']);
+            expect(saveToCookieMock).not.toHaveBeenCalled();
         });
 
         it('should NOT assign a value to eVar113 on NON article pages', function () {
             s._utils.getDocType.mockReturnValue('any-type');
-            s._directOutbrainOrderObj.getPageVisibility.mockReturnValue('false');
+            s._articleViewTypeObj.isFromArticleWithReco.mockReturnValue('true');
+            s._directOutbrainOrderObj.isPaywall.mockReturnValue('true');
+            s._campaignObj.getAdobeCampaign.mockReturnValue('cid=kooperation.article.outbrain.A_23');
             s._directOutbrainOrderObj.setOutbrain(s);
             expect(s.eVar113).toBeUndefined();
         });
 
         it('should NOT store otb in utag_main cookie on NON article pages', function () {
             s._utils.getDocType.mockReturnValue('any-type');
-            window.utag.data['qp.otb'] = 'any-otb';
+            s._articleViewTypeObj.isFromArticleWithReco.mockReturnValue('true');
+            s._directOutbrainOrderObj.isPaywall.mockReturnValue('true');
+            s._campaignObj.getAdobeCampaign.mockReturnValue('cid=kooperation.article.outbrain.A_23');
             s._directOutbrainOrderObj.setOutbrain(s);
             expect(saveToCookieMock).not.toHaveBeenCalled();
         });

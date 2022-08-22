@@ -730,30 +730,15 @@ s._directOutbrainOrderObj = {
         //Premium Service Event for paywall
         if (eventName === 'offer-module' && eventAction === 'load' && eventLabel === 'article') {
             is_paywall = true;
-        //BILD Page 
-        } else if (!window.utag.data.is_status_premium_visibility){
+        //BILD 
+        } else if (window.utag.data.is_status_premium_visibility === 'false'){
             is_paywall = true;
         //WELT 
-        } else if (window.utag.data.user_statusValidAbo_String && window.utag.data.page_isPremium) {
+        } else if (window.utag.data.user_statusValidAbo_String === 'false' && window.utag.data.page_isPremium === 'true') {
             is_paywall = true;
         }
         return is_paywall;
     },
-
-/*  getSubscriptionStatus: function () {
-        return window.utag.data.user_statusValidAbo_String || window.utag.data.is_subscriber;
-    },
-
-    getPagePremiumStatus: function () {
-        return window.utag.data.is_status_premium || window.utag.data.page_isPremium || window.utag.data.screen_isPremium;
-    },
-
-    getPageVisibility: function () {
-        const subscription_status = this.getSubscriptionStatus();
-        const page_is_premium = s._scrollDepthObj.getPagePremiumStatus(s);
-
-        return ((subscription_status +  page_is_premium === 'falsetrue') ? 'true' : '' );
-    }, */
 
     setOutbrain: function (s) {
         const documentType = s._utils.getDocType(s);

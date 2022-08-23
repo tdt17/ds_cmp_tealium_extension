@@ -709,6 +709,57 @@ s._plusDensityObj = {
 };
 
 /**
+ * Outbrain direct order
+ */
+s._directOutbrainOrderObj = {
+    saveToCookie: (otb) => {
+        window.utag.loader.SC('utag_main', {'otb': otb + ';exp-session'});
+    },
+    deleteFromCookie: () => {
+        window.utag.loader.SC('utag_main', {'otb': '' + ';exp-session'});
+    },
+    getTealiumProfile: function () {
+        return window.utag.data.tealium_profile || window.utag.data['ut.profile'];
+    },
+
+    isPaywall: function () {
+        let is_paywall = false;
+        const eventName = window.utag.data.event_name;
+        const eventAction = window.utag.data.event_action;
+        const eventLabel = window.utag.data.event_label;
+        //Premium Service Event for paywall
+        if (eventName === 'offer-module' && eventAction === 'load' && eventLabel === 'article') {
+            is_paywall = true;
+        //BILD 
+        } else if (window.utag.data.is_status_premium_visibility === 'false'){
+            is_paywall = true;
+        //WELT 
+        } else if ((window.utag.data.user_statusValidAbo_String === 'false'|| window.utag.data.user_statusValidAbo === false || window.utag.data['cp.utag_main_va']=== false) 
+                        && window.utag.data.page_isPremium === 'true') {
+            is_paywall = true;
+        }
+        return is_paywall;
+    },
+
+    setOutbrain: function (s) {
+        const documentType = s._utils.getDocType(s);
+        const page_is_ps_team = this.getTealiumProfile(s);
+        if (documentType === 'article') {
+            const outbrain = s._articleViewTypeObj.isFromArticleWithReco(s);
+            const otb = s._campaignObj.getAdobeCampaign(s);
+            const page_isPaywall = this.isPaywall(s);
+
+            if (outbrain && otb && page_isPaywall ) {
+                s.eVar113 = otb;
+                this.saveToCookie(otb);
+            } 
+        }else if (page_is_ps_team !== 'spring-premium') {
+            this.deleteFromCookie();
+        }
+    }
+};
+
+/**
  * Starting point of extension
  */
 s._init = function (s) {
@@ -737,6 +788,7 @@ s._init = function (s) {
     s._campaignObj.setCampaignVariables(s);
     s._setExternalReferringDomainEvents(s);
     s._plusDensityObj.setDensity(s);
+    s._directOutbrainOrderObj.setOutbrain(s);
 };
 
 /**

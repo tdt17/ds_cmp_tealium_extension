@@ -555,6 +555,11 @@ s._bildPageNameObj = {
             s.pageName = 'live-sport : ' + window.utag.data['page_id'];
         }
     },
+
+    //Get Parameter t_ref for Mobile Switcher 
+    setReferrerFromGetParameter: function (s){
+        s.eVar53 = this.getReferrerFromGetParameter() || '';
+    }
 };
 
 /**

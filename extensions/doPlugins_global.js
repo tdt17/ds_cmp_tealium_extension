@@ -556,10 +556,6 @@ s._bildPageNameObj = {
         }
     },
 
-    //Get Parameter t_ref for Mobile Switcher 
-    setReferrerFromGetParameter: function (s){
-        s.eVar53 = this.getReferrerFromGetParameter() || '';
-    }
 };
 
 /**
@@ -678,6 +674,24 @@ s._ICIDTracking = {
         }
 
         s.eVar78 = s.eVar79 = icid;
+    }
+};
+
+/**
+ * Mobile Switcher Get Parameter t_ref
+ * (replacement of wt_ref)
+ */
+s._T_REFTracking = {
+    setVariables: function (s) {
+        let tref = '';
+        try {
+            const queryParams = new URLSearchParams(window.location.search);
+            tref = queryParams.get('t_ref') ? queryParams.get('t_ref') : '';
+        } catch (error) {
+            // nothing to do here
+        }
+
+        s.eVar53 = tref;
     }
 };
 
@@ -804,6 +818,7 @@ s._init = function (s) {
     s._setExternalReferringDomainEvents(s);
     s._plusDensityObj.setDensity(s);
     s._directOutbrainOrderObj.setOutbrain(s);
+    s._T_REFTracking.setVariables(s);
 };
 
 /**

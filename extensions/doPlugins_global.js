@@ -103,8 +103,18 @@ s._utils = {
         }
         return this.isValidURL(referrerFromHash) ? referrerFromHash : '';
     },
+
+    getReferrerFromGetParameter: function () {
+        let referrerFromGetParameter;
+        if (window.utag.data['qp.t_ref']) {
+            referrerFromGetParameter = window.utag.data['qp.t_ref'];
+            referrerFromGetParameter = decodeURIComponent(referrerFromGetParameter);
+        }
+        return this.isValidURL(referrerFromGetParameter) ? referrerFromGetParameter : '';
+    },
+
     getReferrer: function () {
-        return this.getReferrerFromLocationHash() || window.document.referrer;
+        return this.getReferrerFromLocationHash() || this.getReferrerFromGetParameter() || window.document.referrer;
     },
     getReferringDomain: function () {
         return this.getDomainFromURLString(this.getReferrer());

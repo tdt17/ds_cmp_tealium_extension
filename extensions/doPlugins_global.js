@@ -691,7 +691,7 @@ s._T_REFTracking = {
             // nothing to do here
         }
 
-        s.eVar53 = s.eVar53 ? s.eVar53 + 't_ref=' + tref : 't_ref=' + tref;
+        s.eVar53 = s.eVar53 ? s.eVar53 + '|t_ref=' + tref : 't_ref=' + tref;
     }
 };
 
@@ -802,6 +802,8 @@ s._init = function (s) {
 
     s.trackExternalLinks = true;
     s.eVar61 = window.navigator.userAgent;
+
+    s.eVar53 = window.utag.data['dom.hash'] || '';
 
     //Referrer for link events
     s.referrer = s._utils.getReferrer();

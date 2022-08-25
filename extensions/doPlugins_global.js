@@ -684,14 +684,19 @@ s._ICIDTracking = {
 s._T_REFTracking = {
     setVariables: function (s) {
         let tref = '';
+        let wtref = window.utag.data['dom.hash']  || '';
         try {
             const queryParams = new URLSearchParams(window.location.search);
             tref = queryParams.get('t_ref') ? queryParams.get('t_ref') : '';
         } catch (error) {
             // nothing to do here
         }
-
-        s.eVar53 = s.eVar53 ? s.eVar53 + '|t_ref=' + tref : 't_ref=' + tref;
+        if (wtref && tref){
+            s.eVar53 = wtref + '|t_ref=' + tref;
+        } else if (wtref && !tref) {
+            s.eVar53 = wtref;
+        } else if (!wtref && tref)
+            s.eVar53 = 't_ref=' + tref;
     }
 };
 
@@ -802,8 +807,6 @@ s._init = function (s) {
 
     s.trackExternalLinks = true;
     s.eVar61 = window.navigator.userAgent;
-
-    s.eVar53 = window.utag.data['dom.hash'] || '';
 
     //Referrer for link events
     s.referrer = s._utils.getReferrer();

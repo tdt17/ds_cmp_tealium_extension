@@ -114,7 +114,7 @@ s._utils = {
     },
 
     getReferrer: function () {
-        return this.getReferrerFromLocationHash() || this.getReferrerFromGetParameter() || window.document.referrer;
+        return window.document.referrer || this.getReferrerFromLocationHash() || this.getReferrerFromGetParameter() ;
     },
     getReferringDomain: function () {
         return this.getDomainFromURLString(this.getReferrer());
@@ -310,8 +310,20 @@ s._articleViewTypeObj = {
             ? referrerFromHash : '';
     },
 
+    referrerFromGetParameter: function () {
+        let referrerFromGetParameter;
+        if (window.utag.data['qp.t_ref']) {
+            referrerFromGetParameter = window.utag.data['qp.t_ref'];
+            //referrerFromGetParameter = decodeURIComponent(referrerFromGetParameter);
+            
+        }
+        // exclude Outbrain URL
+        return (this.isValidURL(referrerFromGetParameter) && !referrerFromGetParameter.includes('https://traffic.outbrain.com'))
+            ? referrerFromGetParameter : '';
+    },
+
     getViewTypeByReferrer: function () {
-        const referrer = this.getReferrerFromLocationHash() || window.document.referrer;
+        const referrer = this.getReferrerFromLocationHash() || this.referrerFromGetParameter()  || window.document.referrer;
         let articleViewType;
 
         if (this.isFromInternal(referrer)) {

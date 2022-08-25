@@ -103,8 +103,18 @@ s._utils = {
         }
         return this.isValidURL(referrerFromHash) ? referrerFromHash : '';
     },
+
+    getReferrerFromGetParameter: function () {
+        let referrerFromGetParameter;
+        if (window.utag.data['qp.t_ref']) {
+            referrerFromGetParameter = window.utag.data['qp.t_ref'];
+            referrerFromGetParameter = decodeURIComponent(referrerFromGetParameter);
+        }
+        return this.isValidURL(referrerFromGetParameter) ? referrerFromGetParameter : '';
+    },
+
     getReferrer: function () {
-        return this.getReferrerFromLocationHash() || window.document.referrer;
+        return this.getReferrerFromLocationHash() || this.getReferrerFromGetParameter() || window.document.referrer;
     },
     getReferringDomain: function () {
         return this.getDomainFromURLString(this.getReferrer());
@@ -545,6 +555,7 @@ s._bildPageNameObj = {
             s.pageName = 'live-sport : ' + window.utag.data['page_id'];
         }
     },
+
 };
 
 /**
@@ -667,6 +678,24 @@ s._ICIDTracking = {
 };
 
 /**
+ * Mobile Switcher Get Parameter t_ref
+ * (replacement of wt_ref)
+ */
+s._T_REFTracking = {
+    setVariables: function (s) {
+        let tref = '';
+        try {
+            const queryParams = new URLSearchParams(window.location.search);
+            tref = queryParams.get('t_ref') ? queryParams.get('t_ref') : '';
+        } catch (error) {
+            // nothing to do here
+        }
+
+        s.eVar53 = s.eVar53 ? s.eVar53 + '|t_ref=' + tref : 't_ref=' + tref;
+    }
+};
+
+/**
  * Configuration of events property
  */
 s._eventsObj = {
@@ -774,6 +803,8 @@ s._init = function (s) {
     s.trackExternalLinks = true;
     s.eVar61 = window.navigator.userAgent;
 
+    s.eVar53 = window.utag.data['dom.hash'] || '';
+
     //Referrer for link events
     s.referrer = s._utils.getReferrer();
     s._referringDomain = s._utils.getReferringDomain();
@@ -789,6 +820,7 @@ s._init = function (s) {
     s._setExternalReferringDomainEvents(s);
     s._plusDensityObj.setDensity(s);
     s._directOutbrainOrderObj.setOutbrain(s);
+    s._T_REFTracking.setVariables(s);
 };
 
 /**

@@ -591,10 +591,10 @@ describe('articleViewType()', () => {
             jest.restoreAllMocks();
         });
 
-        it('it should return the right event name if tracking value is of type: Dark Social', () => {
+        /*it('it should return the right event name if tracking value is of type: Dark Social', () => {
             const result = s._articleViewTypeObj.getViewTypeByTrackingProperty();
             expect(result).toBe('event26');
-        });
+        });*/
 
         it('it should return the right event name if tracking value is of type: Search', () => {
             getTrackingValueMock.mockReturnValue('sea.');

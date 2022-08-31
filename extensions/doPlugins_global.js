@@ -294,7 +294,7 @@ s._articleViewTypeObj = {
             return 'event23'; // Login via secure.mypass
         } else if (this.isFromPaypal(referrer)) {
             return 'event23'; // After Payment via Paypal
-        } else if (!referringDomain || referringDomain === ''){
+        } else if (!referringDomain){
             return 'event26'; // Dark Social
         } else {
             return 'event27'; // Other External (Referrer)

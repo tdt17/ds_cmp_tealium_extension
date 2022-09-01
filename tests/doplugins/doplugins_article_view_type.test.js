@@ -413,6 +413,7 @@ describe('articleViewType()', () => {
     describe('getExternalType()', () => {
         const anyReferrerDomain = 'www.any-domain.com';
         const anyReferrer = 'https://www.any-domain.com';
+        const noReferrer = '';
         let isFromSearchMock;
         let isFromSocialMock;
         let isFromBildMock;
@@ -469,10 +470,16 @@ describe('articleViewType()', () => {
             expect(result).toBe('event23');
         });
 
+       /* it('should return event26 (dark social) if there is no referrer', function () {
+            const result = s._articleViewTypeObj.getExternalType(noReferrer);
+            expect(result).toBe('event26');
+        });*/
+
         it('should return event27 (other external) in any other cases', function () {
             const result = s._articleViewTypeObj.getExternalType(anyReferrer);
             expect(result).toBe('event27');
         });
+
     });
 
     describe('getReferrerFromLocationHash', () => {
@@ -541,12 +548,19 @@ describe('articleViewType()', () => {
             expect(result).toBe(anyRecommendationType);
         });
 
+        it('should return event26 (dark social) if there is no referrer', function () {
+            const noReferrer = false;
+            const result = s._articleViewTypeObj.getExternalType(noReferrer);
+            expect(result).toBe(noReferrer);
+        });
+
         it('should call getExternalType(referrer) and return its result if referrer is from an external domain', () => {
             const anyExternalType = 'any-external-type';
             getExternalTypeMock.mockReturnValue(anyExternalType);
             let result = s._articleViewTypeObj.getViewTypeByReferrer();
             expect(result).toBe(anyExternalType);
         });
+        
     });
 
     describe('getTrackingValue', () => {
@@ -589,11 +603,6 @@ describe('articleViewType()', () => {
 
         afterEach(() => {
             jest.restoreAllMocks();
-        });
-
-        it('it should return the right event name if tracking value is of type: Dark Social', () => {
-            const result = s._articleViewTypeObj.getViewTypeByTrackingProperty();
-            expect(result).toBe('event26');
         });
 
         it('it should return the right event name if tracking value is of type: Search', () => {

@@ -473,6 +473,12 @@ describe('articleViewType()', () => {
             const result = s._articleViewTypeObj.getExternalType(anyReferrer);
             expect(result).toBe('event27');
         });
+
+        it('should return event26 (dark social) if there is no referrer', function () {
+            const referrer = '';
+            const result = s._articleViewTypeObj.getExternalType(referrer);
+            expect(result).toBe('event26');
+        });
     });
 
     describe('getReferrerFromLocationHash', () => {

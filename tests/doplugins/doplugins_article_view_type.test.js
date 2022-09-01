@@ -474,11 +474,6 @@ describe('articleViewType()', () => {
             expect(result).toBe('event27');
         });
 
-        it('should return event26 (dark social) if there is no referrer', function () {
-            const referrer = '';
-            const result = s._articleViewTypeObj.getExternalType(referrer);
-            expect(result).toBe('event26');
-        });
     });
 
     describe('getReferrerFromLocationHash', () => {
@@ -552,6 +547,12 @@ describe('articleViewType()', () => {
             getExternalTypeMock.mockReturnValue(anyExternalType);
             let result = s._articleViewTypeObj.getViewTypeByReferrer();
             expect(result).toBe(anyExternalType);
+        });
+
+        it('should return event26 (dark social) if there is no referrer', function () {
+            const noReferrer = false;
+            const result = s._articleViewTypeObj.getExternalType(noReferrer);
+            expect(result).toBe(noReferrer);
         });
     });
 

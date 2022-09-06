@@ -12,18 +12,21 @@ describe('s.doPlugins()', () => {
 
         // Provide a fresh copy of the s-object for each test.
         s = { ...sObject };
+        jest.spyOn(s, 'getPreviousValue').mockImplementation(jest.fn());
     });
 
     afterEach(() => {
         jest.restoreAllMocks();
     });
 
-    it('should assign values to eVar 181, 184 and 185', () => {
+    it('should assign values to eVars and props', () => {
         window.utag.data.myCW = 'test_cw';
         s.version = 'test_version';
         s.visitor = {
             version: 'test_visitor_version'
         };
+
+        s.getPreviousValue.mockReturnValue('test_value');
         
         s.doPlugins(s);
 
@@ -33,10 +36,15 @@ describe('s.doPlugins()', () => {
         expect(s.eVar184.length).toBeGreaterThanOrEqual(1);
         expect(s.eVar181.length).toBeGreaterThanOrEqual(1);
         expect(s.eVar185).toBe(window.utag.data.myCW);
+        expect(s.prop61).toBe('test_value');
+        expect(s.eVar33).toBe('test_value');
+
     });
 
     it('should call s._bildAppsPageNameObj.setAppsPageName()', () => {
         const setAppsPageNameMock = jest.spyOn(s._bildAppsPageNameObj, 'setAppsPageName');
+
+        jest.spyOn(s, 'getPreviousValue').mockImplementation(jest.fn());
 
         s.doPlugins(s);
 
@@ -46,6 +54,8 @@ describe('s.doPlugins()', () => {
     it('should call s._orderViaArticle()', () => {
         const orderViaArticleMock = jest.spyOn(s, '_orderViaArticle');
 
+        jest.spyOn(s, 'getPreviousValue').mockImplementation(jest.fn());
+
         s.doPlugins(s);
 
         expect(orderViaArticleMock).toHaveBeenCalledWith(s);
@@ -54,6 +64,8 @@ describe('s.doPlugins()', () => {
     it('should call s._setPageAgeForCheckout()', () => {
         const setPageAgeForCheckoutMock = jest.spyOn(s, '_setPageAgeForCheckout');
 
+        jest.spyOn(s, 'getPreviousValue').mockImplementation(jest.fn());
+
         s.doPlugins(s);
 
         expect(setPageAgeForCheckoutMock).toHaveBeenCalled();
@@ -61,6 +73,8 @@ describe('s.doPlugins()', () => {
 
     it('should call s._setPageCmsPathWithoutBild()', () => {
         const setPageCmsPathWithoutBildMock = jest.spyOn(s, '_setPageCmsPathWithoutBild');
+
+        jest.spyOn(s, 'getPreviousValue').mockImplementation(jest.fn());
 
         s.doPlugins(s);
 

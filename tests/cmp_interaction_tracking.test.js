@@ -11,6 +11,7 @@ const TEALIUM_PROFILES = [
     {profileName: 'bild-bild.de', tagId: 12},
     {profileName: 'bild-fitbook.de', tagId: 40},
     {profileName: 'bild-myhomebook.de', tagId: 37},
+    {profileName: 'bild-petbook.de', tagId: 82},
     {profileName: 'bild-sportbild.de', tagId: 16},
     {profileName: 'bild-stylebook.de', tagId: 30},
     {profileName: 'bild-techbook.de', tagId: 82},

@@ -460,6 +460,10 @@ s._setKameleoonTracking = function (s) {
     if (s.linkName === 'Kameleoon Tracking') {
         if (window.Kameleoon) {
             window.Kameleoon.API.Tracking.processOmniture(s);
+        }else {
+            window.kameleoonQueue.push(function () {
+                window.Kameleoon.API.Tracking.processOmniture(s);
+            });
         }
         window.kameleoonOmnitureCallSent = true;
     }

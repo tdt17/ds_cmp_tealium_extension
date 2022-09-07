@@ -25,6 +25,7 @@
         'bild-bild.de': 12,
         'bild-fitbook.de': 40,
         'bild-myhomebook.de': 37,
+        'bild-petbook.de': 82,
         'bild-sportbild.de': 16,
         'bild-stylebook.de': 30,
         'bild-techbook.de': 82,

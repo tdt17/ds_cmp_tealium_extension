@@ -431,6 +431,7 @@ s._setExternalReferringDomainEvents = function (s) {
         },
     ];
 
+    
     if (s._utils.isArticlePage()) {
         const referringURL = s._utils.getReferrer();
 
@@ -452,6 +453,68 @@ s._setExternalReferringDomainEvents = function (s) {
         });
     }
 };
+
+/**
+ * Set additional events with trackingValue (cid, wtrid, wtmc) context.
+ */
+s._setTrackingValueEvents = function (s) {
+    const trackingValuesToEventMapping = [
+        {
+            trackingvalues: ['cid=upday'],
+            event: 'event204',
+            matchExact: 'true',
+        },
+        {
+            trackingvalues: ['kooperation.article.outbrain.'],
+            event: 'event102',
+        },
+        {
+            trackingvalues: ['kooperation.home.outbrain.'],
+            event: 'event231',
+        },
+        {
+            trackingvalues: ['.telegram.'],
+            event: 'event225',
+        },
+        {
+            trackingvalues: ['.instagram.'],
+            event: 'event53',
+        },
+        {
+            trackingvalues: ['.youtube.'],
+            event: 'event50',
+        },
+        {
+            trackingvalues: ['.twitter.'],
+            event: 'event51',
+        },
+        {
+            trackingvalues: ['.facebook.'],
+            event: 'event52',
+        },
+    ];
+
+    
+    if (s._utils.isArticlePage()) {
+        const trackingValuesFromQueryParameter = s._articleViewTypeObj.getTrackingValue();
+
+        trackingValuesToEventMapping.forEach(trackingvalueEventMap => {
+            const {trackingvalues, event, matchExact} = trackingvalueEventMap;
+            const trackingvalueMatches = trackingvalues.some(trackingValues => {
+                if (matchExact) {
+                    return trackingValuesFromQueryParameter && trackingValues.includes(trackingvalues);
+                } else {
+                    return trackingValuesFromQueryParameter;
+                }
+            });
+            if (trackingvalueMatches) {
+                s._eventsObj.addEvent(event);
+            }
+        });
+    }
+};
+
+
 
 /**
  *  Kameleoon tracking
@@ -839,6 +902,7 @@ s._init = function (s) {
     s._ICIDTracking.setVariables(s);
     s._campaignObj.setCampaignVariables(s);
     s._setExternalReferringDomainEvents(s);
+    s._setTrackingValueEvents(s);
     s._plusDensityObj.setDensity(s);
     s._directOutbrainOrderObj.setOutbrain(s);
     s._T_REFTracking.setVariables(s);

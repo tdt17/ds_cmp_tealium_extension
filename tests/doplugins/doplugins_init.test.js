@@ -8,6 +8,7 @@ describe('init()', () => {
     let setICIDTrackingVariablesMock;
     let setDensityMock;
     let setExternalReferringDomainEventsMock;
+    let setTrackingValueEventsMock;
     let setOutbrainMock;
 
     beforeEach(() => {
@@ -24,6 +25,7 @@ describe('init()', () => {
         setICIDTrackingVariablesMock = jest.spyOn(s._ICIDTracking, 'setVariables').mockImplementation();
         setDensityMock = jest.spyOn(s._plusDensityObj, 'setDensity').mockImplementation();
         setExternalReferringDomainEventsMock = jest.spyOn(s, '_setExternalReferringDomainEvents').mockImplementation();
+        setTrackingValueEventsMock = jest.spyOn(s, '_setTrackingValueEvents').mockImplementation();
         setOutbrainMock = jest.spyOn(s._directOutbrainOrderObj, 'setOutbrain').mockImplementation();
     });
 
@@ -93,6 +95,12 @@ describe('init()', () => {
 
         s._init(s);
         expect(setExternalReferringDomainEventsMock).toHaveBeenCalledWith(s);
+    });
+
+    it('should call s.setTrackingValueEvents(s)', () => {
+
+        s._init(s);
+        expect(setTrackingValueEventsMock).toHaveBeenCalledWith(s);
     });
 
     it('should call s.s._directOutbrainOrderObj.setOutbrain(s)', () => {

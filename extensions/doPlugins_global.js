@@ -114,7 +114,7 @@ s._utils = {
     },
 
     getReferrer: function () {
-        return window.document.referrer || this.getReferrerFromLocationHash() || this.getReferrerFromGetParameter() ;
+        return this.getReferrerFromLocationHash() || this.getReferrerFromGetParameter() || window.document.referrer;
     },
     getReferringDomain: function () {
         return this.getDomainFromURLString(this.getReferrer());
@@ -312,7 +312,7 @@ s._articleViewTypeObj = {
             ? referrerFromHash : '';
     },
 
-    referrerFromGetParameter: function () {
+    getReferrerFromGetParameter: function () {
         let referrerFromGetParameter;
         if (window.utag.data['qp.t_ref']) {
             referrerFromGetParameter = window.utag.data['qp.t_ref'];
@@ -325,7 +325,7 @@ s._articleViewTypeObj = {
     },
 
     getViewTypeByReferrer: function () {
-        const referrer = this.getReferrerFromLocationHash() || this.referrerFromGetParameter()  || window.document.referrer;
+        const referrer = this.getReferrerFromLocationHash() || this.getReferrerFromGetParameter() || window.document.referrer ;
         let articleViewType;
 
         if (this.isFromInternal(referrer)) {

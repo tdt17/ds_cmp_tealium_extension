@@ -462,7 +462,6 @@ s._setTrackingValueEvents = function (s) {
         {
             trackingvalues: ['cid=upday'],
             event: 'event204',
-            matchExact: 'true',
         },
         {
             trackingvalues: ['kooperation.article.outbrain.'],
@@ -499,12 +498,13 @@ s._setTrackingValueEvents = function (s) {
         const trackingValuesFromQueryParameter = s._articleViewTypeObj.getTrackingValue();
 
         trackingValuesToEventMapping.forEach(trackingvalueEventMap => {
-            const {trackingvalues, event, matchExact} = trackingvalueEventMap;
+            const {trackingvalues, event} = trackingvalueEventMap;
             const trackingvalueMatches = trackingvalues.some(trackingValues => {
-                if (matchExact) {
+                if (trackingvalues) {
                     return trackingValuesFromQueryParameter && trackingValues.includes(trackingvalues);
                 } else {
-                    return trackingValuesFromQueryParameter;
+                    
+                    return; // trackingValuesFromQueryParameter;
                 }
             });
             if (trackingvalueMatches) {

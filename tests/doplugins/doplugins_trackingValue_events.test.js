@@ -40,7 +40,7 @@ describe('tracking Value (URL Parameter like cid)', () => {
     });
     //Outbrain Home
     it('should set event231 if the trackingValue contains kooperation.home.outbrain.', () => {
-        getTrackingValueMock.mockReturnValue('www.google.com');
+        getTrackingValueMock.mockReturnValue('kooperation.home.outbrain');
 
         s._setTrackingValueEvents(s);
         expect(addEventMock).toHaveBeenCalledWith('event231');
@@ -71,20 +71,20 @@ describe('tracking Value (URL Parameter like cid)', () => {
         s._setTrackingValueEvents(s);
         expect(addEventMock).toHaveBeenCalledWith('event225');
     });
-    it('should not set event49 if the trackingValue does not contain .telegram.', () => {
+    it('should not set event225 if the trackingValue does not contain .telegram.', () => {
         getTrackingValueMock.mockReturnValue('any-trackingValue');
 
         s._setTrackingValueEvents(s);
         expect(addEventMock).not.toHaveBeenCalledWith('event225');
     });
     //Instagram
-    it('should set event231 if the trackingValue contains .instagram.', () => {
+    it('should set event53 if the trackingValue contains .instagram.', () => {
         getTrackingValueMock.mockReturnValue('.instagram.');
 
         s._setTrackingValueEvents(s);
         expect(addEventMock).toHaveBeenCalledWith('event53');
     });
-    it('should not set event49 if the trackingValue does not contain .instagram.', () => {
+    it('should not set event53 if the trackingValue does not contain .instagram.', () => {
         getTrackingValueMock.mockReturnValue('any-trackingValue');
 
         s._setTrackingValueEvents(s);

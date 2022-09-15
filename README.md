@@ -64,5 +64,8 @@ The extension contains features which are needed for the Adobe Analytics trackin
 The different features are organized as simple Javascript objects which are attached to the global S-Object which 
 is provided by the Adobe Analytics tag.
 
+### Adobe DoPlugins App Extensions (Bild and Welt)
+
+In addition to the global doPlugins extension there are three app extensions (doPlugins_bild_apps, doPlugins_welt_apps_android, doPlugins_welt_apps_ios) which are the generalized and refactored version for different Bild and Welt apps. The app extensions specifically cater for tracking on the mobile platforms.
 
 Good luck!

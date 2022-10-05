@@ -458,37 +458,37 @@ s._setExternalReferringDomainEvents = function (s) {
  * Set additional events with trackingValue (cid, wtrid, wtmc) context.
  */
 s._setTrackingValueEvents = function (s) {
-    const trackingValuesToEventMapping = [
+    const trackingValueToEventMapping = [
         {
-            trackingvalues: ['cid=upday'],
+            trackingValue: 'cid=upday',
             event: 'event204',
         },
         {
-            trackingvalues: ['kooperation.article.outbrain.'],
+            trackingValue: 'kooperation.article.outbrain.',
             event: 'event102',
         },
         {
-            trackingvalues: ['kooperation.home.outbrain.'],
+            trackingValue: 'kooperation.home.outbrain.',
             event: 'event231',
         },
         {
-            trackingvalues: ['.telegram.'],
+            trackingValue: '.telegram.',
             event: 'event225',
         },
         {
-            trackingvalues: ['.instagram.'],
+            trackingValue: '.instagram.',
             event: 'event53',
         },
         {
-            trackingvalues: ['.youtube.'],
+            trackingValue: '.youtube.',
             event: 'event50',
         },
         {
-            trackingvalues: ['.twitter.'],
+            trackingValue: '.twitter.',
             event: 'event51',
         },
         {
-            trackingvalues: ['.facebook.'],
+            trackingValue: '.facebook.',
             event: 'event52',
         },
     ];
@@ -497,16 +497,9 @@ s._setTrackingValueEvents = function (s) {
     if (s._utils.isArticlePage()) {
         const trackingValuesFromQueryParameter = s._articleViewTypeObj.getTrackingValue();
 
-        trackingValuesToEventMapping.forEach(trackingvalueEventMap => {
-            const {trackingvalues, event} = trackingvalueEventMap;
-            const trackingvalueMatches = trackingvalues.some(trackingValues => {
-                if (trackingvalues) {
-                    return trackingValuesFromQueryParameter && trackingValues.includes(trackingvalues);
-                } else {
-                    
-                    return; // trackingValuesFromQueryParameter;
-                }
-            });
+        trackingValueToEventMapping.forEach(trackingValueEventMap => {
+            const {trackingValue, event} = trackingValueEventMap;
+            const trackingvalueMatches = trackingValuesFromQueryParameter && trackingValuesFromQueryParameter.includes(trackingValue);
             if (trackingvalueMatches) {
                 s._eventsObj.addEvent(event);
             }

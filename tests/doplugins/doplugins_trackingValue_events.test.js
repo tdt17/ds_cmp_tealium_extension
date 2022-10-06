@@ -94,5 +94,34 @@ describe('_setTrackingValueEvents (URL Parameter like cid)', () => {
         s._setTrackingValueEvents(s);
         expect(addEventMock).not.toHaveBeenCalledWith('event53');
     });   
+
+     //Youtube
+     it('should set event53 if the trackingValue contains .youtube.', () => {
+        getTrackingValueMock.mockReturnValue('.youtube.');
+
+        s._setTrackingValueEvents(s);
+        expect(addEventMock).toHaveBeenCalledWith('event50');
+    });
+    it('should not set event53 if the trackingValue does not contain .youtube.', () => {
+        getTrackingValueMock.mockReturnValue('any-trackingValue');
+
+        s._setTrackingValueEvents(s);
+        expect(addEventMock).not.toHaveBeenCalledWith('event50');
+    });     
  
+     //Facebook
+     it('should set event53 if the trackingValue contains .facebook.', () => {
+        getTrackingValueMock.mockReturnValue('.facebook.');
+
+        s._setTrackingValueEvents(s);
+        expect(addEventMock).toHaveBeenCalledWith('event52');
+    });
+    it('should not set event53 if the trackingValue does not contain .facebook.', () => {
+        getTrackingValueMock.mockReturnValue('any-trackingValue');
+
+        s._setTrackingValueEvents(s);
+        expect(addEventMock).not.toHaveBeenCalledWith('event52');
+    });     
+
+
 });

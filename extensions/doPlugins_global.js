@@ -460,7 +460,7 @@ s._setExternalReferringDomainEvents = function (s) {
 s._setTrackingValueEvents = function (s) {
     const trackingValueToEventMapping = [
         {
-            trackingValue: 'cid=upday',
+            trackingValue: 'upday',
             event: 'event204',
         },
         {
@@ -502,6 +502,8 @@ s._setTrackingValueEvents = function (s) {
             const trackingvalueMatches = trackingValuesFromQueryParameter && trackingValuesFromQueryParameter.includes(trackingValue);
             if (trackingvalueMatches) {
                 s._eventsObj.addEvent(event);
+            } else if (!trackingvalueMatches && trackingValuesFromQueryParameter && trackingValuesFromQueryParameter.startsWith('social')){
+                s._eventsObj.addEvent('event226');
             }
         });
     }

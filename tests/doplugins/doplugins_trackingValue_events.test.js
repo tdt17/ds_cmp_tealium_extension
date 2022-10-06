@@ -25,8 +25,8 @@ describe('_setTrackingValueEvents (URL Parameter like cid)', () => {
         expect(getTrackingValueMock).not.toBeCalled();
     });
     //Upday
-    it('should set event204 if the trackingValue equals cid=upday', () => {
-        getTrackingValueMock.mockReturnValue('cid=upday');
+    it('should set event204 if the trackingValue equals upday', () => {
+        getTrackingValueMock.mockReturnValue('upday');
 
         s._setTrackingValueEvents(s);
         expect(addEventMock).toHaveBeenCalledWith('event204');
@@ -96,13 +96,13 @@ describe('_setTrackingValueEvents (URL Parameter like cid)', () => {
     });   
 
      //Youtube
-     it('should set event53 if the trackingValue contains .youtube.', () => {
+     it('should set event50 if the trackingValue contains .youtube.', () => {
         getTrackingValueMock.mockReturnValue('.youtube.');
 
         s._setTrackingValueEvents(s);
         expect(addEventMock).toHaveBeenCalledWith('event50');
     });
-    it('should not set event53 if the trackingValue does not contain .youtube.', () => {
+    it('should not set event50 if the trackingValue does not contain .youtube.', () => {
         getTrackingValueMock.mockReturnValue('any-trackingValue');
 
         s._setTrackingValueEvents(s);
@@ -110,18 +110,32 @@ describe('_setTrackingValueEvents (URL Parameter like cid)', () => {
     });     
  
      //Facebook
-     it('should set event53 if the trackingValue contains .facebook.', () => {
+     it('should set event52 if the trackingValue contains .facebook.', () => {
         getTrackingValueMock.mockReturnValue('.facebook.');
 
         s._setTrackingValueEvents(s);
         expect(addEventMock).toHaveBeenCalledWith('event52');
     });
-    it('should not set event53 if the trackingValue does not contain .facebook.', () => {
+    it('should not set event52 if the trackingValue does not contain .facebook.', () => {
         getTrackingValueMock.mockReturnValue('any-trackingValue');
 
         s._setTrackingValueEvents(s);
         expect(addEventMock).not.toHaveBeenCalledWith('event52');
     });     
+
+     //other organic social 
+     it('should set event226 if the trackingValue start with social ', () => {
+        getTrackingValueMock.mockReturnValue('social');
+
+        s._setTrackingValueEvents(s);
+        expect(addEventMock).toHaveBeenCalledWith('event226');
+    });
+    it('should not set event226 if the trackingValue does not contain one of the trackingValue events but startWith social.', () => {
+        getTrackingValueMock.mockReturnValue('any-trackingValue');
+
+        s._setTrackingValueEvents(s);
+        expect(addEventMock).not.toHaveBeenCalledWith('event226');
+    });       
 
 
 });

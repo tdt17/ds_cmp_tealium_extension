@@ -502,9 +502,10 @@ s._setTrackingValueEvents = function (s) {
             const trackingvalueMatches = trackingValuesFromQueryParameter && trackingValuesFromQueryParameter.includes(trackingValue);
             if (trackingvalueMatches) {
                 s._eventsObj.addEvent(event);
-            } else if (!trackingvalueMatches && trackingValuesFromQueryParameter && trackingValuesFromQueryParameter.startsWith('social')){
+            } else {
+                if (trackingValuesFromQueryParameter && trackingValuesFromQueryParameter.startsWith('social')) {
                 s._eventsObj.addEvent('event226');
-            }
+            }}
         });
     }
 };

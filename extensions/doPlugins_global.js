@@ -464,41 +464,6 @@ s._setExternalReferringDomainEvents = function (s) {
  */
 
 s._setTrackingValueEvents = function (s) {
-/*    const trackingValueToEventMapping = [
-        {
-            trackingValue: 'upday',
-            event: 'event204',
-        },
-        {
-            trackingValue: 'kooperation.article.outbrain.',
-            event: 'event102',
-        },
-        {
-            trackingValue: 'kooperation.home.outbrain.',
-            event: 'event231',
-        },
-        {
-            trackingValue: '.telegram.',
-            event: 'event225',
-        },
-        {
-            trackingValue: '.instagram.',
-            event: 'event53',
-        },
-        {
-            trackingValue: '.youtube.',
-            event: 'event50',
-        },
-        {
-            trackingValue: '.twitter.',
-            event: 'event51',
-        },
-        {
-            trackingValue: '.facebook.',
-            event: 'event52',
-        },
-    ];
-*/
     
     if (s._utils.isArticlePage()) {
         const trackingValuesFromQueryParameter = s._articleViewTypeObj.getTrackingValue();
@@ -540,21 +505,7 @@ s._setTrackingValueEvents = function (s) {
                 break;            
         }}
     }}
-
-/*
-        trackingValueToEventMapping.forEach(trackingValueEventMap => {
-            const {trackingValue, event} = trackingValueEventMap;
-            const trackingvalueMatches = trackingValuesFromQueryParameter && trackingValuesFromQueryParameter.includes(trackingValue);
-            if (trackingvalueMatches) {
-                s._eventsObj.addEvent(event);
-            } else if (typeOf(trackingvalueMatches) === 'undefined') {s._eventsObj.addEvent('event226');}
-        });
-    }*/
 };
-
-
-
-
 
 /**
  *  Kameleoon tracking

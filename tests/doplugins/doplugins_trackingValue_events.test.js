@@ -162,14 +162,7 @@ describe('_setTrackingValueEvents (URL Parameter like cid)', () => {
 
         s._setTrackingValueEvents(s);
         expect(addEventMock).toHaveBeenCalledWith('event226');
-    });
-    it('should not set event226 if the trackingValue does not contain one of the trackingValue events but startWith social.', () => {
-        getTrackingValueMock.mockReturnValue('any-trackingValue');
-        isSocialTrackingParameterMock.mockReturnValue(true);
-
-        s._setTrackingValueEvents(s);
-        expect(addEventMock).not.toHaveBeenCalledWith('event226');
-    });       
+    });      
 
 
 });

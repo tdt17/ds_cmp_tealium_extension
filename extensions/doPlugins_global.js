@@ -204,6 +204,11 @@ s._articleViewTypeObj = {
         return trackingValue;
     },
 
+    isTrackingValueOrganicSocial: function () {
+        const trackingValue = this.getTrackingValue();
+        return trackingValue.startsWith('social.');
+    },
+
     isFromSecureMypass: function (referrer) {
         const referringDomain = s._utils.getDomainFromURLString(referrer);
         return referringDomain === 'secure.mypass.de';
@@ -457,8 +462,9 @@ s._setExternalReferringDomainEvents = function (s) {
 /**
  * Set additional events with trackingValue (cid, wtrid, wtmc) context.
  */
+
 s._setTrackingValueEvents = function (s) {
-    const trackingValueToEventMapping = [
+/*    const trackingValueToEventMapping = [
         {
             trackingValue: 'upday',
             event: 'event204',
@@ -492,23 +498,61 @@ s._setTrackingValueEvents = function (s) {
             event: 'event52',
         },
     ];
-
+*/
     
     if (s._utils.isArticlePage()) {
         const trackingValuesFromQueryParameter = s._articleViewTypeObj.getTrackingValue();
+        
+        if (trackingValuesFromQueryParameter){
+            const isSocialTrackingParameter = s._articleViewTypeObj.isTrackingValueOrganicSocial();
+            const isSocialTrackingValue = isSocialTrackingParameter ? trackingValuesFromQueryParameter : '';
+            const isOtherTrackingValue = isSocialTrackingParameter ? '' : trackingValuesFromQueryParameter;
+        if (isSocialTrackingParameter){
+        switch (true) {
+            case isSocialTrackingValue.includes('.telegram.') :
+                s._eventsObj.addEvent('event225');
+                break;
+            case isSocialTrackingValue.includes('.instagram.') :
+                s._eventsObj.addEvent('event53');
+                break;            
+            case isSocialTrackingValue.includes('.youtube.') :
+                s._eventsObj.addEvent('event50');
+                break;
+            case isSocialTrackingValue.includes('.twitter.') :
+                s._eventsObj.addEvent('event51');
+                break;
+            case isSocialTrackingValue.includes('.facebook.')  :
+                s._eventsObj.addEvent('event52');
+                break; 
+            default:
+                s._eventsObj.addEvent('event226');   
+        }           
+        } else if (isOtherTrackingValue && isOtherTrackingValue.length > 0){
+        switch (true) {
+            case isOtherTrackingValue.startsWith('upday'):
+                s._eventsObj.addEvent('event204');
+                break;
+            case isOtherTrackingValue.startsWith('kooperation.article.outbrain.'):
+                s._eventsObj.addEvent('event102');
+                break;            
+            case isOtherTrackingValue.startsWith('kooperation.home.outbrain.') :
+                s._eventsObj.addEvent('event231');
+                break;            
+        }}
+    }}
 
+/*
         trackingValueToEventMapping.forEach(trackingValueEventMap => {
             const {trackingValue, event} = trackingValueEventMap;
             const trackingvalueMatches = trackingValuesFromQueryParameter && trackingValuesFromQueryParameter.includes(trackingValue);
             if (trackingvalueMatches) {
                 s._eventsObj.addEvent(event);
-            } else {
-                if (trackingValuesFromQueryParameter && trackingValuesFromQueryParameter.startsWith('social')) {
-                s._eventsObj.addEvent('event226');
-            }}
+            } else if (typeOf(trackingvalueMatches) === 'undefined') {s._eventsObj.addEvent('event226');}
         });
-    }
+    }*/
 };
+
+
 
 
 

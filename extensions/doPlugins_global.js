@@ -796,6 +796,7 @@ s._eventsObj = {
 /**
  * Plus density (Plusdichte) tracking
  */
+/*
 s._plusDensityObj = {
     saveToCookie: (source) => {
         window.utag.loader.SC('utag_main', { 'source': source + ';exp-session' });
@@ -815,7 +816,7 @@ s._plusDensityObj = {
             }
         }
     }
-};
+};*/
 
 /**
  * Outbrain direct order
@@ -897,7 +898,6 @@ s._init = function (s) {
     s._campaignObj.setCampaignVariables(s);
     s._setExternalReferringDomainEvents(s);
     s._setTrackingValueEvents(s);
-    s._plusDensityObj.setDensity(s);
     s._directOutbrainOrderObj.setOutbrain(s);
     s._T_REFTracking.setVariables(s);
 };

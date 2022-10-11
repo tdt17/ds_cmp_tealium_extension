@@ -114,7 +114,7 @@ s._utils = {
     },
 
     getReferrer: function () {
-        return window.document.referrer || this.getReferrerFromLocationHash() || this.getReferrerFromGetParameter();
+        return this.getReferrerFromLocationHash() || this.getReferrerFromGetParameter() || window.document.referrer;
     },
     getReferringDomain: function () {
         return this.getDomainFromURLString(this.getReferrer());
@@ -475,35 +475,35 @@ s._setTrackingValueEvents = function (s) {
             const isOtherTrackingValue = isSocialTrackingParameter ? '' : trackingValuesFromQueryParameter;
             if (isSocialTrackingParameter) {
                 switch (true) {
-                    case isSocialTrackingValue.includes('.telegram.'):
-                        s._eventsObj.addEvent('event225');
-                        break;
-                    case isSocialTrackingValue.includes('.instagram.'):
-                        s._eventsObj.addEvent('event53');
-                        break;
-                    case isSocialTrackingValue.includes('.youtube.'):
-                        s._eventsObj.addEvent('event50');
-                        break;
-                    case isSocialTrackingValue.includes('.twitter.'):
-                        s._eventsObj.addEvent('event51');
-                        break;
-                    case isSocialTrackingValue.includes('.facebook.'):
-                        s._eventsObj.addEvent('event52');
-                        break;
-                    default:
-                        s._eventsObj.addEvent('event226');
+                case isSocialTrackingValue.includes('.telegram.'):
+                    s._eventsObj.addEvent('event225');
+                    break;
+                case isSocialTrackingValue.includes('.instagram.'):
+                    s._eventsObj.addEvent('event53');
+                    break;
+                case isSocialTrackingValue.includes('.youtube.'):
+                    s._eventsObj.addEvent('event50');
+                    break;
+                case isSocialTrackingValue.includes('.twitter.'):
+                    s._eventsObj.addEvent('event51');
+                    break;
+                case isSocialTrackingValue.includes('.facebook.'):
+                    s._eventsObj.addEvent('event52');
+                    break;
+                default:
+                    s._eventsObj.addEvent('event226');
                 }
             } else if (isOtherTrackingValue && isOtherTrackingValue.length > 0) {
                 switch (true) {
-                    case isOtherTrackingValue.startsWith('upday'):
-                        s._eventsObj.addEvent('event204');
-                        break;
-                    case isOtherTrackingValue.startsWith('kooperation.article.outbrain.'):
-                        s._eventsObj.addEvent('event102');
-                        break;
-                    case isOtherTrackingValue.startsWith('kooperation.home.outbrain.'):
-                        s._eventsObj.addEvent('event231');
-                        break;
+                case isOtherTrackingValue.startsWith('upday'):
+                    s._eventsObj.addEvent('event204');
+                    break;
+                case isOtherTrackingValue.startsWith('kooperation.article.outbrain.'):
+                    s._eventsObj.addEvent('event102');
+                    break;
+                case isOtherTrackingValue.startsWith('kooperation.home.outbrain.'):
+                    s._eventsObj.addEvent('event231');
+                    break;
                 }
             }
         }

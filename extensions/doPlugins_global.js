@@ -114,7 +114,7 @@ s._utils = {
     },
 
     getReferrer: function () {
-        return window.document.referrer || this.getReferrerFromLocationHash() || this.getReferrerFromGetParameter();
+        return this.getReferrerFromLocationHash() || this.getReferrerFromGetParameter() || window.document.referrer;
     },
     getReferringDomain: function () {
         return this.getDomainFromURLString(this.getReferrer());

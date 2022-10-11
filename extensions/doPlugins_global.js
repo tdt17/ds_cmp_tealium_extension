@@ -331,7 +331,7 @@ s._articleViewTypeObj = {
     },
 
     getViewTypeByReferrer: function () {
-        const referrer = this.getReferrerFromLocationHash() || this.getReferrerFromGetParameter() || window.document.referrer;
+        const referrer = this.getReferrerFromLocationHash() || this.getReferrerFromGetParameter() || window.document.referrer ;
         let articleViewType;
 
         if (this.isFromInternal(referrer)) {

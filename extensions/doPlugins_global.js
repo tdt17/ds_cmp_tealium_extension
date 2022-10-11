@@ -794,31 +794,6 @@ s._eventsObj = {
 };
 
 /**
- * Plus density (Plusdichte) tracking
- */
-/*
-s._plusDensityObj = {
-    saveToCookie: (source) => {
-        window.utag.loader.SC('utag_main', { 'source': source + ';exp-session' });
-    },
-    deleteFromCookie: () => {
-        window.utag.loader.SC('utag_main', { 'source': '' + ';exp-session' });
-    },
-    setDensity: function (s) {
-        const documentType = s._utils.getDocType(s);
-        if (documentType === 'article') {
-            const source = window.utag.data['qp.source'];
-            if (source) {
-                s.eVar235 = source;
-                this.saveToCookie(source);
-            } else {
-                this.deleteFromCookie();
-            }
-        }
-    }
-};*/
-
-/**
  * Outbrain direct order
  */
 s._directOutbrainOrderObj = {

@@ -111,4 +111,18 @@ describe('External referring domains', () => {
         s._setExternalReferringDomainEvents(s);
         expect(addEventMock).toHaveBeenCalledWith('event52');
     });
+
+    it('should set event225 if the referring domain includes telegram.org', () => {
+        getReferrerMock.mockReturnValue('telegram.org');
+
+        s._setExternalReferringDomainEvents(s);
+        expect(addEventMock).toHaveBeenCalledWith('event225');
+    });
+
+    it('should set event225 if the referring domain includes org.telegram', () => {
+        getReferrerMock.mockReturnValue('org.telegram');
+
+        s._setExternalReferringDomainEvents(s);
+        expect(addEventMock).toHaveBeenCalledWith('event225');
+    });
 });

@@ -435,6 +435,10 @@ s._setExternalReferringDomainEvents = function (s) {
             domains: ['facebook.com'],
             event: 'event52',
         },
+        {
+            domains: ['telegram.org', 'org.telegram'],
+            event: 'event225',
+        },
     ];
 
 

@@ -44,8 +44,6 @@ describe('s.doPlugins()', () => {
     it('should call s._bildAppsPageNameObj.setAppsPageName()', () => {
         const setAppsPageNameMock = jest.spyOn(s._bildAppsPageNameObj, 'setAppsPageName');
 
-        jest.spyOn(s, 'getPreviousValue').mockImplementation(jest.fn());
-
         s.doPlugins(s);
 
         expect(setAppsPageNameMock).toHaveBeenCalledWith(s);
@@ -53,8 +51,6 @@ describe('s.doPlugins()', () => {
 
     it('should call s._orderViaArticle()', () => {
         const orderViaArticleMock = jest.spyOn(s, '_orderViaArticle');
-
-        jest.spyOn(s, 'getPreviousValue').mockImplementation(jest.fn());
 
         s.doPlugins(s);
 
@@ -64,8 +60,6 @@ describe('s.doPlugins()', () => {
     it('should call s._setPageAgeForCheckout()', () => {
         const setPageAgeForCheckoutMock = jest.spyOn(s, '_setPageAgeForCheckout');
 
-        jest.spyOn(s, 'getPreviousValue').mockImplementation(jest.fn());
-
         s.doPlugins(s);
 
         expect(setPageAgeForCheckoutMock).toHaveBeenCalled();
@@ -73,8 +67,6 @@ describe('s.doPlugins()', () => {
 
     it('should call s._setPageCmsPathWithoutBild()', () => {
         const setPageCmsPathWithoutBildMock = jest.spyOn(s, '_setPageCmsPathWithoutBild');
-
-        jest.spyOn(s, 'getPreviousValue').mockImplementation(jest.fn());
 
         s.doPlugins(s);
 

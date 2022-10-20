@@ -12,6 +12,7 @@ describe('s.doPlugins()', () => {
 
         // Provide a fresh copy of the s-object for each test.
         s = { ...sObject };
+
         jest.spyOn(s, 'getPreviousValue').mockImplementation(jest.fn());
     });
 

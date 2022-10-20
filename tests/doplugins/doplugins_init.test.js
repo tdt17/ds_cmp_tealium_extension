@@ -6,8 +6,9 @@ describe('init()', () => {
     let setCampaignVariablesMock;
     let setViewTypesMock;
     let setICIDTrackingVariablesMock;
-    let setDensityMock;
     let setExternalReferringDomainEventsMock;
+    let setTrackingValueEventsMock;
+    let setOutbrainMock;
 
     beforeEach(() => {
         // Create a fresh window mock for each test.
@@ -21,8 +22,9 @@ describe('init()', () => {
         setCampaignVariablesMock = jest.spyOn(s._campaignObj, 'setCampaignVariables').mockImplementation();
         setViewTypesMock = jest.spyOn(s._articleViewTypeObj, 'setViewTypes').mockImplementation();
         setICIDTrackingVariablesMock = jest.spyOn(s._ICIDTracking, 'setVariables').mockImplementation();
-        setDensityMock = jest.spyOn(s._plusDensityObj, 'setDensity').mockImplementation();
         setExternalReferringDomainEventsMock = jest.spyOn(s, '_setExternalReferringDomainEvents').mockImplementation();
+        setTrackingValueEventsMock = jest.spyOn(s, '_setTrackingValueEvents').mockImplementation();
+        setOutbrainMock = jest.spyOn(s._directOutbrainOrderObj, 'setOutbrain').mockImplementation();
     });
 
     afterEach(() => {
@@ -81,17 +83,22 @@ describe('init()', () => {
         expect(setICIDTrackingVariablesMock).toHaveBeenCalledWith(s);
     });
 
-    it('should call s._plusDensityObj.setDensity(s)', () => {
-
-        s._init(s);
-        expect(setDensityMock).toHaveBeenCalledWith(s);
-    });
-
     it('should call s._setExternalReferringDomainEvents(s)', () => {
 
         s._init(s);
         expect(setExternalReferringDomainEventsMock).toHaveBeenCalledWith(s);
     });
 
+    it('should call s.setTrackingValueEvents(s)', () => {
+
+        s._init(s);
+        expect(setTrackingValueEventsMock).toHaveBeenCalledWith(s);
+    });
+
+    it('should call s.s._directOutbrainOrderObj.setOutbrain(s)', () => {
+
+        s._init(s);
+        expect(setOutbrainMock).toHaveBeenCalledWith(s);
+    });
 
 });

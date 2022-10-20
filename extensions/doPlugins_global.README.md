@@ -17,7 +17,6 @@ Adobe Analytics 's-object'. A common practice and already existing pattern.
 * [Adobe Campaign Tracking](#adobe-campaign-tracking-s_campaignobj)
 * [Scroll Depth Tracking](#scroll-depth-tracking-s_scrolldepthobj)
 * [ICID Campaign Tracking](#icid-campaign-tracking-s_icidtracking)
-* [Plusdichte Tracking](#plusdicht-tracking-s_plusdensityobj)
 
 
 ### Page View Types (s._articleViewTypeObj)
@@ -115,11 +114,6 @@ the global doPlugins callback (even though it should be executed only once).
 
 ### ICID Campaign Tracking (s._ICIDTracking)
 Some internal campaign tracking.
-
-
-### Plusdicht Tracking (s._plusDensityObj)
-'Plusdichte' tracking.
-
 
 
 ## Internal Features

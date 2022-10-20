@@ -25,6 +25,7 @@
         'bild-bild.de': 12,
         'bild-fitbook.de': 40,
         'bild-myhomebook.de': 37,
+        'bild-petbook.de': 82,
         'bild-sportbild.de': 16,
         'bild-stylebook.de': 30,
         'bild-techbook.de': 82,
@@ -176,7 +177,7 @@
             // Ensure that view event gets processed before link event by adding a delay.
             setTimeout(() => {
                 exportedFunctions.sendLinkEvent(TCFAPI_COMMON_EVENTS.CMP_UI_SHOWN);
-            }, 1000);
+            }, 500);
         }
     }
 

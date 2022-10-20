@@ -109,6 +109,14 @@ describe('_bildPageNameObj', () => {
             expect(returnValue).toBe(false);
         });
 
+        it('should be false if page_sub_type is not correct', () => {
+            window.utag.data.page_sub_type = 'any-non-Liveticker';
+            window.utag.data.page_mapped_doctype_for_pagename = 'article';
+
+            const returnValue = s._bildPageNameObj.isLive();
+            expect(returnValue).toBe(false);
+        });
+
         it('should be true if page_mapped_doctype_for_pagename is article and is_page_live_article is 1', () => {
             window.utag.data.is_page_live_article = '1';
             window.utag.data.page_mapped_doctype_for_pagename = 'article';
@@ -116,6 +124,14 @@ describe('_bildPageNameObj', () => {
             const returnValue = s._bildPageNameObj.isLive();
             expect(returnValue).toBe(true);
         });
+
+        it('should be true if page_mapped_doctype_for_pagename is article and page_sub_type is LIVETICKER', () => {
+            window.utag.data.page_sub_type = 'LIVETICKER';
+            window.utag.data.page_mapped_doctype_for_pagename = 'article';
+
+            const returnValue = s._bildPageNameObj.isLive();
+            expect(returnValue).toBe(true);
+        });        
     });
 
     describe('isLiveSport', () => {

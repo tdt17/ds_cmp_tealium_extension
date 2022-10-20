@@ -107,8 +107,7 @@ s.doPlugins = function (s) {
     s.eVar181 = new Date().getMinutes().toString();
     s.eVar185 = window.utag.data.myCW || '';
 
-    s.eVar33 = s.getPreviousValue(s.pageName);
-    s.prop61 = s.getPreviousValue(s.pageName);
+    s.eVar33 = s.prop61 = s.getPreviousValue(s.pageName);
 
     s._bildAppsPageNameObj.setAppsPageName(s);
     s._orderViaArticle(s);

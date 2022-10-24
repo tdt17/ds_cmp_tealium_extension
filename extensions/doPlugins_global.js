@@ -189,8 +189,8 @@ s._articleViewTypeObj = {
         //for bild domains see isFromBild & isFromBildMobile
         const asDomains = ['welt.de','fitbook.de','stylebook.de','techbook.de','travelbook.de','myhomebook.de','bz-berlin.de','rollingstone.de','metal-hammer.de','musikexpress.de','petbook.de'];
         const referringDomain = s._utils.getDomainFromURLString(referrer);
-        const isNotInternal = this.isFromInternal(referrer);
-        if (!isNotInternal){
+        const isInternal = this.isFromInternal(referrer);
+        if (!isInternal){
             return asDomains.some(item => {
                 return referringDomain.indexOf(item) !== -1;
             });

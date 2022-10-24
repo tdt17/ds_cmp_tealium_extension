@@ -189,17 +189,15 @@ describe('articleViewType()', () => {
             getDomainFromURLStringMock = jest.spyOn(s._utils, 'getDomainFromURLString').mockReturnValue('');
         });
     
-        it('should return TRUE if referrer is from internal Domain (except bild.de, like from fitbook.de)', function () {
+        it('should return TRUE if referrer is from internal Domain (except bild.de but like from fitbook.de)', function () {
             getDomainFromURLStringMock.mockReturnValue(asDomains);
-            const result = s._articleViewTypeObj.isFromAsDomain(anyReferrer);
-            expect(getDomainFromURLStringMock).toHaveBeenLastCalledWith(anyReferrer);
+            const result = s._articleViewTypeObj.isFromAsDomain(asDomains);
             expect(result).toBe(true);
         });
     
-        it('should return FALSE if referrer is NOT from internal Domain (except bild.de, like from fitbook.de)', function () {
-            getDomainFromURLStringMock.mockReturnValue('any-other-domain.com');
+        it('should return FALSE if referrer is NOT from internal Domain (except bild.de but like from fitbook.de)', function () {
+            getDomainFromURLStringMock.mockReturnValue(anyReferrer);
             const result = s._articleViewTypeObj.isFromAsDomain(anyReferrer);
-            expect(getDomainFromURLStringMock).toHaveBeenLastCalledWith(anyReferrer);
             expect(result).toBe(false);
         });
     });

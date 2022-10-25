@@ -179,7 +179,29 @@ describe('articleViewType()', () => {
             expect(result).toBe(false);
         });
     });
-       
+
+    describe('isAsDomain', () => {
+        const anyReferrer = 'https://any-referrer-domain.com/any-path';
+        const asDomains = 'fitbook.de';
+        let getDomainFromURLStringMock;
+    
+        beforeEach(() => {
+            getDomainFromURLStringMock = jest.spyOn(s._utils, 'getDomainFromURLString').mockReturnValue('');
+        });
+    
+        it('should return TRUE if referrer is from internal Domain (except bild.de but like from fitbook.de)', function () {
+            getDomainFromURLStringMock.mockReturnValue(asDomains);
+            const result = s._articleViewTypeObj.isFromAsDomain(asDomains);
+            expect(result).toBe(true);
+        });
+    
+        it('should return FALSE if referrer is NOT from internal Domain (except bild.de but like from fitbook.de)', function () {
+            getDomainFromURLStringMock.mockReturnValue(anyReferrer);
+            const result = s._articleViewTypeObj.isFromAsDomain(anyReferrer);
+            expect(result).toBe(false);
+        });
+    });
+
     describe('isHomepageSubdomain()', () => {
         it('it should return TRUE for sub domains which can be considered as home pages', () => {
             const homepageSubDomains = [
@@ -413,7 +435,6 @@ describe('articleViewType()', () => {
     describe('getExternalType()', () => {
         const anyReferrerDomain = 'www.any-domain.com';
         const anyReferrer = 'https://www.any-domain.com';
-        const noReferrer = '';
         let isFromSearchMock;
         let isFromSocialMock;
         let isFromBildMock;
@@ -445,22 +466,22 @@ describe('articleViewType()', () => {
             expect(result).toBe('event25');
         });
 
-        it('should return event76 if referrer is Bild desktop homepage', function () {
+        it('should return event76,event205 if referrer is Bild desktop homepage', function () {
             isFromBildMock.mockReturnValue(true);
             isFromHomeMock.mockReturnValue(true);
             const result = s._articleViewTypeObj.getExternalType(anyReferrer);
             expect(isFromBildMock).toHaveBeenCalledWith(anyReferrerDomain);
             expect(isFromHomeMock).toHaveBeenCalledWith(anyReferrer);
-            expect(result).toBe('event76');
+            expect(result).toBe('event76,event205');
         });
 
-        it('should return event77 if referrer is Bild mobile homepage', function () {
+        it('should return event77,event205 if referrer is Bild mobile homepage', function () {
             isFromBildMobileMock.mockReturnValue(true);
             isFromHomeMock.mockReturnValue(true);
             const result = s._articleViewTypeObj.getExternalType(anyReferrer);
             expect(isFromBildMobileMock).toHaveBeenCalledWith(anyReferrerDomain);
             expect(isFromHomeMock).toHaveBeenCalledWith(anyReferrer);
-            expect(result).toBe('event77');
+            expect(result).toBe('event77,event205');
         });
 
         it('should return event23 if referrer is from secure mypass (login/register)', function () {
@@ -469,11 +490,6 @@ describe('articleViewType()', () => {
             expect(isFromSecureMypassMock).toHaveBeenCalledWith(anyReferrer);
             expect(result).toBe('event23');
         });
-
-       /* it('should return event26 (dark social) if there is no referrer', function () {
-            const result = s._articleViewTypeObj.getExternalType(noReferrer);
-            expect(result).toBe('event26');
-        });*/
 
         it('should return event27 (other external) in any other cases', function () {
             const result = s._articleViewTypeObj.getExternalType(anyReferrer);

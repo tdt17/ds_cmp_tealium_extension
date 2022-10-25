@@ -185,6 +185,18 @@ s._articleViewTypeObj = {
         }
     },
 
+    isFromAsDomain: function (referrer) {
+        //for bild domains see isFromBild & isFromBildMobile
+        const asDomains = ['welt.de','fitbook.de','stylebook.de','techbook.de','travelbook.de','myhomebook.de','bz-berlin.de','rollingstone.de','metal-hammer.de','musikexpress.de','petbook.de'];
+        const referringDomain = s._utils.getDomainFromURLString(referrer);
+        const isInternal = this.isFromInternal(referrer);
+        if (!isInternal){
+            return asDomains.some(item => {
+                return referringDomain.indexOf(item) !== -1;
+            });
+        }
+    },
+
     isFromBild: function (referringDomain) {
         return referringDomain === 'www.bild.de';
     },
@@ -293,10 +305,12 @@ s._articleViewTypeObj = {
         } else if (this.isFromSocial(referrer)) {
             return 'event25'; //Social
         } else if (this.isFromBild(referringDomain) && this.isFromHome(referrer)) {
-            return 'event76'; // Bild home
+            return 'event76,event205'; // Bild home
         } else if (this.isFromBildMobile(referringDomain) && this.isFromHome(referrer)) {
-            return 'event77'; // Bild mobile home
-        } else if (this.isFromSecureMypass(referrer)) {
+            return 'event77,event205'; // Bild mobile home
+        } else if (this.isFromAsDomain(referrer)) {
+            return 'event205'; // Axel Springer Domains except bild.de
+        }else if (this.isFromSecureMypass(referrer)) {
             return 'event23'; // Login via secure.mypass
         } else if (this.isFromPaypal(referrer)) {
             return 'event23'; // After Payment via Paypal

@@ -242,21 +242,6 @@ s._articleViewTypeObj = {
         return trackingValue.includes('kooperation.article.outbrain.');
     },
 
-/*    isFromHomeDesktopWithReco: function () {
-        const trackingValue = this.getTrackingValue();
-        const desktopRecoCid = ['kooperation.home.outbrain.desktop', 'kooperation.home.outbrain.tablet'];
-
-        return desktopRecoCid.some(item => {
-            return trackingValue.indexOf(item) !== -1;
-        });
-
-    },
-
-    isFromHomeMobileWithReco: function () {
-        const trackingValue = this.getTrackingValue();
-        return trackingValue.includes('kooperation.home.outbrain.mobil');
-    },
-*/
     isValidURL: function (urlString) {
         try {
             new URL(urlString);
@@ -287,16 +272,6 @@ s._articleViewTypeObj = {
         }
     },
 
-/*    getRecommendationType: function () {
-        if (this.isFromHomeDesktopWithReco()) {
-            return 'event76'; // Bild home desktop recommendation
-        } else if (this.isFromHomeMobileWithReco()) {
-            return 'event77'; // Bild home mobile recommendation
-        } else {
-            return 'event27';
-        }
-    },
-*/
     getExternalType: function (referrer) {
         const referringDomain = s._utils.getDomainFromURLString(referrer);
 

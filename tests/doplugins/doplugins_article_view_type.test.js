@@ -303,48 +303,6 @@ describe('articleViewType()', () => {
         });
     });
 
-/*    describe('isFromHomeDesktopWithReco()', () => {
-        let getTrackingValueMock;
-        beforeEach(() => {
-            getTrackingValueMock = jest.spyOn(s._articleViewTypeObj, 'getTrackingValue');
-        });
-
-        it('should return TRUE if article URL contains recommendation parameter (home/desktop)', function () {
-            const outbrainTrackingValue = 'kooperation.home.outbrain.desktop';
-            getTrackingValueMock.mockReturnValue(outbrainTrackingValue);
-            const result = s._articleViewTypeObj.isFromHomeDesktopWithReco();
-            expect(result).toBe(true);
-        });
-
-        it('should return FALSE if article URL NOT contains recommendation parameter (home/desktop)', function () {
-            const anyTrackingValue = 'any-tracking-value';
-            getTrackingValueMock.mockReturnValue(anyTrackingValue);
-            const result = s._articleViewTypeObj.isFromHomeDesktopWithReco();
-            expect(result).toBe(false);
-        });
-    });
-
-    describe('isFromHomeMobileWithReco()', () => {
-        let getTrackingValueMock;
-        beforeEach(() => {
-            getTrackingValueMock = jest.spyOn(s._articleViewTypeObj, 'getTrackingValue');
-        });
-
-        it('should return TRUE if article URL contains recommendation parameter (home/desktop)', function () {
-            const outbrainTrackingValue = 'kooperation.home.outbrain.mobile';
-            getTrackingValueMock.mockReturnValue(outbrainTrackingValue);
-            const result = s._articleViewTypeObj.isFromHomeMobileWithReco();
-            expect(result).toBe(true);
-        });
-
-        it('should return FALSE if article URL NOT contains recommendation parameter (home/desktop)', function () {
-            const anyTrackingValue = 'any-tracking-value';
-            getTrackingValueMock.mockReturnValue(anyTrackingValue);
-            const result = s._articleViewTypeObj.isFromHomeMobileWithReco();
-            expect(result).toBe(false);
-        });
-    });
-*/
     describe('isSamePageRedirect', () => {
         const bildBaseURL = 'https://www.bild.de';
         const anyPathname = '/any-path-name.bild.html';
@@ -400,38 +358,7 @@ describe('articleViewType()', () => {
             expect(result).toBe('');
         });
     });
-/*
-    describe('getRecommendationType()', () => {
-        let isFromHomeDesktopWithRecoMock;
-        let isFromHomeMobileWithRecoMock;
-        let isFromArticleWithRecoMock;
 
-        beforeEach(() => {
-            isFromHomeDesktopWithRecoMock = jest.spyOn(s._articleViewTypeObj, 'isFromHomeDesktopWithReco').mockReturnValue(false);
-            isFromHomeMobileWithRecoMock = jest.spyOn(s._articleViewTypeObj, 'isFromHomeMobileWithReco').mockReturnValue(false);
-            isFromArticleWithRecoMock = jest.spyOn(s._articleViewTypeObj, 'isFromArticleWithReco').mockReturnValue(false);
-        });
-
-        it('should return event76 if referrer is from desktop homepage recommendation teaser', function () {
-            isFromHomeDesktopWithRecoMock.mockReturnValue(true);
-            const result = s._articleViewTypeObj.getRecommendationType();
-            expect(isFromHomeDesktopWithRecoMock).toHaveBeenCalled();
-            expect(result).toBe('event76');
-        });
-
-        it('should return event77 if referrer is from mobile homepage recommendation teaser', function () {
-            isFromHomeMobileWithRecoMock.mockReturnValue(true);
-            const result = s._articleViewTypeObj.getRecommendationType();
-            expect(isFromHomeMobileWithRecoMock).toHaveBeenCalled();
-            expect(result).toBe('event77');
-        });
-
-        it('should return event27 (other external) in any other cases', function () {
-            const result = s._articleViewTypeObj.getRecommendationType();
-            expect(result).toBe('event27');
-        });
-    });
-*/
     describe('getExternalType()', () => {
         const anyReferrerDomain = 'www.any-domain.com';
         const anyReferrer = 'https://www.any-domain.com';
@@ -719,6 +646,7 @@ describe('articleViewType()', () => {
         let addEventMock;
         let isPageViewFromHomeMock;
         let setHomeTeaserPropertiesMock;
+        let isAdWallMock;
 
         beforeEach(() => {
             isArticlePageMock = jest.spyOn(s._utils, 'isArticlePage');

@@ -242,7 +242,7 @@ s._articleViewTypeObj = {
         return trackingValue.includes('kooperation.article.outbrain.');
     },
 
-    isFromHomeDesktopWithReco: function () {
+/*    isFromHomeDesktopWithReco: function () {
         const trackingValue = this.getTrackingValue();
         const desktopRecoCid = ['kooperation.home.outbrain.desktop', 'kooperation.home.outbrain.tablet'];
 
@@ -256,7 +256,7 @@ s._articleViewTypeObj = {
         const trackingValue = this.getTrackingValue();
         return trackingValue.includes('kooperation.home.outbrain.mobil');
     },
-
+*/
     isValidURL: function (urlString) {
         try {
             new URL(urlString);
@@ -287,7 +287,7 @@ s._articleViewTypeObj = {
         }
     },
 
-    getRecommendationType: function () {
+/*    getRecommendationType: function () {
         if (this.isFromHomeDesktopWithReco()) {
             return 'event76'; // Bild home desktop recommendation
         } else if (this.isFromHomeMobileWithReco()) {
@@ -296,7 +296,7 @@ s._articleViewTypeObj = {
             return 'event27';
         }
     },
-
+*/
     getExternalType: function (referrer) {
         const referringDomain = s._utils.getDomainFromURLString(referrer);
 
@@ -310,11 +310,13 @@ s._articleViewTypeObj = {
             return 'event77,event205'; // Bild mobile home
         } else if (this.isFromAsDomain(referrer)) {
             return 'event205'; // Axel Springer Domains except bild.de
-        }else if (this.isFromSecureMypass(referrer)) {
+        } else if (this.isFromSecureMypass(referrer)) {
             return 'event23'; // Login via secure.mypass
         } else if (this.isFromPaypal(referrer)) {
             return 'event23'; // After Payment via Paypal
-        } else if (!referringDomain) {
+        } else if (this.isFromRecommendation(referringDomain)) {
+            return 'event230,event233'; // Referrer is Outbrain Recommendation
+        }  else if (!referringDomain) {
             return 'event26'; // Dark Social
         } else {
             return 'event27'; // Other External (Referrer)
@@ -351,9 +353,10 @@ s._articleViewTypeObj = {
         if (this.isFromInternal(referrer)) {
             // Referrer is of same domain
             articleViewType = this.getInternalType(referrer);
+            //delete reco
         } else if (this.isFromRecommendation(referrer)) {
             // Referrer is of recommendation service (Outbrain) domain
-            articleViewType = this.getRecommendationType();
+            articleViewType = this.getExternalType(referrer);
         } else {
             // Referrer is of any other domain
             articleViewType = this.getExternalType(referrer);
@@ -371,7 +374,11 @@ s._articleViewTypeObj = {
         } else if (trackingValue.startsWith('social')) {
             articleViewType = 'event25'; //Social
         } else if (trackingValue.startsWith('kooperation.article.outbrain.')) {
-            articleViewType = 'event102'; //Outbrain Reco at Articles
+            articleViewType = 'event102,event230,event232'; //Outbrain Reco at Articles
+        }  else if (trackingValue.startsWith('kooperation.home.outbrain.desktop.') || trackingValue.startsWith('kooperation.home.outbrain.tablet.')) {
+            articleViewType = 'event76,event230,event231'; //Outbrain Reco at Desktop HOME
+        } else if (trackingValue.startsWith('kooperation.home.outbrain.mobile.')) {
+            articleViewType = 'event77,event230,event231'; //Outbrain Reco at Mobile HOME
         }
         return articleViewType;
     },

@@ -303,7 +303,7 @@ describe('articleViewType()', () => {
         });
     });
 
-    describe('isFromHomeDesktopWithReco()', () => {
+/*    describe('isFromHomeDesktopWithReco()', () => {
         let getTrackingValueMock;
         beforeEach(() => {
             getTrackingValueMock = jest.spyOn(s._articleViewTypeObj, 'getTrackingValue');
@@ -344,7 +344,7 @@ describe('articleViewType()', () => {
             expect(result).toBe(false);
         });
     });
-
+*/
     describe('isSamePageRedirect', () => {
         const bildBaseURL = 'https://www.bild.de';
         const anyPathname = '/any-path-name.bild.html';
@@ -400,7 +400,7 @@ describe('articleViewType()', () => {
             expect(result).toBe('');
         });
     });
-
+/*
     describe('getRecommendationType()', () => {
         let isFromHomeDesktopWithRecoMock;
         let isFromHomeMobileWithRecoMock;
@@ -431,7 +431,7 @@ describe('articleViewType()', () => {
             expect(result).toBe('event27');
         });
     });
-
+*/
     describe('getExternalType()', () => {
         const anyReferrerDomain = 'www.any-domain.com';
         const anyReferrer = 'https://www.any-domain.com';
@@ -519,18 +519,14 @@ describe('articleViewType()', () => {
 
     describe('getViewTypeByReferrer()', () => {
         let isFromInternalMock;
-        let isFromRecommendationMock;
         let getInternalTypeMock;
-        let getRecommendationTypeMock;
         let getExternalTypeMock;
         let getReferrerFromLocationHashMock;
 
 
         beforeEach(() => {
             isFromInternalMock = jest.spyOn(s._articleViewTypeObj, 'isFromInternal').mockReturnValue(false);
-            isFromRecommendationMock = jest.spyOn(s._articleViewTypeObj, 'isFromRecommendation').mockReturnValue(false);
             getInternalTypeMock = jest.spyOn(s._articleViewTypeObj, 'getInternalType').mockReturnValue(false);
-            getRecommendationTypeMock = jest.spyOn(s._articleViewTypeObj, 'getRecommendationType').mockReturnValue(false);
             getExternalTypeMock = jest.spyOn(s._articleViewTypeObj, 'getExternalType').mockReturnValue(false);
             getReferrerFromLocationHashMock = jest.spyOn(s._articleViewTypeObj, 'getReferrerFromLocationHash').mockReturnValue('');
         });
@@ -556,14 +552,6 @@ describe('articleViewType()', () => {
             expect(result).toBe(anyInternalType);
         });
 
-        it('should call getRecommendationType(referrer) and return its result if referrer is from recommendation service (Outbrain)', () => {
-            const anyRecommendationType = 'any-reco-type';
-            isFromRecommendationMock.mockReturnValue(true);
-            getRecommendationTypeMock.mockReturnValue(anyRecommendationType);
-            let result = s._articleViewTypeObj.getViewTypeByReferrer();
-            expect(result).toBe(anyRecommendationType);
-        });
-
         it('should return event26 (dark social) if there is no referrer', function () {
             const noReferrer = false;
             const result = s._articleViewTypeObj.getExternalType(noReferrer);
@@ -576,7 +564,13 @@ describe('articleViewType()', () => {
             let result = s._articleViewTypeObj.getViewTypeByReferrer();
             expect(result).toBe(anyExternalType);
         });
-        
+
+        it('should call getExternalType(referrer) and return its result if referrer is from an outbrain domain', () => {
+            const anyRecoType = 'traffic.outbrain.com';
+            getExternalTypeMock.mockReturnValue(anyRecoType);
+            let result = s._articleViewTypeObj.getViewTypeByReferrer();
+            expect(result).toBe(anyRecoType);
+        });
     });
 
     describe('getTrackingValue', () => {
@@ -636,7 +630,19 @@ describe('articleViewType()', () => {
         it('it should return the right event name if tracking value is of type: Outbrain Article Recommendation', () => {
             getTrackingValueMock.mockReturnValue('kooperation.article.outbrain.');
             let result = s._articleViewTypeObj.getViewTypeByTrackingProperty();
-            expect(result).toBe('event102');
+            expect(result).toBe('event102,event230,event232');
+
+        });
+        it('it should return the right event name if tracking value is of type: Outbrain Desktop Home Recommendation', () => {
+            getTrackingValueMock.mockReturnValue('kooperation.home.outbrain.desktop.');
+            let result = s._articleViewTypeObj.getViewTypeByTrackingProperty();
+            expect(result).toBe('event76,event230,event231');
+
+        });
+        it('it should return the right event name if tracking value is of type: Outbrain Mobile Home Recommendation', () => {
+            getTrackingValueMock.mockReturnValue('kooperation.home.outbrain.mobile.');
+            let result = s._articleViewTypeObj.getViewTypeByTrackingProperty();
+            expect(result).toBe('event77,event230,event231');
 
         });
     });

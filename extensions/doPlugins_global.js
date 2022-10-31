@@ -328,10 +328,6 @@ s._articleViewTypeObj = {
         if (this.isFromInternal(referrer)) {
             // Referrer is of same domain
             articleViewType = this.getInternalType(referrer);
-            //delete reco
-        } else if (this.isFromRecommendation(referrer)) {
-            // Referrer is of recommendation service (Outbrain) domain
-            articleViewType = this.getExternalType(referrer);
         } else {
             // Referrer is of any other domain
             articleViewType = this.getExternalType(referrer);

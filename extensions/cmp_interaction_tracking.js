@@ -102,14 +102,16 @@
         const hasVendors = !!window.utag.data.consentedVendors && window.utag.data.consentedVendors !== defaultVendorList;
 
         // sportbild.bild.de needs special treatment because of sub-domain issues.
-        const subdomain_profiles = [
-            'bild-sportbild.de',
-            'shop.bild',
-            'spring-premium',
-            'welt-shop.welt.de'
+        const subdomains = [
+            'sportbild.bild.de',
+            'shop.bild.de',
+            'angebot.bild.de',
+            'shopping.welt.de',
+            'shop.welt.de',
+            'digital.welt.de'
         ];
         // sportbild.bild.de, shop.bild.de, offerpages needs special treatment because of sub-domain issues.
-        if ((window.utag.data['ut.profile']) && subdomain_profiles.indexOf(window.utag.data['ut.profile']) !== -1){
+        if ((window.utag.data['dom.domain']) && subdomains.indexOf(window.utag.data['dom.domain']) !== -1){
             // hasCMPAfterCookie cannot be used here because it shares cookie with base domain
             return hasVendors;
         } else {

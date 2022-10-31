@@ -107,8 +107,8 @@
             'shop.bild',
             'spring-premium',
             'welt-shop.welt.de'
-            ];
-         // sportbild.bild.de, shop.bild.de, offerpages needs special treatment because of sub-domain issues.
+        ];
+        // sportbild.bild.de, shop.bild.de, offerpages needs special treatment because of sub-domain issues.
         if ((window.utag.data['ut.profile']) && subdomain_profiles.indexOf(window.utag.data['ut.profile']) !== -1){
             // hasCMPAfterCookie cannot be used here because it shares cookie with base domain
             return hasVendors;

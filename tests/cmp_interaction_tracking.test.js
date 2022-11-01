@@ -240,7 +240,7 @@ describe('CMP Interaction Tracking', () => {
             expect(result).toBe(false);
         });
 
-        it('should return false if utag_main_cmp_after cookie is set to true and Domain is sportbild.bild.de', function () {
+        it('should return false if utag_main_cmp_after cookie is set to True and Domain is sportbild.bild.de', function () {
             window.utag.data['cp.utag_main_cmp_after'] = 'true';
             window.utag.data['dom.domain'] = 'sportbild.bild.de';
             const result = cmpInteractionTracking.isAfterCMP();

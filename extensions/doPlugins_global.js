@@ -547,6 +547,10 @@ s._homeTeaserTrackingObj = {
         return teaserBrand || window.utag.data['cp.utag_main_hti'] || window.utag.data['qp.dtp'];
     },
 
+    getBlockValue: function () {
+        const teaserBlock = this.getTeaserBrandFromCID();
+        return teaserBlock || window.utag.data['cp.utag_main_tb'] || window.utag.data['qp.tbl'];
+    },
     deleteTrackingValuesFromCookie: function () {
         window.utag.loader.SC('utag_main', { 'hti': '' + ';exp-session' });
         window.utag.loader.SC('utag_main', { 'tb': '' + ';exp-session' });
@@ -554,10 +558,11 @@ s._homeTeaserTrackingObj = {
 
     setEvars: function (s) {
         const trackingValue = this.getTrackingValue();
+        const blockValue = this.getBlockValue();
         if (trackingValue) {
             s.eVar66 = trackingValue;
             s.eVar92 = trackingValue + '|' + window.utag.data.page_id;
-            s.eVar97 = window.utag.data['cp.utag_main_tb'] || '';
+            s.eVar97 = window.utag.data['cp.utag_main_tb'] || blockValue || '';
         }
     },
 

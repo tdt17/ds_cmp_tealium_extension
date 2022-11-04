@@ -53,17 +53,32 @@ describe('_homeTeaserTrackingObj', () => {
         });
     });
 
+    describe('getBlockValue', () => {
+        it('should return the tb value from utag_main cookie if available', function () {
+            window.utag.data['cp.utag_main_tb'] = 'any-tb-value';
+            const result = s._homeTeaserTrackingObj.getBlockValue();
+            expect(result).toBe(window.utag.data['cp.utag_main_tb']);
+        });
+
+        it('should return the tbl URL query parameter if available', function () {
+            window.utag.data['qp.tbl'] = 'any-dtp-value';
+            const result = s._homeTeaserTrackingObj.getBlockValue();
+            expect(result).toBe(window.utag.data['qp.tbl']);
+        });
+    });
+
     describe('setEvars', () => {
         it('should assign teaser tracking values to certain eVars', function () {
             const anyTrackingValue = 'any-tracking-value';
+            const anyBlockValue = 'any-block-value';
             const anyPageId = '123456';
             window.utag.data.page_id = anyPageId;
-            window.utag.data['cp.utag_main_tb'] = 'any-teaser-block';
             jest.spyOn(s._homeTeaserTrackingObj, 'getTrackingValue').mockImplementation().mockReturnValue(anyTrackingValue);
+            jest.spyOn(s._homeTeaserTrackingObj, 'getBlockValue').mockImplementation().mockReturnValue(anyBlockValue);
             s._homeTeaserTrackingObj.setEvars(s);
             expect(s.eVar66).toBe(anyTrackingValue);
             expect(s.eVar92).toBe(anyTrackingValue + '|' + anyPageId);
-            expect(s.eVar97).toBe(window.utag.data['cp.utag_main_tb']);
+            expect(s.eVar97).toBe(anyBlockValue);
         });
     });
 

@@ -544,12 +544,12 @@ s._homeTeaserTrackingObj = {
 
     getTrackingValue: function () {
         const teaserBrand = this.getTeaserBrandFromCID();
-        return teaserBrand || window.utag.data['cp.utag_main_hti'] || window.utag.data['qp.dtp'];
+        return teaserBrand || window.utag.data['cp.utag_main_hti'] || window.utag.data['qp.dtp'] || '';
     },
 
     getBlockValue: function () {
         const teaserBlock = this.getTeaserBrandFromCID();
-        return teaserBlock || window.utag.data['cp.utag_main_tb'] || window.utag.data['qp.tbl'];
+        return teaserBlock || window.utag.data['cp.utag_main_tb'] || window.utag.data['qp.tbl'] || '';
     },
     deleteTrackingValuesFromCookie: function () {
         window.utag.loader.SC('utag_main', { 'hti': '' + ';exp-session' });

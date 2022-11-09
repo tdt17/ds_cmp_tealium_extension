@@ -548,8 +548,8 @@ s._homeTeaserTrackingObj = {
     },
 
     getBlockValue: function () {
-        const teaserBlock = this.getTeaserBrandFromCID();
-        return teaserBlock || window.utag.data['cp.utag_main_tb'] || window.utag.data['qp.tbl'] || '';
+        const teaserBlock = window.utag.data['cp.utag_main_tb'] || window.utag.data['qp.tbl'] ;
+        return teaserBlock || '';
     },
     deleteTrackingValuesFromCookie: function () {
         window.utag.loader.SC('utag_main', { 'hti': '' + ';exp-session' });

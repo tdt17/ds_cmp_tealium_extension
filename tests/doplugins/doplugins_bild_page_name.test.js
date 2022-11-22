@@ -169,17 +169,36 @@ describe('_bildPageNameObj', () => {
         });
     });
 
+    describe('isSport', () => {
+        it('should be false if Domain is not sport', () => {
+            window.document.domain = 'any-sport.bild.de';
+            const returnValue = s._bildPageNameObj.isSport(s);
+            expect(returnValue).toBe(false);
+        });
+
+        it('should be true if Domain is sport.bild.de', () => {
+            window.document.domain = 'sport.bild.de';
+            const returnValue = s._bildPageNameObj.isSport(s);
+            expect(returnValue).toBe(true);
+        });
+
+
+
+    });
+
     describe('setPageName', () => {
         let isHome;
         let isAdWall;
         let isLive;
         let isLiveSport;
+        let isSport;
 
         beforeEach(() => {
             isHome = jest.spyOn(s._bildPageNameObj, 'isHome').mockReturnValue(false);
             isAdWall = jest.spyOn(s._bildPageNameObj, 'isAdWall').mockReturnValue(false);
             isLive = jest.spyOn(s._bildPageNameObj, 'isLive').mockReturnValue(false);
             isLiveSport = jest.spyOn(s._bildPageNameObj, 'isLiveSport').mockReturnValue(false);
+            isSport = jest.spyOn(s._bildPageNameObj, 'isSport').mockReturnValue(false);
         });
 
         afterEach(() => {
@@ -242,6 +261,18 @@ describe('_bildPageNameObj', () => {
             expect(s.eVar3).toBe('live-sport');
             expect(s.prop3).toBe('live-sport');
             expect(s.pageName).toBe('live-sport : ' + window.utag.data.page_id);
+        });
+
+        it('should set relevant data if isSport is true', () => {
+            window.document.domain = 'sport.bild.de';
+            isLiveSport.mockReturnValue(false);
+            isSport.mockReturnValue(true);
+            s._bildPageNameObj.setPageName(s);
+
+            expect(window.utag.data.page_mapped_doctype_for_pagename).toBe('sportdaten');
+            expect(s.eVar3).toBe('sportdaten');
+            expect(s.prop3).toBe('sportdaten');
+            expect(s.pageName).toBe('sportdaten : ' + window.utag.data.page_id);
         });
     });
 });

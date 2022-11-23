@@ -51,16 +51,16 @@ s._utils = {
         }
     },
 
-    setSport: function () {
+    setSportDatencenter: function () {
         if (window.document.domain.includes('sport.bild.de')){
             window.utag.data.page_document_type = location.pathname.includes('/liveticker/') ? 'live-sport' : 'sportdaten';
 
-        }
+        } else return false;
         return window.utag.data.page_document_type;
     },
 
     getDocType: function () {
-        window.utag.data.page_document_type = this.setSport() ? this.setSport() : window.utag.data.page_document_type;
+        window.utag.data.page_document_type = this.setSportDatencenter() ? this.setSportDatencenter() : window.utag.data.page_document_type;
 
         return window.utag.data.page_type
             || window.utag.data.page_mapped_doctype_for_pagename
@@ -609,18 +609,10 @@ s._bildPageNameObj = {
                 || !!window.utag.data.page_sub_type && window.utag.data.page_sub_type === 'LIVETICKER');
     },
 
-    isSport: function () {
-        return !!window.document.domain
-            && (window.document.domain === 'm.sport.bild.de'
-                || window.document.domain === 'sport.bild.de');
-    },
+    isSportDatencenterTyp: function () {
+        const typSdc = s._utils.setSportDatencenter();
 
-    isLiveSport: function () {
-        return !!this.isDocTypeArticle()
-            && !!window.utag.data.page_cms_path
-            && (window.utag.data.page_cms_path.indexOf('im-liveticker') !== -1
-                || window.utag.data.page_cms_path.indexOf('/liveticker/') !== -1)
-            && !this.isLive();
+        return typSdc;
     },
 
     setPageName: function (s) {
@@ -641,13 +633,11 @@ s._bildPageNameObj = {
             s.eVar3 = 'live';
             s.prop3 = 'live';
             s.pageName = 'live : ' + window.utag.data['page_id'];
-        } else if (this.isLiveSport() && this.isSport()) {
-            //window.utag.data.page_mapped_doctype_for_pagename = window.utag.data.page_document_type;
+        } else if (this.isSportDatencenterTyp() === 'live-sport') {
             s.eVar3 = window.utag.data.page_document_type;
             s.prop3 = window.utag.data.page_document_type; 
             s.pageName =  window.utag.data.page_document_type + ' : ' + window.utag.data['page_id'];
-        } else if (this.isSport() && !this.isLiveSport() ) {
-            //window.utag.data.page_mapped_doctype_for_pagename = window.utag.data.page_document_type;
+        } else if (this.isSportDatencenterTyp() === 'sportdaten') {
             s.eVar3 = window.utag.data.page_document_type;
             s.prop3 = window.utag.data.page_document_type;
             s.pageName = window.utag.data.page_document_type + ' : ' +  window.utag.data['page_id'];

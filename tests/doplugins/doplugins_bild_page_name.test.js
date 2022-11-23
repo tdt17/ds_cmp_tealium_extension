@@ -253,11 +253,12 @@ describe('_bildPageNameObj', () => {
 
         it('should set relevant data if isLiveSport is true', () => {
             window.utag.data.page_id = '12345678';
-            isLive.mockReturnValue(false);
+            isLive.mockReturnValue(true);
             isLiveSport.mockReturnValue(true);
+            s._bildPageNameObj.isDocTypeArticle(s);
             s._bildPageNameObj.setPageName(s);
 
-            expect(window.utag.data.page_mapped_doctype_for_pagename).toBe('live-sport');
+            //expect(window.utag.data.page_mapped_doctype_for_pagename).toBe('live-sport');
             expect(s.eVar3).toBe('live-sport');
             expect(s.prop3).toBe('live-sport');
             expect(s.pageName).toBe('live-sport : ' + window.utag.data.page_id);
@@ -267,9 +268,10 @@ describe('_bildPageNameObj', () => {
             window.document.domain = 'sport.bild.de';
             isLiveSport.mockReturnValue(false);
             isSport.mockReturnValue(true);
+            s._bildPageNameObj.isDocTypeArticle(s);
             s._bildPageNameObj.setPageName(s);
-
-            expect(window.utag.data.page_mapped_doctype_for_pagename).toBe('sportdaten');
+            
+            //expect(window.utag.data.page_mapped_doctype_for_pagename).toBe('sportdaten');
             expect(s.eVar3).toBe('sportdaten');
             expect(s.prop3).toBe('sportdaten');
             expect(s.pageName).toBe('sportdaten : ' + window.utag.data.page_id);

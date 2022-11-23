@@ -50,7 +50,18 @@ s._utils = {
             return '';
         }
     },
+
+    setSport: function () {
+        if (window.document.domain.includes('sport.bild.de')){
+            window.utag.data.page_document_type = location.pathname.includes('/liveticker/') ? 'live-sport' : 'sportdaten';
+
+        }
+        return window.utag.data.page_document_type;
+    },
+
     getDocType: function () {
+        window.utag.data.page_document_type = this.setSport() ? this.setSport() : window.utag.data.page_document_type;
+
         return window.utag.data.page_type
             || window.utag.data.page_mapped_doctype_for_pagename
             || window.utag.data.page_document_type
@@ -630,16 +641,16 @@ s._bildPageNameObj = {
             s.eVar3 = 'live';
             s.prop3 = 'live';
             s.pageName = 'live : ' + window.utag.data['page_id'];
-        } else if (this.isLiveSport()) {
-            window.utag.data.page_mapped_doctype_for_pagename = 'live-sport';
-            s.eVar3 = 'live-sport';
-            s.prop3 = 'live-sport';
-            s.pageName = 'live-sport : ' + window.utag.data['page_id'];
-        } else if (this.isSport()) {
-            window.utag.data.page_mapped_doctype_for_pagename = 'sportdaten';
-            s.eVar3 = 'sportdaten';
-            s.prop3 = 'sportdaten';
-            s.pageName = 'sportdaten : ' + window.utag.data['page_id'];
+        } else if (this.isLiveSport() && this.isSport()) {
+            //window.utag.data.page_mapped_doctype_for_pagename = window.utag.data.page_document_type;
+            s.eVar3 = window.utag.data.page_document_type;
+            s.prop3 = window.utag.data.page_document_type; 
+            s.pageName =  window.utag.data.page_document_type + ' : ' + window.utag.data['page_id'];
+        } else if (this.isSport() && !this.isLiveSport() ) {
+            //window.utag.data.page_mapped_doctype_for_pagename = window.utag.data.page_document_type;
+            s.eVar3 = window.utag.data.page_document_type;
+            s.prop3 = window.utag.data.page_document_type;
+            s.pageName = window.utag.data.page_document_type + ' : ' +  window.utag.data['page_id'];
             s.eVar4 = window.utag.data['dom.pathname'] == '/' ? window.utag.data['dom.pathname'] + 'home' : window.utag.data['dom.pathname'];
         }
     },

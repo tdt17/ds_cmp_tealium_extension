@@ -37,7 +37,8 @@ function createWindowMock() {
         },
         location: {
             hash: '',
-            search: ''
+            search: '',
+            pathname: '',
         }
     };
 }

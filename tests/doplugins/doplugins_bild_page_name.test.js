@@ -153,13 +153,11 @@ describe('_bildPageNameObj', () => {
         let isHome;
         let isAdWall;
         let isLive;
-        let isSportDatencenterTyp;
 
         beforeEach(() => {
             isHome = jest.spyOn(s._bildPageNameObj, 'isHome').mockReturnValue(false);
             isAdWall = jest.spyOn(s._bildPageNameObj, 'isAdWall').mockReturnValue(false);
             isLive = jest.spyOn(s._bildPageNameObj, 'isLive').mockReturnValue(false);
-            isSportDatencenterTyp = jest.spyOn(s._bildPageNameObj, 'isSportDatencenterTyp').mockReturnValue(false);
         });
 
         afterEach(() => {
@@ -213,11 +211,10 @@ describe('_bildPageNameObj', () => {
         });
 
         it('should set relevant data if isSportdatencentertyp live-sport is true', () => {
-            window.document.domain = 'sport.bild.de';
+            window.utag.data.page_id = '12345678';
+            window.document.domain = 'www.sport.bild.de';
             window.location.pathname = 'any/path/liveticker/';
-            window.utag.data.page_document_type = window.location.pathname.includes('/liveticker/') ? 'live-sport' : 'sportdaten';
-            
-            s._bildPageNameObj.isSportDatencenterTyp.mockReturnValue('live-sport');
+
             s._bildPageNameObj.setPageName(s);
 
             expect(s.eVar3).toBe('live-sport');
@@ -226,11 +223,10 @@ describe('_bildPageNameObj', () => {
         });
 
         it('should set relevant data if isSportdatencentertyp sportdaten is true', () => {
-            window.document.domain = 'sport.bild.de';
+            window.utag.data.page_id = '12345678';
+            window.document.domain = 'www.sport.bild.de';
             window.location.pathname = 'any/path/';
-            window.utag.data.page_document_type = window.location.pathname.includes('/liveticker/') ? 'live-sport' : 'sportdaten';
             
-            s._bildPageNameObj.isSportDatencenterTyp.mockReturnValue('sportdaten');
             s._bildPageNameObj.setPageName(s);
             
             expect(s.eVar3).toBe('sportdaten');

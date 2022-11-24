@@ -53,10 +53,10 @@ s._utils = {
 
     setSportDatencenter: function () {
         if (window.document.domain.includes('sport.bild.de')){
-            window.utag.data.page_document_type = location.pathname.includes('/liveticker/') ? 'live-sport' : 'sportdaten';
-
-        } else return false;
-        return window.utag.data.page_document_type;
+            window.utag.data.page_document_type = window.location.pathname.includes('/liveticker/') ? 'live-sport' : 'sportdaten';
+            return window.utag.data.page_document_type;
+        }
+        return false;
     },
 
     getDocType: function () {
@@ -610,9 +610,7 @@ s._bildPageNameObj = {
     },
 
     isSportDatencenterTyp: function () {
-        const typSdc = s._utils.setSportDatencenter();
-
-        return typSdc;
+        return s._utils.setSportDatencenter();
     },
 
     setPageName: function (s) {

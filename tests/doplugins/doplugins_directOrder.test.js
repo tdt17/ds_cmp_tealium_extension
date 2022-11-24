@@ -46,22 +46,22 @@ describe('directOrderObj', () => {
         });
     });
 
-    describe('deleteFromCookieAc()', function () {
-        it('should delete the adobe campaign value of article recommendations in utag_main cookie', function () {
-            s._directOrderObj.deleteFromCookieOtb();
-            expect(window.utag.loader.SC).toHaveBeenCalledWith('utag_main', {'otb': ';exp-session'});
+    /*describe('deleteFromCookieAco()', function () {
+        it('should delete the ac value of article recommendations in utag_main cookie', function () {
+            s._directOrderObj.deleteFromCookieMockAco();
+            expect(window.utag.loader.SC).toHaveBeenCalledWith('utag_main', {'aco': ';exp-session'});
         });
-    });
+    });*/
 
     describe('setDirectOrderValues(s)', function () {
         let saveToCookieMock;
         let deleteFromCookieMockOtb;
-        let deleteFromCookieMockAc;
+        //let deleteFromCookieMockAco;
 
         beforeEach(() => {
             saveToCookieMock = jest.spyOn(s._directOrderObj, 'saveToCookie').mockImplementation();
             deleteFromCookieMockOtb = jest.spyOn(s._directOrderObj, 'deleteFromCookieOtb').mockImplementation();
-            deleteFromCookieMockAc = jest.spyOn(s._directOrderObj, 'deleteFromCookieAc').mockImplementation();
+            //deleteFromCookieMockAco = jest.spyOn(s._directOrderObj, 'deleteFromCookieAco').mockImplementation();
         });
 
         it('should evaluate the document type by calling s._utils.getDocType()', function () {
@@ -94,9 +94,12 @@ describe('directOrderObj', () => {
             s._utils.getDocType.mockReturnValue('article');
             s._articleViewTypeObj.isFromArticleWithReco.mockReturnValue('true');
             s._directOrderObj.isPaywall.mockReturnValue('true');
-            s._campaignObj.getAdobeCampaign.mockReturnValue('cid=kooperation.article.outbrain.A_23');
             s._directOrderObj.setDirectOrderValues(s);
-            expect(saveToCookieMock).toHaveBeenCalledWith('cid=kooperation.article.outbrain.A_23');
+            let cookieName = 'otb';
+            let cookieValue = 'cid=kooperation.article.outbrain.A_23';
+            let cookieObj = {};
+            cookieObj[cookieName] = cookieValue +';exp-session';
+            expect(saveToCookieMock).toHaveBeenCalledWith(cookieObj);
         });
 
         it('should NOT store adobe campaign value in utag_main cookie on plus article pages when content of page is shown', function () {
@@ -135,18 +138,20 @@ describe('directOrderObj', () => {
 
 
         it('should delete otb in utag_main cookie if tealium profile is not spring-premium', function () {
+            s._utils.getDocType.mockReturnValue('any-type');
             s._directOrderObj.getTealiumProfile.mockReturnValue('any-profile');
             s._directOrderObj.setDirectOrderValues(s);
             expect(deleteFromCookieMockOtb).toHaveBeenCalledWith();
             expect(s.eVar113).toBeUndefined();
         });
 
-        it('should delete ac in utag_main cookie if tealium profile is not spring-premium', function () {
+        /*it('should delete aco in utag_main cookie if tealium profile is not spring-premium', function () {
+            s._utils.getDocType.mockReturnValue('any-type');
             s._directOrderObj.getTealiumProfile.mockReturnValue('any-profile');
             s._directOrderObj.setDirectOrderValues(s);
-            expect(deleteFromCookieMockAc).toHaveBeenCalledWith();
+            expect(deleteFromCookieMockAco).toHaveBeenCalledWith();
             expect(s.eVar235).toBeUndefined();
-        });
+        });*/
 
 
     });

@@ -806,8 +806,8 @@ s._directOrderObj = {
         window.utag.loader.SC('utag_main', { 'otb': '' + ';exp-session' });
     },
 
-    deleteFromCookieAc: () => {
-        window.utag.loader.SC('utag_main', { 'ac': '' + ';exp-session' });
+    deleteFromCookieAco: () => {
+        window.utag.loader.SC('utag_main', { 'aco': '' + ';exp-session' });
     },
 
 
@@ -824,7 +824,7 @@ s._directOrderObj = {
         if (eventName === 'offer-module' && eventAction === 'load' && eventLabel === 'article') {
             is_paywall = true;
             //BILD 
-        } else if (window.utag.data.is_status_premium_visibility === 'false') {
+        } else if (window.utag.data.is_status_premium_visibility === 'false' && window.utag.data.is_status_premium === 'true') {
             is_paywall = true;
             //WELT 
         } else if ((window.utag.data.user_statusValidAbo_String === 'false' || window.utag.data.user_statusValidAbo === false || window.utag.data['cp.utag_main_va'] === false)
@@ -854,12 +854,12 @@ s._directOrderObj = {
     setDirectOrderValues: function (s) {
         const documentType = s._utils.getDocType(s);
         const page_is_ps_team = this.getTealiumProfile(s);
-        let cookieName = '';
-        let cookieValue = '';
-        let cookieObj = {};
-        cookieObj[cookieName] = cookieValue +';exp-session';
 
         if (documentType === 'article') {
+            let cookieName;
+            let cookieValue;
+            let cookieObj = {};
+
             const page_isPaywall = this.isPaywall(s);
 
             const isOutbrain = this.isOutbrain(s);
@@ -872,17 +872,22 @@ s._directOrderObj = {
                     s.eVar113 = outbrainValue;
                     cookieName = 'otb';
                     cookieValue = outbrainValue;
+                    cookieObj[cookieName] = cookieValue +';exp-session';
                     this.saveToCookie(cookieObj);
                 } else if (isAutocuration){
                     s.eVar235 = autocurationValue;
-                    cookieName = 'ac';
+                    cookieName = 'aco'; //name ac is already used with each page view
                     cookieValue = autocurationValue;
+                    cookieObj[cookieName] = cookieValue +';exp-session';
                     this.saveToCookie(cookieObj);
                 }
+            } else {            
+                this.deleteFromCookieOtb();
+                this.deleteFromCookieAco();
             }
         } else if (page_is_ps_team !== 'spring-premium') {
             this.deleteFromCookieOtb();
-            this.deleteFromCookieAc();
+            this.deleteFromCookieAco();
         }
     }
 };

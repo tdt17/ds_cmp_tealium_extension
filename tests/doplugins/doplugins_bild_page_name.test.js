@@ -134,55 +134,18 @@ describe('_bildPageNameObj', () => {
         });        
     });
 
-    describe('isLiveSport', () => {
-        it('should be false if page_mapped_doctype_for_pagename is not article', () => {
-            window.utag.data.page_cms_path = 'test/im-liveticker';
-            window.utag.data.page_mapped_doctype_for_pagename = 'home';
-
-            const returnValue = s._bildPageNameObj.isLiveSport();
-            expect(returnValue).toBe(false);
-        });
-
-        it('should be false if page_cms_path is not correct', () => {
-            window.utag.data.page_cms_path = 'test/imliveticker';
-            window.utag.data.page_mapped_doctype_for_pagename = 'article';
-
-            const returnValue = s._bildPageNameObj.isLiveSport();
-            expect(returnValue).toBe(false);
-        });
-
-
-        it('should be true if page_mapped_doctype_for_pagename is article and page_cms_path contains im-liveticker', () => {
-            window.utag.data.page_cms_path = 'test/im-liveticker';
-            window.utag.data.page_mapped_doctype_for_pagename = 'article';
-
-            const returnValue = s._bildPageNameObj.isLiveSport();
-            expect(returnValue).toBe(true);
-        });
-
-        it('should be true if page_mapped_doctype_for_pagename is article and page_cms_path contains /liveticker/', () => {
-            window.utag.data.page_cms_path = 'test/liveticker/';
-            window.utag.data.page_mapped_doctype_for_pagename = 'article';
-
-            const returnValue = s._bildPageNameObj.isLiveSport();
-            expect(returnValue).toBe(true);
-        });
-    });
-
-    describe('isSport', () => {
+    describe('isSportDatencenterTyp', () => {
         it('should be false if Domain is not sport', () => {
-            window.document.domain = 'any-sport.bild.de';
-            const returnValue = s._bildPageNameObj.isSport(s);
+            window.document.domain = 'any-sport.domain.de';
+            const returnValue = s._bildPageNameObj.isSportDatencenterTyp(s);
             expect(returnValue).toBe(false);
         });
 
-        it('should be true if Domain is sport.bild.de', () => {
+        it('should be sportdaten if Domain is sport.bild.de', () => {
             window.document.domain = 'sport.bild.de';
-            const returnValue = s._bildPageNameObj.isSport(s);
-            expect(returnValue).toBe(true);
+            const returnValue = s._bildPageNameObj.isSportDatencenterTyp(s);
+            expect(returnValue).toBe('sportdaten');
         });
-
-
 
     });
 
@@ -190,15 +153,11 @@ describe('_bildPageNameObj', () => {
         let isHome;
         let isAdWall;
         let isLive;
-        let isLiveSport;
-        let isSport;
 
         beforeEach(() => {
             isHome = jest.spyOn(s._bildPageNameObj, 'isHome').mockReturnValue(false);
             isAdWall = jest.spyOn(s._bildPageNameObj, 'isAdWall').mockReturnValue(false);
             isLive = jest.spyOn(s._bildPageNameObj, 'isLive').mockReturnValue(false);
-            isLiveSport = jest.spyOn(s._bildPageNameObj, 'isLiveSport').mockReturnValue(false);
-            isSport = jest.spyOn(s._bildPageNameObj, 'isSport').mockReturnValue(false);
         });
 
         afterEach(() => {
@@ -251,25 +210,25 @@ describe('_bildPageNameObj', () => {
             expect(s.pageName).toBe('live : ' + window.utag.data.page_id);
         });
 
-        it('should set relevant data if isLiveSport is true', () => {
+        it('should set relevant data if isSportdatencentertyp live-sport is true', () => {
             window.utag.data.page_id = '12345678';
-            isLive.mockReturnValue(false);
-            isLiveSport.mockReturnValue(true);
+            window.document.domain = 'www.sport.bild.de';
+            window.location.pathname = 'any/path/liveticker/';
+
             s._bildPageNameObj.setPageName(s);
 
-            expect(window.utag.data.page_mapped_doctype_for_pagename).toBe('live-sport');
             expect(s.eVar3).toBe('live-sport');
             expect(s.prop3).toBe('live-sport');
             expect(s.pageName).toBe('live-sport : ' + window.utag.data.page_id);
         });
 
-        it('should set relevant data if isSport is true', () => {
-            window.document.domain = 'sport.bild.de';
-            isLiveSport.mockReturnValue(false);
-            isSport.mockReturnValue(true);
+        it('should set relevant data if isSportdatencentertyp sportdaten is true', () => {
+            window.utag.data.page_id = '12345678';
+            window.document.domain = 'www.sport.bild.de';
+            window.location.pathname = 'any/path/';
+            
             s._bildPageNameObj.setPageName(s);
-
-            expect(window.utag.data.page_mapped_doctype_for_pagename).toBe('sportdaten');
+            
             expect(s.eVar3).toBe('sportdaten');
             expect(s.prop3).toBe('sportdaten');
             expect(s.pageName).toBe('sportdaten : ' + window.utag.data.page_id);

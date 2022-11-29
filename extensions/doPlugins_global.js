@@ -52,7 +52,7 @@ s._utils = {
     },
 
     setSportDatencenter: function () {
-        if (window.document.domain.includes('sport.bild.de')){
+        if (window.document.domain.includes('sport.bild.de') || window.document.domain.includes('sportdaten.sportbild.bild.de')){
             window.utag.data.page_document_type = window.location.pathname.includes('/liveticker/') ? 'live-sport' : 'sportdaten';
             return window.utag.data.page_document_type;
         }

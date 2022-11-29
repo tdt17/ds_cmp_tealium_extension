@@ -147,6 +147,12 @@ describe('_bildPageNameObj', () => {
             expect(returnValue).toBe('sportdaten');
         });
 
+        it('should be sportdaten if Domain is sportdaten.sportbild.bild.de', () => {
+            window.document.domain = 'sportdaten.sportbild.bild.de';
+            const returnValue = s._bildPageNameObj.isSportDatencenterTyp(s);
+            expect(returnValue).toBe('sportdaten');
+        });
+
     });
 
     describe('setPageName', () => {

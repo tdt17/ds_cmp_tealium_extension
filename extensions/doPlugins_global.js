@@ -806,15 +806,22 @@ s._eventsObj = {
 };
 
 /**
- * Outbrain direct order
+ * direct order: Outbrain, Autocuation
  */
-s._directOutbrainOrderObj = {
-    saveToCookie: (otb) => {
-        window.utag.loader.SC('utag_main', { 'otb': otb + ';exp-session' });
+s._directOrderObj = {
+    saveToCookie: (cookieObj) => {
+        window.utag.loader.SC('utag_main', cookieObj);
     },
-    deleteFromCookie: () => {
+
+    deleteFromCookieOtb: () => {
         window.utag.loader.SC('utag_main', { 'otb': '' + ';exp-session' });
     },
+
+    deleteFromCookieAco: () => {
+        window.utag.loader.SC('utag_main', { 'aco': '' + ';exp-session' });
+    },
+
+
     getTealiumProfile: function () {
         return window.utag.data.tealium_profile || window.utag.data['ut.profile'];
     },
@@ -828,7 +835,7 @@ s._directOutbrainOrderObj = {
         if (eventName === 'offer-module' && eventAction === 'load' && eventLabel === 'article') {
             is_paywall = true;
             //BILD 
-        } else if (window.utag.data.is_status_premium_visibility === 'false') {
+        } else if (window.utag.data.is_status_premium_visibility === 'false' && window.utag.data.is_status_premium === 'true') {
             is_paywall = true;
             //WELT 
         } else if ((window.utag.data.user_statusValidAbo_String === 'false' || window.utag.data.user_statusValidAbo === false || window.utag.data['cp.utag_main_va'] === false)
@@ -838,20 +845,60 @@ s._directOutbrainOrderObj = {
         return is_paywall;
     },
 
-    setOutbrain: function (s) {
+    isOutbrain: function () {
+        const isOutbrain = s._articleViewTypeObj.isFromArticleWithReco(s);
+        return isOutbrain;
+
+    },
+
+    isAutocuration: function () {
+        const isAutocuration = this.getAutocurationValue(s);
+        return isAutocuration;
+
+    },
+
+    getAutocurationValue : function () {
+        const autocurationValue = window.utag.data['qp.source'];
+        return autocurationValue;
+
+    },
+    setDirectOrderValues: function (s) {
         const documentType = s._utils.getDocType(s);
         const page_is_ps_team = this.getTealiumProfile(s);
+
         if (documentType === 'article') {
-            const outbrain = s._articleViewTypeObj.isFromArticleWithReco(s);
-            const otb = s._campaignObj.getAdobeCampaign(s);
+            let cookieName;
+            let cookieValue;
+            let cookieObj = {};
+
             const page_isPaywall = this.isPaywall(s);
 
-            if (outbrain && otb && page_isPaywall) {
-                s.eVar113 = otb;
-                this.saveToCookie(otb);
+            const isOutbrain = this.isOutbrain(s);
+            const outbrainValue = s._campaignObj.getAdobeCampaign(s);
+            const isAutocuration = this.isAutocuration(s);
+            const autocurationValue = this.getAutocurationValue(s);
+
+            if (page_isPaywall) {
+                if (isOutbrain){
+                    s.eVar113 = outbrainValue;
+                    cookieName = 'otb';
+                    cookieValue = outbrainValue;
+                    cookieObj[cookieName] = cookieValue +';exp-session';
+                    this.saveToCookie(cookieObj);
+                } else if (isAutocuration){
+                    s.eVar235 = autocurationValue;
+                    cookieName = 'aco'; //name ac is already used with each page view
+                    cookieValue = autocurationValue;
+                    cookieObj[cookieName] = cookieValue +';exp-session';
+                    this.saveToCookie(cookieObj);
+                }
+            } else {            
+                this.deleteFromCookieOtb();
+                this.deleteFromCookieAco();
             }
         } else if (page_is_ps_team !== 'spring-premium') {
-            this.deleteFromCookie();
+            this.deleteFromCookieOtb();
+            this.deleteFromCookieAco();
         }
     }
 };
@@ -885,7 +932,7 @@ s._init = function (s) {
     s._campaignObj.setCampaignVariables(s);
     s._setExternalReferringDomainEvents(s);
     s._setTrackingValueEvents(s);
-    s._directOutbrainOrderObj.setOutbrain(s);
+    s._directOrderObj.setDirectOrderValues(s);
     s._T_REFTracking.setVariables(s);
 };
 

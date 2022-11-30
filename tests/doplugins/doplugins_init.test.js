@@ -8,7 +8,7 @@ describe('init()', () => {
     let setICIDTrackingVariablesMock;
     let setExternalReferringDomainEventsMock;
     let setTrackingValueEventsMock;
-    let setOutbrainMock;
+    let setDirectOrderValuesMock;
 
     beforeEach(() => {
         // Create a fresh window mock for each test.
@@ -24,7 +24,7 @@ describe('init()', () => {
         setICIDTrackingVariablesMock = jest.spyOn(s._ICIDTracking, 'setVariables').mockImplementation();
         setExternalReferringDomainEventsMock = jest.spyOn(s, '_setExternalReferringDomainEvents').mockImplementation();
         setTrackingValueEventsMock = jest.spyOn(s, '_setTrackingValueEvents').mockImplementation();
-        setOutbrainMock = jest.spyOn(s._directOutbrainOrderObj, 'setOutbrain').mockImplementation();
+        setDirectOrderValuesMock = jest.spyOn(s._directOrderObj, 'setDirectOrderValues').mockImplementation();
     });
 
     afterEach(() => {
@@ -95,10 +95,10 @@ describe('init()', () => {
         expect(setTrackingValueEventsMock).toHaveBeenCalledWith(s);
     });
 
-    it('should call s.s._directOutbrainOrderObj.setOutbrain(s)', () => {
+    it('should call s.s._directOrderObj.setDirectOrderValues(s)', () => {
 
         s._init(s);
-        expect(setOutbrainMock).toHaveBeenCalledWith(s);
+        expect(setDirectOrderValuesMock).toHaveBeenCalledWith(s);
     });
 
 });

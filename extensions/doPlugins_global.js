@@ -827,7 +827,7 @@ s._directOrderObj = {
         } else if (window.utag.data.is_status_premium_visibility === 'false' && window.utag.data.is_status_premium === 'true') {
             is_paywall = true;
             //WELT 
-        } else if ((window.utag.data.user_statusValidAbo_String === 'false' || window.utag.data.user_statusValidAbo === false || window.utag.data['cp.utag_main_va'] === false)
+        } else if ((window.utag.data.user_statusValidAbo_String === 'false' || window.utag.data.user_statusValidAbo === false || window.utag.data['cp.utag_main_va'] === false || window.utag.data['cp.utag_main_va'] === 'false')
             && window.utag.data.page_isPremium === 'true') {
             is_paywall = true;
         }

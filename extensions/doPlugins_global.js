@@ -580,7 +580,8 @@ s._homeTeaserTrackingObj = {
     setHomeTeaserProperties: function (s) {
         this.setEvars(s);
         this.deleteTrackingValuesFromCookie();
-    }
+    },
+
 };
 
 
@@ -817,13 +818,8 @@ s._directOrderObj = {
         window.utag.loader.SC('utag_main', { 'otb': '' + ';exp-session' });
     },
 
-    deleteFromCookieAco: () => {
-        window.utag.loader.SC('utag_main', { 'aco': '' + ';exp-session' });
-    },
-
-
-    getTealiumProfile: function () {
-        return window.utag.data.tealium_profile || window.utag.data['ut.profile'];
+    isSpringPremiumProfile: function () {
+        return window.utag.data['ut.profile'] === 'spring-premium' ? true : false;
     },
 
     isPaywall: function () {
@@ -851,20 +847,9 @@ s._directOrderObj = {
 
     },
 
-    isAutocuration: function () {
-        const isAutocuration = this.getAutocurationValue(s);
-        return isAutocuration;
-
-    },
-
-    getAutocurationValue : function () {
-        const autocurationValue = window.utag.data['qp.source'];
-        return autocurationValue;
-
-    },
     setDirectOrderValues: function (s) {
         const documentType = s._utils.getDocType(s);
-        const page_is_ps_team = this.getTealiumProfile(s);
+        const page_is_ps_team = this.isSpringPremiumProfile(s);
 
         if (documentType === 'article') {
             let cookieName;
@@ -872,11 +857,8 @@ s._directOrderObj = {
             let cookieObj = {};
 
             const page_isPaywall = this.isPaywall(s);
-
             const isOutbrain = this.isOutbrain(s);
             const outbrainValue = s._campaignObj.getAdobeCampaign(s);
-            const isAutocuration = this.isAutocuration(s);
-            const autocurationValue = this.getAutocurationValue(s);
 
             if (page_isPaywall) {
                 if (isOutbrain){
@@ -885,23 +867,63 @@ s._directOrderObj = {
                     cookieValue = outbrainValue;
                     cookieObj[cookieName] = cookieValue +';exp-session';
                     this.saveToCookie(cookieObj);
-                } else if (isAutocuration){
-                    s.eVar235 = autocurationValue;
-                    cookieName = 'aco'; //name ac is already used with each page view
-                    cookieValue = autocurationValue;
-                    cookieObj[cookieName] = cookieValue +';exp-session';
-                    this.saveToCookie(cookieObj);
-                }
+                } 
             } else {            
                 this.deleteFromCookieOtb();
-                this.deleteFromCookieAco();
             }
-        } else if (page_is_ps_team !== 'spring-premium') {
+        } else if (!page_is_ps_team) {
             this.deleteFromCookieOtb();
-            this.deleteFromCookieAco();
+
         }
     }
 };
+
+/**
+ * Autocuration direct Order
+ */
+s._directAutocurationObj = {
+
+    isSpringPremiumProfile: function () {
+        return window.utag.data['ut.profile'] === 'spring-premium' ? true : false;
+    },
+
+    isAutocuration: function () {
+        return typeof(window.utag.data['cp.utag_main_ac']) !== 'undefined';
+    },
+
+    isFromHome: function () {
+        //const urlObjectAc = new URL(window.document.referrer);
+        const isFromHome = s._articleViewTypeObj.isFromHome(s);
+        //const urlObjectAc = new URL(referrer);
+        //return urlObjectAc.pathname === '/';
+        return isFromHome;
+    },
+
+    saveCookieAco: (acoValue) => {
+        window.utag.loader.SC('utag_main', { 'aco': acoValue + ';exp-session' });
+    },
+
+    deleteCookieAco: function () {
+        window.utag.loader.SC('utag_main', { 'aco': '' + ';exp-session' });
+    },
+
+    setDirectOrderAc: function () {
+        //const isFromHome = s._articleViewTypeObj.isFromHome(s);
+        const isFromHome = this.isFromHome(s);
+        const isAutocuration = this.isAutocuration();
+        const page_is_ps_team = this.isSpringPremiumProfile();
+        
+        if (isFromHome && isAutocuration){
+            const acoValue = window.utag.data['cp.utag_main_ac'];
+            this.saveCookieAco(acoValue);
+
+        } else if (page_is_ps_team === false) {
+            this.deleteCookieAco();
+
+        }
+    },
+};
+
 
 /**
  * Starting point of extension
@@ -933,6 +955,7 @@ s._init = function (s) {
     s._setExternalReferringDomainEvents(s);
     s._setTrackingValueEvents(s);
     s._directOrderObj.setDirectOrderValues(s);
+    s._directAutocurationObj.setDirectOrderAc(s);
     s._T_REFTracking.setVariables(s);
 };
 

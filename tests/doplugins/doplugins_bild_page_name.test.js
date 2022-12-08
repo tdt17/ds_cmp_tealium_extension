@@ -63,35 +63,6 @@ describe('_bildPageNameObj', () => {
 
     });
 
-    describe('isAdWall', () => {
-        it('should be false if pageName is incorrect', () => {
-            s.pageName = 'test-12345678';
-            window.utag.data['dom.pathname'] = 'any-value';
-            const returnValue = s._bildPageNameObj.isAdWall(s);
-            expect(returnValue).toBe(false);
-        });
-
-        it('should be true if pageName contains 42925516', () => {
-            s.pageName = 'test-42925516';
-            window.utag.data['dom.pathname'] = 'any-value';
-            const returnValue = s._bildPageNameObj.isAdWall(s);
-            expect(returnValue).toBe(true);
-        });
-
-        it('should be true if pageName contains 54578900', () => {
-            s.pageName = 'test-54578900';
-            const returnValue = s._bildPageNameObj.isAdWall(s);
-            expect(returnValue).toBe(true);
-        });
-
-        it('should be true if utag.data.dom.pathname contains adblockwall.html', () => {
-            window.utag.data['dom.pathname'] = 'adblockwall.html';
-            const returnValue = s._bildPageNameObj.isAdWall(s);
-            expect(returnValue).toBe(true);
-        });
-
-    });
-
     describe('isLive', () => {
         it('should be false if page_mapped_doctype_for_pagename is not article', () => {
             window.utag.data.is_page_live_article = '1';
@@ -157,12 +128,10 @@ describe('_bildPageNameObj', () => {
 
     describe('setPageName', () => {
         let isHome;
-        let isAdWall;
         let isLive;
 
         beforeEach(() => {
             isHome = jest.spyOn(s._bildPageNameObj, 'isHome').mockReturnValue(false);
-            isAdWall = jest.spyOn(s._bildPageNameObj, 'isAdWall').mockReturnValue(false);
             isLive = jest.spyOn(s._bildPageNameObj, 'isLive').mockReturnValue(false);
         });
 
@@ -170,26 +139,13 @@ describe('_bildPageNameObj', () => {
             jest.restoreAllMocks();
         });
 
-        it('should not set any data if isAdWall, isHome, isLive, isLiveSport are all false', () => {
+        it('should not set any data if isHome, isLive, isLiveSport are all false', () => {
             s._bildPageNameObj.setPageName(s);
 
             expect(window.utag.data.page_mapped_doctype_for_pagename).toBeUndefined();
             expect(s.pageName).toBeUndefined();
             expect(s.eVar3).toBeUndefined();
             expect(s.prop3).toBeUndefined();
-        });
-
-        it('should set relevant data if isAdWall is true', () => {
-            s.eVar1 = 'eVar1_test';
-
-            isAdWall.mockReturnValue(true);
-            s._bildPageNameObj.setPageName(s);
-
-            expect(window.utag.data.page_mapped_doctype_for_pagename).toBe('ad wall');
-            expect(s.pageName).toBe('ad wall : ' + s.eVar1);
-            expect(s.eVar3).toBe('ad wall');
-            expect(s.prop3).toBe('ad wall');
-
         });
 
         it('should set relevant data if isHome is true', () => {

@@ -75,7 +75,8 @@ s._utils = {
             || s.pageName.indexOf('54578900') !== -1)
             || window.location.toString().indexOf('unangemeldet-42925516') !== -1
             || window.location.toString().indexOf('unangemeldet-54578900') !== -1
-            || window.utag.data['dom.pathname'].indexOf('adblockwall.html') !== -1);
+            || window.utag.data['dom.pathname'].indexOf('adblockwall.html') !== -1)
+            || window.utag.data.page_document_type.indexOf('adwall' !== -1);
     },
 
     isArticlePage: function () {
@@ -599,10 +600,6 @@ s._bildPageNameObj = {
                 || window.utag.data['page_id'] === 'wDmWJyqHFeqhJHmeuqfN');
     },
 
-    isAdWall: function (s) {
-        return s._utils.isAdWall(s);
-    },
-
     isLive: function () {
         return !!this.isDocTypeArticle()
             && (!!window.utag.data.is_page_live_article && window.utag.data.is_page_live_article === '1'
@@ -614,12 +611,7 @@ s._bildPageNameObj = {
     },
 
     setPageName: function (s) {
-        if (this.isAdWall(s)) {
-            window.utag.data.page_mapped_doctype_for_pagename = 'ad wall';
-            s.pageName = 'ad wall : ' + s.eVar1;
-            s.eVar3 = 'ad wall';
-            s.prop3 = 'ad wall';
-        } else if (this.isHome()) {
+        if (this.isHome()) {
             window.utag.data.page_mapped_doctype_for_pagename = 'home';
             s.eVar3 = 'home';
             s.prop3 = 'home';

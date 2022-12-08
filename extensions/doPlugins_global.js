@@ -75,8 +75,8 @@ s._utils = {
             || s.pageName.indexOf('54578900') !== -1)
             || window.location.toString().indexOf('unangemeldet-42925516') !== -1
             || window.location.toString().indexOf('unangemeldet-54578900') !== -1
-            || window.utag.data['dom.pathname'].indexOf('adblockwall.html') !== -1)
-            || window.utag.data.page_document_type.indexOf('adwall' !== -1);
+            || (!!window.utag.data['dom.pathname'] && window.utag.data['dom.pathname'].indexOf('adblockwall.html') !== -1)
+            || (!!window.utag.data.page_document_type && window.utag.data.page_document_type.indexOf('adwall') !== -1));
     },
 
     isArticlePage: function () {

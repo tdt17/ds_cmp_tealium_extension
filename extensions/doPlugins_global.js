@@ -380,7 +380,7 @@ s._articleViewTypeObj = {
     },
 
     isPageViewFromHome: function (pageViewType) {
-        const viewTypesFromHome = ['event22', 'event76', 'event77'];
+        const viewTypesFromHome = ['event22', 'event76', 'event77', 'event76,event205','event77,event205'];
         return viewTypesFromHome.includes(pageViewType);
     },
 

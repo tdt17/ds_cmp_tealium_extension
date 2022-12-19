@@ -4,6 +4,8 @@ const { createWindowMock } = require('../mocks/browserMocks');
 describe('_bildAppsPageNameObj', () => {
     let s;
     let isDocTypeArticleMock;
+    let isLive;
+
     beforeEach(() => {
         // Create a fresh window mock for each test.
         const windowMock = createWindowMock();
@@ -14,6 +16,7 @@ describe('_bildAppsPageNameObj', () => {
         s = { ...sObject };
 
         isDocTypeArticleMock = jest.spyOn(s._utils, 'isDocTypeArticle');
+        isLive = jest.spyOn(s._bildAppsPageNameObj, 'isLive');
     });
 
     afterEach(() => {
@@ -21,17 +24,7 @@ describe('_bildAppsPageNameObj', () => {
     });
 
     describe('isLive', () => {
-        it('should be false if isDocTypeArticle is false', () => {
-            window.utag.data.page_cms_path = 'test/im-live-ticker';
-            isDocTypeArticleMock.mockReturnValue(false);
-
-            const returnValue = s._bildAppsPageNameObj.isLive();
-            expect(returnValue).toBe(false);
-        });
-
         it('should be false if page_cms_path is not defined', () => {
-            isDocTypeArticleMock.mockReturnValue(true);
-
             const returnValue = s._bildAppsPageNameObj.isLive();
             expect(returnValue).toBe(false);
         });
@@ -45,35 +38,36 @@ describe('_bildAppsPageNameObj', () => {
         });
     });
 
-    describe('isLiveSport', () => {
+    describe('isSport', () => {
         it('should be false if isDocTypeArticle is false', () => {
             window.utag.data.page_cms_path = 'test/im-liveticker';
             isDocTypeArticleMock.mockReturnValue(false);
 
-            const returnValue = s._bildAppsPageNameObj.isLiveSport();
+            const returnValue = s._bildAppsPageNameObj.isSport();
             expect(returnValue).toBe(false);
         });
 
         it('should be false if page_cms_path is not defined', () => {
             isDocTypeArticleMock.mockReturnValue(true);
 
-            const returnValue = s._bildAppsPageNameObj.isLiveSport();
+            const returnValue = s._bildAppsPageNameObj.isSport();
             expect(returnValue).toBe(false);
         });
 
         it('should be true if document type is article and page_cms_path contains im-liveticker', () => {
-            window.utag.data.page_cms_path = 'test/im-liveticker';
+            window.utag.data.page_cms_path = 'test/sportdaten';
             isDocTypeArticleMock.mockReturnValue(true);
+            isLive.mockReturnValue(true);
 
-            const returnValue = s._bildAppsPageNameObj.isLiveSport();
+            const returnValue = s._bildAppsPageNameObj.isSport();
             expect(returnValue).toBe(true);
         });
 
         it('should be true if document type is article and page_cms_path contains /liveticker/', () => {
-            window.utag.data.page_cms_path = 'test/liveticker/';
+            window.utag.data.page_cms_path = 'test/sportdaten/';
             isDocTypeArticleMock.mockReturnValue(true);
 
-            const returnValue = s._bildAppsPageNameObj.isLiveSport();
+            const returnValue = s._bildAppsPageNameObj.isSport();
             expect(returnValue).toBe(true);
         });
     });
@@ -106,12 +100,12 @@ describe('_bildAppsPageNameObj', () => {
 
     describe('setAppsPageName', () => {
         let isLive;
-        let isLiveSport;
+        let isSport;
         let setDocTypePropertyMock;
 
         beforeEach(() => {
             isLive = jest.spyOn(s._bildAppsPageNameObj, 'isLive').mockReturnValue(false);
-            isLiveSport = jest.spyOn(s._bildAppsPageNameObj, 'isLiveSport').mockReturnValue(false);
+            isSport = jest.spyOn(s._bildAppsPageNameObj, 'isSport').mockReturnValue(false);
             setDocTypePropertyMock = jest.spyOn(s._bildAppsPageNameObj, 'setDocTypeProperty');
         });
 
@@ -128,9 +122,11 @@ describe('_bildAppsPageNameObj', () => {
             expect(s.prop3).toBeUndefined();
         });
 
-        it('should set relevant data if isLive is true', () => {
+        it('should set relevant data if isLive is true and isSport is false', () => {
             window.utag.data.page_id = '12345678';
+            isDocTypeArticleMock.mockReturnValue(true);
             isLive.mockReturnValue(true);
+            isSport.mockReturnValue(false);
             
             s._bildAppsPageNameObj.setAppsPageName(s);
 
@@ -140,9 +136,11 @@ describe('_bildAppsPageNameObj', () => {
             expect(s.pageName).toBe('live : ' + window.utag.data.page_id);
         });
 
-        it('should set relevant data if isLiveSport is true', () => {
+        it('should set relevant data if isSport is true and isLive is true', () => {
             window.utag.data.page_id = '12345678';
-            isLiveSport.mockReturnValue(true);
+            isDocTypeArticleMock.mockReturnValue(true);
+            isSport.mockReturnValue(true);
+            isLive.mockReturnValue(true);
 
             s._bildAppsPageNameObj.setAppsPageName(s);
 

@@ -124,6 +124,7 @@ describe('_bildAppsPageNameObj', () => {
 
         it('should set relevant data if isLive is true and isSport is false', () => {
             window.utag.data.page_id = '12345678';
+            isDocTypeArticleMock.mockReturnValue(true);
             isLive.mockReturnValue(true);
             isSport.mockReturnValue(false);
             
@@ -137,6 +138,7 @@ describe('_bildAppsPageNameObj', () => {
 
         it('should set relevant data if isSport is true and isLive is true', () => {
             window.utag.data.page_id = '12345678';
+            isDocTypeArticleMock.mockReturnValue(true);
             isSport.mockReturnValue(true);
             isLive.mockReturnValue(true);
 

@@ -31,14 +31,23 @@ s._setPageAgeForCheckout = function () {
 
 s._bildAppsPageNameObj = {
     isLive: function () {
-        return s._utils.isDocTypeArticle() && !!window.utag.data.page_cms_path
-            && window.utag.data.page_cms_path.indexOf('im-live-ticker') !== -1;
+        if (window.utag.data.page_cms_path){
+            return (window.utag.data.page_cms_path.indexOf('im-liveticker') !== -1
+                    || window.utag.data.page_cms_path.indexOf('/liveticker/') !== -1
+                    || window.utag.data.page_cms_path.indexOf('/im-live-ticker/') !== -1
+                    || window.utag.data.page_cms_path.startsWith('liveticker/') !== -1
+                    || (!!window.utag.data.keywords && window.utag.data.keywords.indexOf('Live-Ticker') !== -1));
+        } else 
+            return false;
     },
 
-    isLiveSport: function () {
-        return s._utils.isDocTypeArticle() && !!window.utag.data.page_cms_path
-            && (window.utag.data.page_cms_path.indexOf('im-liveticker') !== -1
-                || window.utag.data.page_cms_path.indexOf('/liveticker/') !== -1);
+    isSport: function () {
+        if (window.utag.data.page_cms_path){
+            const lowerCmsPath = window.utag.data.page_cms_path.toLowerCase();
+            return (lowerCmsPath.indexOf('sport/') !== -1
+                    || lowerCmsPath.indexOf('sportdaten') !== -1);
+        } else 
+            return false;
     },
 
     setDocTypeProperty: function (value) {
@@ -53,16 +62,18 @@ s._bildAppsPageNameObj = {
     },
 
     setAppsPageName: function (s) {
-        if (this.isLive()) {
-            this.setDocTypeProperty('live');
-            s.eVar3 = 'live';
-            s.prop3 = 'live';
-            s.pageName = 'live : ' + window.utag.data['page_id'];
-        } else if (this.isLiveSport()) {
-            this.setDocTypeProperty('live-sport');
-            s.eVar3 = 'live-sport';
-            s.prop3 = 'live-sport';
-            s.pageName = 'live-sport : ' + window.utag.data['page_id'];
+        if (s._utils.isDocTypeArticle()){
+            if (this.isLive() && !this.isSport()) {
+                this.setDocTypeProperty('live');
+                s.eVar3 = 'live';
+                s.prop3 = 'live';
+                s.pageName = 'live : ' + window.utag.data['page_id'];
+            } else if (this.isLive() && this.isSport()) {
+                this.setDocTypeProperty('live-sport');
+                s.eVar3 = 'live-sport';
+                s.prop3 = 'live-sport';
+                s.pageName = 'live-sport : ' + window.utag.data['page_id'];
+            }
         }
     },
 };

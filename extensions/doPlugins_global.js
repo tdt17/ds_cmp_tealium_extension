@@ -798,7 +798,8 @@ s._eventsObj = {
 };
 
 /**
- * direct order: Outbrain, Autocuation
+ * direct order: Outbrain
+ * 
  */
 s._directOrderObj = {
     saveToCookie: (cookieObj) => {
@@ -808,11 +809,6 @@ s._directOrderObj = {
     deleteFromCookieOtb: () => {
         window.utag.loader.SC('utag_main', { 'otb': '' + ';exp-session' });
     },
-
-    deleteFromCookieAco: () => {
-        window.utag.loader.SC('utag_main', { 'aco': '' + ';exp-session' });
-    },
-
 
     getTealiumProfile: function () {
         return window.utag.data.tealium_profile || window.utag.data['ut.profile'];
@@ -843,17 +839,6 @@ s._directOrderObj = {
 
     },
 
-    isAutocuration: function () {
-        const isAutocuration = this.getAutocurationValue(s);
-        return isAutocuration;
-
-    },
-
-    getAutocurationValue : function () {
-        const autocurationValue = window.utag.data['qp.source'];
-        return autocurationValue;
-
-    },
     setDirectOrderValues: function (s) {
         const documentType = s._utils.getDocType(s);
         const page_is_ps_team = this.getTealiumProfile(s);
@@ -867,8 +852,6 @@ s._directOrderObj = {
 
             const isOutbrain = this.isOutbrain(s);
             const outbrainValue = s._campaignObj.getAdobeCampaign(s);
-            const isAutocuration = this.isAutocuration(s);
-            const autocurationValue = this.getAutocurationValue(s);
 
             if (page_isPaywall) {
                 if (isOutbrain){
@@ -877,20 +860,12 @@ s._directOrderObj = {
                     cookieValue = outbrainValue;
                     cookieObj[cookieName] = cookieValue +';exp-session';
                     this.saveToCookie(cookieObj);
-                } else if (isAutocuration){
-                    s.eVar235 = autocurationValue;
-                    cookieName = 'aco'; //name ac is already used with each page view
-                    cookieValue = autocurationValue;
-                    cookieObj[cookieName] = cookieValue +';exp-session';
-                    this.saveToCookie(cookieObj);
-                }
+                } 
             } else {            
                 this.deleteFromCookieOtb();
-                this.deleteFromCookieAco();
             }
         } else if (page_is_ps_team !== 'spring-premium') {
             this.deleteFromCookieOtb();
-            this.deleteFromCookieAco();
         }
     }
 };

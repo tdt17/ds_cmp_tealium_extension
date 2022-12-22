@@ -19,8 +19,6 @@ describe('directOrderObj', () => {
         jest.spyOn(s._directOrderObj, 'isPaywall');
         jest.spyOn(s._campaignObj,'getAdobeCampaign');
         jest.spyOn(s._articleViewTypeObj, 'isFromArticleWithReco');
-        jest.spyOn(s._directOrderObj, 'isAutocuration');
-        jest.spyOn(s._directOrderObj, 'getAutocurationValue');
     });
 
     afterEach(() => {
@@ -46,17 +44,9 @@ describe('directOrderObj', () => {
         });
     });
 
-    /*describe('deleteFromCookieAco()', function () {
-        it('should delete the ac value of article recommendations in utag_main cookie', function () {
-            s._directOrderObj.deleteFromCookieMockAco();
-            expect(window.utag.loader.SC).toHaveBeenCalledWith('utag_main', {'aco': ';exp-session'});
-        });
-    });*/
-
     describe('setDirectOrderValues(s)', function () {
         let saveToCookieMock;
         let deleteFromCookieMockOtb;
-        //let deleteFromCookieMockAco;
 
         beforeEach(() => {
             saveToCookieMock = jest.spyOn(s._directOrderObj, 'saveToCookie').mockImplementation();
@@ -74,8 +64,6 @@ describe('directOrderObj', () => {
             s._articleViewTypeObj.isFromArticleWithReco.mockReturnValue('true');
             s._directOrderObj.isPaywall.mockReturnValue('true');
             s._campaignObj.getAdobeCampaign.mockReturnValue('cid=kooperation.article.outbrain.A_23');
-            s._directOrderObj.isAutocuration.mockReturnValue('true');
-            s._directOrderObj.getAutocurationValue.mockReturnValue('any-source');
             s._directOrderObj.setDirectOrderValues(s);
             expect(s.eVar113).toBeUndefined();
             expect(s.eVar235).toBeUndefined();
@@ -110,19 +98,6 @@ describe('directOrderObj', () => {
             expect(saveToCookieMock).not.toHaveBeenCalled();
         });
 
-
-        it('should assign autocuration value of data layer to eVar235 on plus article pages when paywall is shown', function () {
-            s._utils.getDocType.mockReturnValue('article');
-            s._directOrderObj.isPaywall.mockReturnValue('true');
-            s._directOrderObj.isAutocuration.mockReturnValue('true');
-            s._directOrderObj.getAutocurationValue.mockReturnValue('any-source');
-            s._directOrderObj.setDirectOrderValues(s);
-            expect(s.eVar235).toEqual('any-source');
-        });
-
-
-
-
         it('should NOT store otb n utag_main cookie on NON article pages', function () {
             s._utils.getDocType.mockReturnValue('any-type');
             s._articleViewTypeObj.isFromArticleWithReco.mockReturnValue('true');
@@ -132,11 +107,6 @@ describe('directOrderObj', () => {
             expect(saveToCookieMock).not.toHaveBeenCalled();
         });
 
-
-
-
-
-
         it('should delete otb in utag_main cookie if tealium profile is not spring-premium', function () {
             s._utils.getDocType.mockReturnValue('any-type');
             s._directOrderObj.getTealiumProfile.mockReturnValue('any-profile');
@@ -144,18 +114,5 @@ describe('directOrderObj', () => {
             expect(deleteFromCookieMockOtb).toHaveBeenCalledWith();
             expect(s.eVar113).toBeUndefined();
         });
-
-        /*it('should delete aco in utag_main cookie if tealium profile is not spring-premium', function () {
-            s._utils.getDocType.mockReturnValue('any-type');
-            s._directOrderObj.getTealiumProfile.mockReturnValue('any-profile');
-            s._directOrderObj.setDirectOrderValues(s);
-            expect(deleteFromCookieMockAco).toHaveBeenCalledWith();
-            expect(s.eVar235).toBeUndefined();
-        });*/
-
-
     });
-
-
-    
 });

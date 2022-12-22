@@ -125,4 +125,18 @@ describe('External referring domains', () => {
         s._setExternalReferringDomainEvents(s);
         expect(addEventMock).toHaveBeenCalledWith('event225');
     });
+
+    it('should set event227 if the referring domain includes com.linkedin', () => {
+        getReferrerMock.mockReturnValue('com.linkedin');
+
+        s._setExternalReferringDomainEvents(s);
+        expect(addEventMock).toHaveBeenCalledWith('event227');
+    });
+
+    it('should set event227 if the referring domain includes linkedin.com', () => {
+        getReferrerMock.mockReturnValue('linkedin.com');
+
+        s._setExternalReferringDomainEvents(s);
+        expect(addEventMock).toHaveBeenCalledWith('event227');
+    });
 });

@@ -443,11 +443,16 @@ s._setExternalReferringDomainEvents = function (s) {
             domains: ['telegram.org', 'org.telegram'],
             event: 'event225',
         },
+        {
+            domains: ['linkedin.com', 'org.linkedin'],
+            event: 'event227',
+        },
     ];
 
 
     if (s._utils.isArticlePage()) {
         const referringURL = s._utils.getReferrer();
+        const referringSocial = s._articleViewTypeObj.isFromSocial(referringURL);
 
         domainsToEventMapping.forEach(domainEventMap => {
             const { domains, event, matchExact } = domainEventMap;
@@ -463,6 +468,8 @@ s._setExternalReferringDomainEvents = function (s) {
             });
             if (domainMatches) {
                 s._eventsObj.addEvent(event);
+            } else if (!domainMatches && referringSocial){
+                s._eventsObj.addEvent('event226');
             }
         });
     }

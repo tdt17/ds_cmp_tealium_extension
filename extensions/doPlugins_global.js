@@ -468,7 +468,8 @@ s._setExternalReferringDomainEvents = function (s) {
             });
             if (domainMatches) {
                 s._eventsObj.addEvent(event);
-            } else if (!domainMatches && referringSocial){
+                window.setDomain = true;
+            } else if (window.setDomain === 'undefined' && referringSocial){
                 s._eventsObj.addEvent('event226');
             }
         });

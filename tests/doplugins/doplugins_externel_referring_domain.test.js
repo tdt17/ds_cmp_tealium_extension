@@ -139,4 +139,11 @@ describe('External referring domains', () => {
         s._setExternalReferringDomainEvents(s);
         expect(addEventMock).toHaveBeenCalledWith('event227');
     });
+
+    it('should set event226 if the referring domain includes a social referrer like wordpress.com', () => {
+        getReferrerMock.mockReturnValue('wordpress.com');
+
+        s._setExternalReferringDomainEvents(s);
+        expect(addEventMock).toHaveBeenCalledWith('event226');
+    });
 });

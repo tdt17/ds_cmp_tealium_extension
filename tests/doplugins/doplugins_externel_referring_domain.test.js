@@ -12,6 +12,7 @@ describe('External referring domains', () => {
         addEventMock = jest.spyOn(s._eventsObj, 'addEvent').mockImplementation();
         getReferrerMock = jest.spyOn(s._utils, 'getReferrer').mockImplementation();
         isArticlePageMock = jest.spyOn(s._utils, 'isArticlePage').mockImplementation().mockReturnValue(true);
+
     });
 
     afterEach(() => {
@@ -124,5 +125,26 @@ describe('External referring domains', () => {
 
         s._setExternalReferringDomainEvents(s);
         expect(addEventMock).toHaveBeenCalledWith('event225');
+    });
+
+    it('should set event227 if the referring domain includes org.linkedin', () => {
+        getReferrerMock.mockReturnValue('org.linkedin');
+
+        s._setExternalReferringDomainEvents(s);
+        expect(addEventMock).toHaveBeenCalledWith('event227');
+    });
+
+    it('should set event227 if the referring domain includes linkedin.com', () => {
+        getReferrerMock.mockReturnValue('linkedin.com');
+
+        s._setExternalReferringDomainEvents(s);
+        expect(addEventMock).toHaveBeenCalledWith('event227');
+    });
+
+    it('should set event226 if the referring domain includes a social referrer like wordpress.com', () => {
+        getReferrerMock.mockReturnValue('wordpress.com');
+
+        s._setExternalReferringDomainEvents(s);
+        expect(addEventMock).toHaveBeenCalledWith('event226');
     });
 });

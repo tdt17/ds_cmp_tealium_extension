@@ -443,6 +443,14 @@ s._setExternalReferringDomainEvents = function (s) {
             domains: ['telegram.org', 'org.telegram'],
             event: 'event225',
         },
+        {
+            domains: ['linkedin.com', 'org.linkedin'],
+            event: 'event227',
+        },
+        {
+            domains: ['xing.com', 'away.vk.com', 'www.pinterest.de', 'linkedin.android', 'ok.ru', 'mobile.ok.ru', 'www.yammer.com', 'www.netvibes.com', 'pinterest.com', 'wordpress.com', 'blogspot.com', 'lnkd.in', 'xing.android', 'vk.com', 'com.twitter.android', 'm.ok.ru', 'welt.de/instagram', 'linkin.bio'],
+            event: 'event226',
+        },
     ];
 
 
@@ -462,8 +470,8 @@ s._setExternalReferringDomainEvents = function (s) {
 
             });
             if (domainMatches) {
-                s._eventsObj.addEvent(event);
-            }
+                s._eventsObj.addEvent(event); 
+            } 
         });
     }
 };

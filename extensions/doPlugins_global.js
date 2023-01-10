@@ -447,12 +447,15 @@ s._setExternalReferringDomainEvents = function (s) {
             domains: ['linkedin.com', 'org.linkedin'],
             event: 'event227',
         },
+        {
+            domains: ['xing.com', 'away.vk.com', 'www.pinterest.de', 'linkedin.android', 'ok.ru', 'mobile.ok.ru', 'www.yammer.com', 'www.netvibes.com', 'pinterest.com', 'wordpress.com', 'blogspot.com', 'lnkd.in', 'xing.android', 'vk.com', 'com.twitter.android', 'm.ok.ru', 'welt.de/instagram', 'linkin.bio'],
+            event: 'event226',
+        },
     ];
 
 
     if (s._utils.isArticlePage()) {
         const referringURL = s._utils.getReferrer();
-        const referringSocial = s._articleViewTypeObj.isFromSocial(referringURL);
 
         domainsToEventMapping.forEach(domainEventMap => {
             const { domains, event, matchExact } = domainEventMap;
@@ -467,11 +470,8 @@ s._setExternalReferringDomainEvents = function (s) {
 
             });
             if (domainMatches) {
-                s._eventsObj.addEvent(event);
-                window.setDomain = true;
-            } else if (window.setDomain === 'undefined' && referringSocial){
-                s._eventsObj.addEvent('event226');
-            }
+                s._eventsObj.addEvent(event); 
+            } 
         });
     }
 };

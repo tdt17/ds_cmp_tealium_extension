@@ -12,6 +12,7 @@ describe('External referring domains', () => {
         addEventMock = jest.spyOn(s._eventsObj, 'addEvent').mockImplementation();
         getReferrerMock = jest.spyOn(s._utils, 'getReferrer').mockImplementation();
         isArticlePageMock = jest.spyOn(s._utils, 'isArticlePage').mockImplementation().mockReturnValue(true);
+
     });
 
     afterEach(() => {
@@ -126,8 +127,8 @@ describe('External referring domains', () => {
         expect(addEventMock).toHaveBeenCalledWith('event225');
     });
 
-    it('should set event227 if the referring domain includes com.linkedin', () => {
-        getReferrerMock.mockReturnValue('com.linkedin');
+    it('should set event227 if the referring domain includes org.linkedin', () => {
+        getReferrerMock.mockReturnValue('org.linkedin');
 
         s._setExternalReferringDomainEvents(s);
         expect(addEventMock).toHaveBeenCalledWith('event227');

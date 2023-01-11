@@ -108,8 +108,8 @@ describe('_setTrackingValueEvents (URL Parameter like cid)', () => {
         expect(addEventMock).not.toHaveBeenCalledWith('event53');
     });   
 
-     //Youtube
-     it('should set event50 if the trackingValue contains .youtube.', () => {
+    //Youtube
+    it('should set event50 if the trackingValue contains .youtube.', () => {
         getTrackingValueMock.mockReturnValue('.youtube.');
         isSocialTrackingParameterMock.mockReturnValue(true);
 
@@ -124,8 +124,8 @@ describe('_setTrackingValueEvents (URL Parameter like cid)', () => {
         expect(addEventMock).not.toHaveBeenCalledWith('event50');
     });     
  
-     //Twitter
-     it('should set event50 if the trackingValue contains .twitter.', () => {
+    //Twitter
+    it('should set event50 if the trackingValue contains .twitter.', () => {
         getTrackingValueMock.mockReturnValue('.twitter.');
         isSocialTrackingParameterMock.mockReturnValue(true);
 
@@ -139,8 +139,8 @@ describe('_setTrackingValueEvents (URL Parameter like cid)', () => {
         s._setTrackingValueEvents(s);
         expect(addEventMock).not.toHaveBeenCalledWith('event51');
     });         
-     //Facebook
-     it('should set event52 if the trackingValue contains .facebook.', () => {
+    //Facebook
+    it('should set event52 if the trackingValue contains .facebook.', () => {
         getTrackingValueMock.mockReturnValue('.facebook.');
         isSocialTrackingParameterMock.mockReturnValue(true);
 
@@ -155,8 +155,24 @@ describe('_setTrackingValueEvents (URL Parameter like cid)', () => {
         expect(addEventMock).not.toHaveBeenCalledWith('event52');
     });     
 
-     //other organic social 
-     it('should set event226 if the trackingValue start with social ', () => {
+    //Linkedin
+    it('should set event52 if the trackingValue contains .facebook.', () => {
+        getTrackingValueMock.mockReturnValue('.linkedin.');
+        isSocialTrackingParameterMock.mockReturnValue(true);
+
+        s._setTrackingValueEvents(s);
+        expect(addEventMock).toHaveBeenCalledWith('event227');
+    });
+    it('should not set event52 if the trackingValue does not contain .facebook.', () => {
+        getTrackingValueMock.mockReturnValue('any-trackingValue');
+        isSocialTrackingParameterMock.mockReturnValue(true);
+
+        s._setTrackingValueEvents(s);
+        expect(addEventMock).not.toHaveBeenCalledWith('event227');
+    });     
+
+    //other organic social 
+    it('should set event226 if the trackingValue start with social ', () => {
         getTrackingValueMock.mockReturnValue('social');
         isSocialTrackingParameterMock.mockReturnValue(true);
 

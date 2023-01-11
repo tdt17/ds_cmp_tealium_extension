@@ -506,6 +506,9 @@ s._setTrackingValueEvents = function (s) {
                 case isSocialTrackingValue.includes('.facebook.'):
                     s._eventsObj.addEvent('event52');
                     break;
+                case isSocialTrackingValue.includes('.linkedin.'):
+                    s._eventsObj.addEvent('event227');
+                    break;
                 default:
                     s._eventsObj.addEvent('event226');
                 }

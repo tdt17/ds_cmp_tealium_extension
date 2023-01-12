@@ -67,6 +67,25 @@ describe('articleViewType()', () => {
         });
     });
 
+    describe('isPaidMarketing()', () => {
+        it('should return TRUE if trackingChannel is paid', function () {
+            const trackingChannel = ['email.','onsite.','inapp.','push.','sea.','affiliate.','social_paid.','app.','display.','career.','print.'];
+            trackingChannel.forEach((item) => {
+                const trackingValue = item;
+                console.log("hello : " + trackingValue); // eslint-disable-line
+                const result = s._articleViewTypeObj.isPaidMarketing(trackingValue);
+                //console.log("hello2 : " + s._articleViewTypeObj.isPaidMarketing(trackingValue)); // eslint-disable-line
+                expect(result).toBe(true);
+            });
+        });
+
+        it('should return FALSE if trackingChannel is NOT paid', function () {
+            const trackingValue = 'any-trackingChannel.';
+            const result = s._articleViewTypeObj.isPaidMarketing(trackingValue);
+            expect(result).toBe(false);
+        });
+    });
+
     describe('isFromInternal()', function () {
         const anyReferrer = 'https://any-domain.com/any-path';
         let getDomainFromURLStringMock;

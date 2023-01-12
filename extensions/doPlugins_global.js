@@ -227,6 +227,14 @@ s._articleViewTypeObj = {
         }
         return trackingValue;
     },
+    
+    isPaidMarketing: function (trackingValue) {
+        const trackingChannel = ['email.','onsite.','inapp.','push.','sea.','affiliate.','social_paid.','app.','display.','career.','print.'];
+        trackingValue = this.getTrackingValue();
+        return trackingChannel.some(item => {
+            return trackingValue.indexOf(item) === 0;
+        });
+    },
 
     isTrackingValueOrganicSocial: function () {
         const trackingValue = this.getTrackingValue();
@@ -351,6 +359,7 @@ s._articleViewTypeObj = {
     getViewTypeByTrackingProperty: function () {
         const trackingValue = this.getTrackingValue();
         let articleViewType;
+        const isMarketing = this.isPaidMarketing(); 
 
         if (trackingValue.startsWith('sea.')) {
             articleViewType = 'event24'; // Search
@@ -362,6 +371,8 @@ s._articleViewTypeObj = {
             articleViewType = 'event76,event230,event231'; //Outbrain Reco at Desktop HOME
         } else if (trackingValue.startsWith('kooperation.home.outbrain.mobile.')) {
             articleViewType = 'event77,event230,event231'; //Outbrain Reco at Mobile HOME
+        } else if (trackingValue && isMarketing) {
+            articleViewType = 'event206';
         }
         return articleViewType;
     },

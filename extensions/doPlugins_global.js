@@ -362,9 +362,9 @@ s._articleViewTypeObj = {
         const isMarketing = this.isPaidMarketing(); 
 
         if (trackingValue.startsWith('sea.')) {
-            articleViewType = 'event24'; // Search
+            articleViewType = 'event24,event206'; // Search
         } else if (trackingValue.startsWith('social')) {
-            articleViewType = 'event25'; //Social
+            articleViewType = 'event25,event206'; //Social
         } else if (trackingValue.startsWith('kooperation.article.outbrain.')) {
             articleViewType = 'event102,event230,event232'; //Outbrain Reco at Articles
         }  else if (trackingValue.startsWith('kooperation.home.outbrain.desktop.') || trackingValue.startsWith('kooperation.home.outbrain.tablet.')) {

@@ -564,13 +564,13 @@ describe('articleViewType()', () => {
         it('it should return the right event name if tracking value is of type: Search', () => {
             getTrackingValueMock.mockReturnValue('sea.');
             const result = s._articleViewTypeObj.getViewTypeByTrackingProperty();
-            expect(result).toBe('event24');
+            expect(result).toBe('event24,event206');
         });
 
         it('it should return the right event name if tracking value is of type: Social', () => {
             getTrackingValueMock.mockReturnValue('social');
             const result = s._articleViewTypeObj.getViewTypeByTrackingProperty();
-            expect(result).toBe('event25');
+            expect(result).toBe('event25,event206');
         });
 
         it('it should return the right event name if tracking value is of type: Outbrain Article Recommendation', () => {

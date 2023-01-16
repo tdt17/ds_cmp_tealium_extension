@@ -67,6 +67,31 @@ describe('_homeTeaserTrackingObj', () => {
         });
     });
 
+    describe('getPageId', () => {
+        
+        it('should return empty string if no page id is present', () => {
+            const value = s._homeTeaserTrackingObj.getPageId();
+
+            expect(value).toBe('');
+        });
+
+        it('should return page_id if it is present', () => {
+            window.utag.data.page_id = 'test_page_id';
+            const value = s._homeTeaserTrackingObj.getPageId();
+
+            expect(value).toBe(window.utag.data.page_id);
+        });
+
+        it('should return page_escenicId if it is present', () => {
+            window.utag.data.page_escenicId = 'test_page_escenicId';
+            const value = s._homeTeaserTrackingObj.getPageId();
+
+            expect(value).toBe(window.utag.data.page_escenicId);
+        });
+
+    });
+
+
     describe('setEvars', () => {
         it('should assign teaser tracking values to certain eVars', function () {
             const anyTrackingValue = 'any-tracking-value';
@@ -75,6 +100,7 @@ describe('_homeTeaserTrackingObj', () => {
             window.utag.data.page_id = anyPageId;
             jest.spyOn(s._homeTeaserTrackingObj, 'getTrackingValue').mockImplementation().mockReturnValue(anyTrackingValue);
             jest.spyOn(s._homeTeaserTrackingObj, 'getBlockValue').mockImplementation().mockReturnValue(anyBlockValue);
+            jest.spyOn(s._homeTeaserTrackingObj, 'getPageId').mockImplementation().mockReturnValue(anyPageId);
             s._homeTeaserTrackingObj.setEvars(s);
             expect(s.eVar66).toBe(anyTrackingValue);
             expect(s.eVar92).toBe(anyTrackingValue + '|' + anyPageId);

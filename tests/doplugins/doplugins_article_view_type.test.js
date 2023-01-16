@@ -71,10 +71,8 @@ describe('articleViewType()', () => {
         it('should return TRUE if trackingChannel is paid', function () {
             const trackingChannel = ['email.','onsite.','inapp.','push.','sea.','affiliate.','social_paid.','app.','display.','career.','print.'];
             trackingChannel.forEach((item) => {
-                const trackingValue = item;
-                console.log("hello : " + trackingValue); // eslint-disable-line
+                const trackingValue = jest.spyOn(s._articleViewTypeObj, 'getTrackingValue').mockReturnValue(item);
                 const result = s._articleViewTypeObj.isPaidMarketing(trackingValue);
-                //console.log("hello2 : " + s._articleViewTypeObj.isPaidMarketing(trackingValue)); // eslint-disable-line
                 expect(result).toBe(true);
             });
         });

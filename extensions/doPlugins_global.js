@@ -228,9 +228,9 @@ s._articleViewTypeObj = {
         return trackingValue;
     },
     
-    isPaidMarketing: function (trackingValue) {
+    isPaidMarketing: function () {
         const trackingChannel = ['email.','onsite.','inapp.','push.','sea.','affiliate.','social_paid.','app.','display.','career.','print.'];
-        trackingValue = this.getTrackingValue();
+        const trackingValue = this.getTrackingValue();
         return trackingChannel.some(item => {
             return trackingValue.indexOf(item) === 0;
         });

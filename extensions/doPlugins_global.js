@@ -590,12 +590,19 @@ s._homeTeaserTrackingObj = {
         window.utag.loader.SC('utag_main', { 'tb': '' + ';exp-session' });
     },
 
+    getPageId: function () {
+        return window.utag.data.page_id
+            || window.utag.data.page_escenicId
+            || '';
+    },
+
     setEvars: function (s) {
         const trackingValue = this.getTrackingValue();
         const blockValue = this.getBlockValue();
+        const pageId = this.getPageId();
         if (trackingValue) {
             s.eVar66 = trackingValue;
-            s.eVar92 = trackingValue + '|' + window.utag.data.page_id;
+            s.eVar92 = trackingValue + '|' + pageId;
             s.eVar97 = window.utag.data['cp.utag_main_tb'] || blockValue || '';
         }
     },

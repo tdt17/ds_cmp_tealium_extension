@@ -67,6 +67,23 @@ describe('articleViewType()', () => {
         });
     });
 
+    describe('isPaidMarketing()', () => {
+        it('should return TRUE if trackingChannel is paid', function () {
+            const trackingChannel = ['email.','onsite.','inapp.','push.','sea.','affiliate.','social_paid.','app.','display.','career.','print.'];
+            trackingChannel.forEach((item) => {
+                const trackingValue = jest.spyOn(s._articleViewTypeObj, 'getTrackingValue').mockReturnValue(item);
+                const result = s._articleViewTypeObj.isPaidMarketing(trackingValue);
+                expect(result).toBe(true);
+            });
+        });
+
+        it('should return FALSE if trackingChannel is NOT paid', function () {
+            const trackingValue = 'any-trackingChannel.';
+            const result = s._articleViewTypeObj.isPaidMarketing(trackingValue);
+            expect(result).toBe(false);
+        });
+    });
+
     describe('isFromInternal()', function () {
         const anyReferrer = 'https://any-domain.com/any-path';
         let getDomainFromURLStringMock;
@@ -545,13 +562,13 @@ describe('articleViewType()', () => {
         it('it should return the right event name if tracking value is of type: Search', () => {
             getTrackingValueMock.mockReturnValue('sea.');
             const result = s._articleViewTypeObj.getViewTypeByTrackingProperty();
-            expect(result).toBe('event24');
+            expect(result).toBe('event24,event206');
         });
 
         it('it should return the right event name if tracking value is of type: Social', () => {
             getTrackingValueMock.mockReturnValue('social');
             const result = s._articleViewTypeObj.getViewTypeByTrackingProperty();
-            expect(result).toBe('event25');
+            expect(result).toBe('event25,event206');
         });
 
         it('it should return the right event name if tracking value is of type: Outbrain Article Recommendation', () => {

@@ -292,8 +292,6 @@ s._articleViewTypeObj = {
         }
     },
 
-    
-
     getExternalType: function (referrer) {
         const referringDomain = s._utils.getDomainFromURLString(referrer);
 

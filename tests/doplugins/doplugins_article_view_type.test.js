@@ -400,7 +400,7 @@ describe('articleViewType()', () => {
             isFromSearchMock.mockReturnValue(true);
             const result = s._articleViewTypeObj.getExternalType(anyReferrer);
             expect(isFromSearchMock).toHaveBeenCalledWith(anyReferrerDomain);
-            expect(result).toBe('event24');
+            expect(result).toBe('event24,event210');
         });
 
         it('should return event25 if referrer is from social media', function () {

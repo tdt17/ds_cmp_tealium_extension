@@ -296,7 +296,7 @@ s._articleViewTypeObj = {
         const referringDomain = s._utils.getDomainFromURLString(referrer);
 
         if (this.isFromSearch(referringDomain)) {
-            return 'event24'; //Search
+            return 'event24,event210'; //Search
         } else if (this.isFromSocial(referrer)) {
             return 'event25'; //Social
         } else if (this.isFromBild(referringDomain) && this.isFromHome(referrer)) {
@@ -422,6 +422,10 @@ s._articleViewTypeObj = {
 s._setExternalReferringDomainEvents = function (s) {
     const domainsToEventMapping = [
         {
+            domains: ['news.google'],
+            event: 'event48',
+        },
+        {
             domains: ['www.google.com', 'www.google.de'],
             event: 'event49',
             matchExact: 'true',
@@ -431,8 +435,17 @@ s._setExternalReferringDomainEvents = function (s) {
             event: 'event49',
         },
         {
-            domains: ['news.google'],
-            event: 'event48',
+            domains: ['googlequicksearchbox'],
+            event: 'event213',
+            matchExact: 'true',
+        },
+        {
+            domains: ['www.google.com/', 'www.google.de/'],
+            event: 'event213',
+        },
+        {
+            domains: ['bing.com', 'ecosia.org', 'duckduckgo.com', 'amp-welt-de.cdn.ampproject.org', 'qwant.com', 'suche.t-online.de', '.yandex.', 'yahoo.com', 'googleapis.com', 'nortonsafe.search.ask.com', 'wikipedia.org', 'googleadservices.com', 'search.myway.com', 'lycos.de'],
+            event: 'event213',
         },
         {
             domains: ['instagram.com'],

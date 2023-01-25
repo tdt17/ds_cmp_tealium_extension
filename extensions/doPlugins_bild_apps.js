@@ -31,23 +31,18 @@ s._setPageAgeForCheckout = function () {
 
 s._bildAppsPageNameObj = {
     isLive: function () {
-        if (window.utag.data.page_cms_path){
-            return (window.utag.data.page_cms_path.indexOf('im-liveticker') !== -1
+        return (!!window.utag.data.page_cms_path && 
+                (window.utag.data.page_cms_path.indexOf('/im-live-ticker/') !== -1
+                    || window.utag.data.page_cms_path.indexOf('im-liveticker') !== -1
                     || window.utag.data.page_cms_path.indexOf('/liveticker/') !== -1
-                    || window.utag.data.page_cms_path.indexOf('/im-live-ticker/') !== -1
-                    || window.utag.data.page_cms_path.startsWith('liveticker/') !== -1
-                    || (!!window.utag.data.keywords && window.utag.data.keywords.indexOf('Live-Ticker') !== -1));
-        } else 
-            return false;
+                    || window.utag.data.page_cms_path.startsWith('liveticker/') 
+                    || (!!window.utag.data.keywords && window.utag.data.keywords.indexOf('Live-Ticker') !== -1)));
     },
 
     isSport: function () {
-        if (window.utag.data.page_cms_path){
-            const lowerCmsPath = window.utag.data.page_cms_path.toLowerCase();
-            return (lowerCmsPath.indexOf('sport/') !== -1
-                    || lowerCmsPath.indexOf('sportdaten') !== -1);
-        } else 
-            return false;
+        const lowerCmsPath = window.utag.data.page_cms_path.toLowerCase() || '';
+        return (!!window.utag.data.page_cms_path && (lowerCmsPath.indexOf('sport/') !== -1
+                    || lowerCmsPath.indexOf('sportdaten') !== -1));
     },
 
     setDocTypeProperty: function (value) {

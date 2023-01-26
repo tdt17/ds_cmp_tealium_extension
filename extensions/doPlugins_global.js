@@ -333,7 +333,6 @@ s._articleViewTypeObj = {
         let referrerFromGetParameter;
         if (window.utag.data['qp.t_ref']) {
             referrerFromGetParameter = window.utag.data['qp.t_ref'];
-            //referrerFromGetParameter = decodeURIComponent(referrerFromGetParameter);
 
         }
         // exclude Outbrain URL

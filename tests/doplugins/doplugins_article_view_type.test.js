@@ -486,15 +486,20 @@ describe('articleViewType()', () => {
         it('should return event230,event233 if referrer is from Recommendation', function () {
             isFromRecommendationMock.mockReturnValue(true);
             const result = s._articleViewTypeObj.getExternalType(anyReferrer);
-            expect(isFromRecommendationMock).toHaveBeenCalledWith(anyReferrer);
+            expect(isFromRecommendationMock).toHaveBeenCalledWith(anyReferrerDomain);
             expect(result).toBe('event230,event233');
+        });
+
+        it('should return event26 (DarkSocial) if no referrer', function () {
+            const noReferrerMock = jest.spyOn(s._utils, 'getDomainFromURLString').mockReturnValue('');
+            const result = s._articleViewTypeObj.getExternalType(noReferrerMock);
+            expect(result).toBe('event26');
         });
 
         it('should return event27 (other external) in any other cases', function () {
             const result = s._articleViewTypeObj.getExternalType(anyReferrer);
             expect(result).toBe('event27');
         });
-
     });
 
     describe('getReferrerFromLocationHash', () => {
@@ -606,8 +611,11 @@ describe('articleViewType()', () => {
 
     describe('getViewTypeByTrackingProperty()', () => {
         let getTrackingValueMock;
+        let isMarketingMock;
+
         beforeEach(() => {
             getTrackingValueMock = jest.spyOn(s._articleViewTypeObj, 'getTrackingValue').mockReturnValue('');
+            isMarketingMock = jest.spyOn(s._articleViewTypeObj, 'isPaidMarketing').mockReturnValue(true); 
         });
 
         afterEach(() => {
@@ -642,6 +650,12 @@ describe('articleViewType()', () => {
             getTrackingValueMock.mockReturnValue('kooperation.home.outbrain.mobile.');
             let result = s._articleViewTypeObj.getViewTypeByTrackingProperty();
             expect(result).toBe('event77,event230,event231');
+
+        });
+        it('it should return the right event name if tracking value is Paid Marketing like email. as one example', () => {
+            getTrackingValueMock.mockReturnValue('email.');
+            let result = s._articleViewTypeObj.getViewTypeByTrackingProperty();
+            expect(result).toBe('event206');
 
         });
     });

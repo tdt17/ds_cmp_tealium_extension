@@ -82,6 +82,7 @@ describe('directOrderObj', () => {
             s._utils.getDocType.mockReturnValue('article');
             s._articleViewTypeObj.isFromArticleWithReco.mockReturnValue('true');
             s._directOrderObj.isPaywall.mockReturnValue('true');
+            s._campaignObj.getAdobeCampaign.mockReturnValue('cid=kooperation.article.outbrain.A_23');
             s._directOrderObj.setDirectOrderValues(s);
             let cookieName = 'otb';
             let cookieValue = 'cid=kooperation.article.outbrain.A_23';

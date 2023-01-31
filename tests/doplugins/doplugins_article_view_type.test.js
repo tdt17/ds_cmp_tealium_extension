@@ -119,6 +119,14 @@ describe('articleViewType()', () => {
             const result = s._articleViewTypeObj.isFromInternal(anyReferrer);
             expect(result).toBe(true);
         });
+
+        it('should return TRUE if referring domain is from sub domain sportbild', function () {
+            const anyDomain = 'sportbild.bild.de';
+            window.document.domain = anyDomain;
+            getDomainFromURLStringMock.mockReturnValue(anyDomain);
+            const result = s._articleViewTypeObj.isFromInternal(anyReferrer);
+            expect(result).toBe(true);
+        });
     });
 
     describe('isFromBild()', () => {
@@ -320,6 +328,25 @@ describe('articleViewType()', () => {
         });
     });
 
+    describe('isTrackingValueOrganicSocial()', () => {
+        let getTrackingValueMock;
+        beforeEach(() => {
+            getTrackingValueMock = jest.spyOn(s._articleViewTypeObj, 'getTrackingValue');
+        });
+
+        it('should return TRUE if article trackingValue starts with social.', function () {
+            getTrackingValueMock.mockReturnValue('social.');
+            const result = s._articleViewTypeObj.isTrackingValueOrganicSocial();
+            expect(result).toBe(true);
+        });
+
+        it('should return FALSE if article URL NOT contains recommendation parameter', function () {
+            getTrackingValueMock.mockReturnValue('any-tracking-value');
+            const result = s._articleViewTypeObj.isTrackingValueOrganicSocial();
+            expect(result).toBe(false);
+        });
+    });
+
     describe('isSamePageRedirect', () => {
         const bildBaseURL = 'https://www.bild.de';
         const anyPathname = '/any-path-name.bild.html';
@@ -385,6 +412,9 @@ describe('articleViewType()', () => {
         let isFromBildMobileMock;
         let isFromHomeMock;
         let isFromSecureMypassMock;
+        let isFromAsDomainMock;
+        let isFromPaypalMock;
+        let isFromRecommendationMock;
 
         beforeEach(() => {
             jest.spyOn(s._utils, 'getDomainFromURLString').mockReturnValue(anyReferrerDomain);
@@ -394,6 +424,9 @@ describe('articleViewType()', () => {
             isFromBildMobileMock = jest.spyOn(s._articleViewTypeObj, 'isFromBildMobile').mockReturnValue(false);
             isFromHomeMock = jest.spyOn(s._articleViewTypeObj, 'isFromHome').mockReturnValue(false);
             isFromSecureMypassMock = jest.spyOn(s._articleViewTypeObj, 'isFromSecureMypass').mockReturnValue(false);
+            isFromAsDomainMock = jest.spyOn(s._articleViewTypeObj, 'isFromAsDomain').mockReturnValue(false);
+            isFromPaypalMock = jest.spyOn(s._articleViewTypeObj, 'isFromPaypal').mockReturnValue(false);
+            isFromRecommendationMock = jest.spyOn(s._articleViewTypeObj, 'isFromRecommendation').mockReturnValue(false);
         });
 
         it('should return event24 if referrer is from search engine', function () {
@@ -428,18 +461,43 @@ describe('articleViewType()', () => {
             expect(result).toBe('event77,event205');
         });
 
+        it('should return event205 if referrer is from AS Domain ', function () {
+            isFromAsDomainMock.mockReturnValue(true);
+            const result = s._articleViewTypeObj.getExternalType(anyReferrer);
+            expect(result).toBe('event205');
+        });
+
         it('should return event23 if referrer is from secure mypass (login/register)', function () {
             isFromSecureMypassMock.mockReturnValue(true);
             const result = s._articleViewTypeObj.getExternalType(anyReferrer);
             expect(isFromSecureMypassMock).toHaveBeenCalledWith(anyReferrer);
             expect(result).toBe('event23');
+        });        
+
+        it('should return event23 if referrer is from Paypal', function () {
+            isFromPaypalMock.mockReturnValue(true);
+            const result = s._articleViewTypeObj.getExternalType(anyReferrer);
+            expect(isFromPaypalMock).toHaveBeenCalledWith(anyReferrer);
+            expect(result).toBe('event23');
+        });
+
+        it('should return event230,event233 if referrer is from Recommendation', function () {
+            isFromRecommendationMock.mockReturnValue(true);
+            const result = s._articleViewTypeObj.getExternalType(anyReferrerDomain);
+            expect(isFromRecommendationMock).toHaveBeenCalledWith(anyReferrerDomain);
+            expect(result).toBe('event230,event233');
+        });
+
+        it('should return event26 (DarkSocial) if no referrer', function () {
+            const noReferrerMock = jest.spyOn(s._utils, 'getDomainFromURLString').mockReturnValue('');
+            const result = s._articleViewTypeObj.getExternalType(noReferrerMock);
+            expect(result).toBe('event26');
         });
 
         it('should return event27 (other external) in any other cases', function () {
             const result = s._articleViewTypeObj.getExternalType(anyReferrer);
             expect(result).toBe('event27');
         });
-
     });
 
     describe('getReferrerFromLocationHash', () => {
@@ -551,8 +609,11 @@ describe('articleViewType()', () => {
 
     describe('getViewTypeByTrackingProperty()', () => {
         let getTrackingValueMock;
+        let isMarketingMock;
+
         beforeEach(() => {
             getTrackingValueMock = jest.spyOn(s._articleViewTypeObj, 'getTrackingValue').mockReturnValue('');
+            isMarketingMock = jest.spyOn(s._articleViewTypeObj, 'isPaidMarketing').mockReturnValue(true); 
         });
 
         afterEach(() => {
@@ -587,6 +648,12 @@ describe('articleViewType()', () => {
             getTrackingValueMock.mockReturnValue('kooperation.home.outbrain.mobile.');
             let result = s._articleViewTypeObj.getViewTypeByTrackingProperty();
             expect(result).toBe('event77,event230,event231');
+
+        });
+        it('it should return the right event name if tracking value is Paid Marketing like email. as one example', () => {
+            getTrackingValueMock.mockReturnValue('email.');
+            let result = s._articleViewTypeObj.getViewTypeByTrackingProperty();
+            expect(result).toBe('event206');
 
         });
     });

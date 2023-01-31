@@ -123,7 +123,7 @@ describe('articleViewType()', () => {
         it('should return TRUE if referring domain is from sub domain sportbild', function () {
             const anyDomain = 'sportbild.bild.de';
             window.document.domain = anyDomain;
-            getDomainFromURLStringMock.mockReturnValue('sportbild.bild.de');
+            getDomainFromURLStringMock.mockReturnValue(anyDomain);
             const result = s._articleViewTypeObj.isFromInternal(anyReferrer);
             expect(result).toBe(true);
         });
@@ -335,15 +335,13 @@ describe('articleViewType()', () => {
         });
 
         it('should return TRUE if article trackingValue starts with social.', function () {
-            const socialTrackingValue = 'social.';
-            getTrackingValueMock.mockReturnValue(socialTrackingValue);
+            getTrackingValueMock.mockReturnValue('social.');
             const result = s._articleViewTypeObj.isTrackingValueOrganicSocial();
             expect(result).toBe(true);
         });
 
         it('should return FALSE if article URL NOT contains recommendation parameter', function () {
-            const anyTrackingValue = 'any-tracking-value';
-            getTrackingValueMock.mockReturnValue(anyTrackingValue);
+            getTrackingValueMock.mockReturnValue('any-tracking-value');
             const result = s._articleViewTypeObj.isTrackingValueOrganicSocial();
             expect(result).toBe(false);
         });
@@ -485,7 +483,7 @@ describe('articleViewType()', () => {
 
         it('should return event230,event233 if referrer is from Recommendation', function () {
             isFromRecommendationMock.mockReturnValue(true);
-            const result = s._articleViewTypeObj.getExternalType(anyReferrer);
+            const result = s._articleViewTypeObj.getExternalType(anyReferrerDomain);
             expect(isFromRecommendationMock).toHaveBeenCalledWith(anyReferrerDomain);
             expect(result).toBe('event230,event233');
         });

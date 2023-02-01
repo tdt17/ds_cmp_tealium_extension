@@ -318,30 +318,8 @@ s._articleViewTypeObj = {
         }
     },
 
-    getReferrerFromLocationHash: function () {
-        let referrerFromHash;
-        if (window.location.hash.indexOf('wt_ref') !== -1) {
-            referrerFromHash = window.location.hash.replace('###wt_ref=', '');
-            referrerFromHash = decodeURIComponent(referrerFromHash);
-        }
-        // exclude Outbrain URL
-        return (this.isValidURL(referrerFromHash) && !referrerFromHash.includes('https://traffic.outbrain.com'))
-            ? referrerFromHash : '';
-    },
-
-    getReferrerFromGetParameter: function () {
-        let referrerFromGetParameter;
-        if (window.utag.data['qp.t_ref']) {
-            referrerFromGetParameter = window.utag.data['qp.t_ref'];
-
-        }
-        // exclude Outbrain URL
-        return (this.isValidURL(referrerFromGetParameter) && !referrerFromGetParameter.includes('https://traffic.outbrain.com'))
-            ? referrerFromGetParameter : '';
-    },
-
     getViewTypeByReferrer: function () {
-        const referrer = this.getReferrerFromLocationHash() || this.getReferrerFromGetParameter() || window.document.referrer ;
+        const referrer = s._utils.getReferrer(); 
         let articleViewType;
 
         if (this.isFromInternal(referrer)) {

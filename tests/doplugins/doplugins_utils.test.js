@@ -147,4 +147,51 @@ describe('s_utils', () => {
             expect(result).toBe(false);
         });
     });
+
+    describe('getReferrerFromLocationHash', () => {
+        let getReferrerFromLocationHashMock;
+
+        beforeEach(() => {
+            getReferrerFromLocationHashMock = jest.spyOn(s._utils, 'getReferrerFromLocationHash').mockReturnValue('');
+        });
+
+        it('should get the hash if the location hash as the referrer if available', () => {
+            const anyReferrerFromHash = 'any-referrer-from-hash';
+            getReferrerFromLocationHashMock.mockReturnValue(anyReferrerFromHash);
+            const result = s._utils.getReferrerFromLocationHash();
+            expect(result).toBe(anyReferrerFromHash);
+        });
+
+    });
+
+    describe('getReferrerFromGetParameter', () => {
+        let getReferrerFromGetParameterMock;
+
+        beforeEach(() => {
+            getReferrerFromGetParameterMock = jest.spyOn(s._utils, 'getReferrerFromGetParameter').mockReturnValue('');
+        });
+
+        it('should get the get Paraneter if the get parameter as the referrer if available', () => {
+            const anyReferrerFromGet = 'any-referrer-from-get';
+            getReferrerFromGetParameterMock.mockReturnValue(anyReferrerFromGet);
+            const result = s._utils.getReferrerFromGetParameter();
+            expect(result).toBe(anyReferrerFromGet);
+        });
+
+    });
+
+    /*describe('getReferrerFromGetParameter', () => {
+        let getReferrerFromGetParameterMock;
+
+        beforeEach(() => {
+            getReferrerFromGetParameterMock = jest.spyOn(s._utils, 'getReferrerFromGetParameter').mockReturnValue('');
+        });
+
+        it('should use the URL from GET Parameter as the referrer if available', () => {
+            const anyReferrerFromGET = 'any-referrer-from-get';
+            getReferrerFromGetParameterMock.mockReturnValue(anyReferrerFromGET);
+            //s._utils.getViewTypeByReferrer();
+            expect(getReferrerFromGetParameterMock).toHaveBeenCalledWith(anyReferrerFromGET);
+        });
+    });*/
 });

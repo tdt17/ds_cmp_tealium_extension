@@ -149,36 +149,41 @@ describe('s_utils', () => {
     });
 
     describe('getReferrerFromLocationHash', () => {
-        let getReferrerFromLocationHashMock;
+        const anyValidUrl = 'https://any-valid-url.de';
 
-        beforeEach(() => {
-            getReferrerFromLocationHashMock = jest.spyOn(s._utils, 'getReferrerFromLocationHash').mockReturnValue('');
-        });
-
-        it('should get the hash if the location hash as the referrer if available', () => {
-            const anyReferrerFromHash = 'any-referrer-from-hash';
-            getReferrerFromLocationHashMock.mockReturnValue(anyReferrerFromHash);
+        it('should return the referrer from the location hash', () => {
+            window.location.hash = `###wt_ref=${anyValidUrl}`;
             const result = s._utils.getReferrerFromLocationHash();
-            expect(result).toBe(anyReferrerFromHash);
+
+            expect(result).toBe(anyValidUrl);
         });
 
+        it('should ONLY return the referrer if location hash contains a valid URL', () => {
+            const anyInvalidUrl = 'invalid-url';
+            window.location.hash = `###wt_ref=${anyInvalidUrl}`;
+            const result = s._utils.getReferrerFromLocationHash();
+
+            expect(result).toBe('');
+        });
     });
 
     describe('getReferrerFromGetParameter', () => {
-        let getReferrerFromGetParameterMock;
+        const anyValidUrl = 'https://any-valid-url.de';
 
-        beforeEach(() => {
-            getReferrerFromGetParameterMock = jest.spyOn(s._utils, 'getReferrerFromGetParameter').mockReturnValue('');
-        });
-
-        it('should get the get Paraneter if the get parameter as the referrer if available', () => {
-            const anyReferrerFromGet = 'any-referrer-from-get';
-            window.location.search = `?t_ref=${anyReferrerFromGet}`;
-            getReferrerFromGetParameterMock.mockReturnValue(anyReferrerFromGet);
+        it('should return the referrer from the get parameter t_ref', () => {
+            window.utag.data['qp.t_ref'] = anyValidUrl;
             const result = s._utils.getReferrerFromGetParameter();
-            expect(result).toBe(anyReferrerFromGet);
+
+            expect(result).toBe(anyValidUrl);
         });
 
+        it('should ONLY return the referrer if the get parameter t_ref exists', () => {
+            const anyInvalidUrl = 'invalid-url';
+            window.location.search = `?t_ref=${anyInvalidUrl}`;
+            const result = s._utils.getReferrerFromGetParameter();
+
+            expect(result).toBe('');
+        });
     });
 
 });

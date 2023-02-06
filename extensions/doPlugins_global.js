@@ -298,7 +298,7 @@ s._articleViewTypeObj = {
         if (this.isFromSearch(referringDomain)) {
             return 'event24,event210'; //Search
         } else if (this.isFromSocial(referrer)) {
-            return 'event25'; //Social
+            return 'event25,event220'; //Social
         } else if (this.isFromBild(referringDomain) && this.isFromHome(referrer)) {
             return 'event76,event205'; // Bild home
         } else if (this.isFromBildMobile(referringDomain) && this.isFromHome(referrer)) {
@@ -312,9 +312,9 @@ s._articleViewTypeObj = {
         } else if (this.isFromRecommendation(referringDomain)) {
             return 'event230,event233'; // Referrer is Outbrain Recommendation
         }  else if (!referringDomain) {
-            return 'event26'; // Dark Social
+            return 'event26,event202'; // Dark Social
         } else {
-            return 'event27'; // Other External (Referrer)
+            return 'event27,event203'; // Other External (Referrer)
         }
     },
 
@@ -339,9 +339,11 @@ s._articleViewTypeObj = {
         const isMarketing = this.isPaidMarketing(); 
 
         if (trackingValue.startsWith('sea.')) {
-            articleViewType = 'event24,event206'; // Search
+            articleViewType = 'event24,event206,event242'; // Search
+        } else if (trackingValue.startsWith('social_paid')) {
+            articleViewType = 'event25,event206,event241'; //Social_Paid
         } else if (trackingValue.startsWith('social')) {
-            articleViewType = 'event25,event206'; //Social
+            articleViewType = 'event25,event220'; //Social
         } else if (trackingValue.startsWith('kooperation.article.outbrain.')) {
             articleViewType = 'event102,event230,event232'; //Outbrain Reco at Articles
         }  else if (trackingValue.startsWith('kooperation.home.outbrain.desktop.') || trackingValue.startsWith('kooperation.home.outbrain.tablet.')) {
@@ -400,16 +402,16 @@ s._setExternalReferringDomainEvents = function (s) {
     const domainsToEventMapping = [
         {
             domains: ['news.google'],
-            event: 'event48',
+            event: 'event48,event211',
         },
         {
             domains: ['www.google.com', 'www.google.de'],
-            event: 'event49',
+            event: 'event49,event212',
             matchExact: 'true',
         },
         {
             domains: ['googlequicksearchbox/'],
-            event: 'event49',
+            event: 'event49,event212',
         },
         {
             domains: ['googlequicksearchbox'],
@@ -426,19 +428,19 @@ s._setExternalReferringDomainEvents = function (s) {
         },
         {
             domains: ['instagram.com'],
-            event: 'event53',
+            event: 'event53,event224',
         },
         {
             domains: ['youtube.com'],
-            event: 'event50',
+            event: 'event50,event223',
         },
         {
             domains: ['t.co', 'twitter.com', 'android-app://com.twitter.android'],
-            event: 'event51',
+            event: 'event51,event222',
         },
         {
             domains: ['facebook.com'],
-            event: 'event52',
+            event: 'event52,event221',
         },
         {
             domains: ['telegram.org', 'org.telegram'],
@@ -493,25 +495,25 @@ s._setTrackingValueEvents = function (s) {
             if (isSocialTrackingParameter) {
                 switch (true) {
                 case isSocialTrackingValue.includes('.telegram.'):
-                    s._eventsObj.addEvent('event225');
+                    s._eventsObj.addEvent('event225,event220');
                     break;
                 case isSocialTrackingValue.includes('.instagram.'):
-                    s._eventsObj.addEvent('event53');
+                    s._eventsObj.addEvent('event53,event224,event220');
                     break;
                 case isSocialTrackingValue.includes('.youtube.'):
-                    s._eventsObj.addEvent('event50');
+                    s._eventsObj.addEvent('event50,event,223,event220');
                     break;
                 case isSocialTrackingValue.includes('.twitter.'):
-                    s._eventsObj.addEvent('event51');
+                    s._eventsObj.addEvent('event51,event222,event220');
                     break;
                 case isSocialTrackingValue.includes('.facebook.'):
-                    s._eventsObj.addEvent('event52');
+                    s._eventsObj.addEvent('event52,event221,event220');
                     break;
                 case isSocialTrackingValue.includes('.linkedin.'):
-                    s._eventsObj.addEvent('event227');
+                    s._eventsObj.addEvent('event227,event220');
                     break;
                 default:
-                    s._eventsObj.addEvent('event226');
+                    s._eventsObj.addEvent('event226,event220');
                 }
             } else if (isOtherTrackingValue && isOtherTrackingValue.length > 0) {
                 switch (true) {
@@ -519,10 +521,10 @@ s._setTrackingValueEvents = function (s) {
                     s._eventsObj.addEvent('event204');
                     break;
                 case isOtherTrackingValue.startsWith('kooperation.article.outbrain.'):
-                    s._eventsObj.addEvent('event102');
+                    s._eventsObj.addEvent('event102,event230,event232');
                     break;
                 case isOtherTrackingValue.startsWith('kooperation.home.outbrain.'):
-                    s._eventsObj.addEvent('event231');
+                    s._eventsObj.addEvent('event231,event230');
                     break;
                 }
             }

@@ -440,7 +440,7 @@ describe('articleViewType()', () => {
             isFromSocialMock.mockReturnValue(true);
             const result = s._articleViewTypeObj.getExternalType(anyReferrer);
             expect(isFromSocialMock).toHaveBeenCalledWith(anyReferrer);
-            expect(result).toBe('event25');
+            expect(result).toBe('event25,event220');
         });
 
         it('should return event76,event205 if referrer is Bild desktop homepage', function () {
@@ -491,12 +491,12 @@ describe('articleViewType()', () => {
         it('should return event26 (DarkSocial) if no referrer', function () {
             const noReferrerMock = jest.spyOn(s._utils, 'getDomainFromURLString').mockReturnValue('');
             const result = s._articleViewTypeObj.getExternalType(noReferrerMock);
-            expect(result).toBe('event26');
+            expect(result).toBe('event26,event202');
         });
 
         it('should return event27 (other external) in any other cases', function () {
             const result = s._articleViewTypeObj.getExternalType(anyReferrer);
-            expect(result).toBe('event27');
+            expect(result).toBe('event27,event203');
         });
     });
 
@@ -613,13 +613,19 @@ describe('articleViewType()', () => {
         it('it should return the right event name if tracking value is of type: Search', () => {
             getTrackingValueMock.mockReturnValue('sea.');
             const result = s._articleViewTypeObj.getViewTypeByTrackingProperty();
-            expect(result).toBe('event24,event206');
+            expect(result).toBe('event24,event206,event242');
+        });
+        
+        it('it should return the right event name if tracking value is of type: Social Paid', () => {
+            getTrackingValueMock.mockReturnValue('social_paid');
+            const result = s._articleViewTypeObj.getViewTypeByTrackingProperty();
+            expect(result).toBe('event25,event206,event241');
         });
 
         it('it should return the right event name if tracking value is of type: Social', () => {
             getTrackingValueMock.mockReturnValue('social');
             const result = s._articleViewTypeObj.getViewTypeByTrackingProperty();
-            expect(result).toBe('event25,event206');
+            expect(result).toBe('event25,event220');
         });
 
         it('it should return the right event name if tracking value is of type: Outbrain Article Recommendation', () => {

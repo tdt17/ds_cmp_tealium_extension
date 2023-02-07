@@ -500,37 +500,20 @@ describe('articleViewType()', () => {
         });
     });
 
-    describe('getReferrerFromLocationHash', () => {
-        const anyValidUrl = 'https://any-valid-url.de';
-
-        it('should return the referrer from the location hash', () => {
-            window.location.hash = `###wt_ref=${anyValidUrl}`;
-            const result = s._articleViewTypeObj.getReferrerFromLocationHash();
-
-            expect(result).toBe(anyValidUrl);
-        });
-
-        it('should ONLY return the referrer if location hash contains a valid URL', () => {
-            const anyInvalidUrl = 'invalid-url';
-            window.location.hash = `###wt_ref=${anyInvalidUrl}`;
-            const result = s._articleViewTypeObj.getReferrerFromLocationHash();
-
-            expect(result).toBe('');
-        });
-    });
-
-    describe('getViewTypeByReferrer()', () => {
+    describe('getViewTypeByReferrer', () => {
         let isFromInternalMock;
         let getInternalTypeMock;
         let getExternalTypeMock;
         let getReferrerFromLocationHashMock;
+        let getReferrerFromGetParameterMock;
 
 
         beforeEach(() => {
             isFromInternalMock = jest.spyOn(s._articleViewTypeObj, 'isFromInternal').mockReturnValue(false);
             getInternalTypeMock = jest.spyOn(s._articleViewTypeObj, 'getInternalType').mockReturnValue(false);
             getExternalTypeMock = jest.spyOn(s._articleViewTypeObj, 'getExternalType').mockReturnValue(false);
-            getReferrerFromLocationHashMock = jest.spyOn(s._articleViewTypeObj, 'getReferrerFromLocationHash').mockReturnValue('');
+            getReferrerFromLocationHashMock = jest.spyOn(s._utils, 'getReferrerFromLocationHash').mockReturnValue('');
+            getReferrerFromGetParameterMock = jest.spyOn(s._utils, 'getReferrerFromGetParameter').mockReturnValue('');
         });
 
         it('should use the URL from the location hash as the referrer if available', () => {
@@ -538,6 +521,13 @@ describe('articleViewType()', () => {
             getReferrerFromLocationHashMock.mockReturnValue(anyReferrerFromHash);
             s._articleViewTypeObj.getViewTypeByReferrer();
             expect(isFromInternalMock).toHaveBeenCalledWith(anyReferrerFromHash);
+        });
+
+        it('should use the URL from GET Parameter as the referrer if available', () => {
+            const anyReferrerFromGET = 'any-referrer-from-get';
+            getReferrerFromGetParameterMock.mockReturnValue(anyReferrerFromGET);
+            s._articleViewTypeObj.getViewTypeByReferrer();
+            expect(isFromInternalMock).toHaveBeenCalledWith(anyReferrerFromGET);
         });
 
         it('should use the document referrer if the location hash is NOT available', () => {

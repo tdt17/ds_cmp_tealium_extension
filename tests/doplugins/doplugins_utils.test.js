@@ -173,6 +173,7 @@ describe('s_utils', () => {
         });
     });
 
+
     describe('isValidURL', () => {
         it('should return true if passed string is URL', () => {
             urlString = 'https://www.bild.de';
@@ -189,3 +190,44 @@ describe('s_utils', () => {
         });
     });
 });
+
+    describe('getReferrerFromLocationHash', () => {
+        const anyValidUrl = 'https://any-valid-url.de';
+
+        it('should return the referrer from the location hash', () => {
+            window.location.hash = `###wt_ref=${anyValidUrl}`;
+            const result = s._utils.getReferrerFromLocationHash();
+
+            expect(result).toBe(anyValidUrl);
+        });
+
+        it('should ONLY return the referrer if location hash contains a valid URL', () => {
+            const anyInvalidUrl = 'invalid-url';
+            window.location.hash = `###wt_ref=${anyInvalidUrl}`;
+            const result = s._utils.getReferrerFromLocationHash();
+
+            expect(result).toBe('');
+        });
+    });
+
+    describe('getReferrerFromGetParameter', () => {
+        const anyValidUrl = 'https://any-valid-url.de';
+
+        it('should return the referrer from the get parameter t_ref', () => {
+            window.utag.data['qp.t_ref'] = anyValidUrl;
+            const result = s._utils.getReferrerFromGetParameter();
+
+            expect(result).toBe(anyValidUrl);
+        });
+
+        it('should ONLY return the referrer if the get parameter t_ref exists', () => {
+            const anyInvalidUrl = 'invalid-url';
+            window.location.search = `?t_ref=${anyInvalidUrl}`;
+            const result = s._utils.getReferrerFromGetParameter();
+
+            expect(result).toBe('');
+        });
+    });
+
+});
+

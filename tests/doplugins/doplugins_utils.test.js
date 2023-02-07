@@ -189,7 +189,6 @@ describe('s_utils', () => {
             expect(result).toBe(false);
         });
     });
-});
 
     describe('getReferrerFromLocationHash', () => {
         const anyValidUrl = 'https://any-valid-url.de';

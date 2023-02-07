@@ -181,7 +181,7 @@ describe('s_utils', () => {
             expect(result).toBe(true);
         });
 
-        it('should return true if passed string is not URL', () => {
+        it('should return false if passed string is not URL', () => {
             urlString = 'www.bild.de';
             const result = s._utils.isValidURL(urlString);
 

@@ -99,6 +99,31 @@ describe('s_utils', () => {
         });
     });
 
+    describe('isAdWall', () => {
+        it('should return false if none of the conditions are met', () => {
+            const value = s._utils.isAdWall(s);
+
+            expect(value).toBe(false);
+        });
+
+        it('should return true if pageName value is correct', () => {
+            s.pageName = 'value_42925516';
+            const value = s._utils.isAdWall(s);
+
+            expect(value).toBe(true);
+
+        });
+
+        it('should return true if window.location value is correct', () => {
+            window.location = 'value_unangemeldet-42925516';
+            const value = s._utils.isAdWall(s);
+
+            expect(value).toBe(true);
+
+        });
+    });
+
+
     describe('isArticlePage()', () => {
         let getDocTypeMock;
 
@@ -143,6 +168,22 @@ describe('s_utils', () => {
 
         it('should return false if there is no global object with the name cmp', () => {
             const result = s._utils.isFirstPageView();
+
+            expect(result).toBe(false);
+        });
+    });
+
+    describe('isValidURL', () => {
+        it('should return true if passed string is URL', () => {
+            urlString = 'https://www.bild.de';
+            const result = s._utils.isValidURL(urlString);
+
+            expect(result).toBe(true);
+        });
+
+        it('should return true if passed string is not URL', () => {
+            urlString = 'www.bild.de';
+            const result = s._utils.isValidURL(urlString);
 
             expect(result).toBe(false);
         });

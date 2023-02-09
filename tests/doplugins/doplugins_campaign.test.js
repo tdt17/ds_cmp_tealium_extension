@@ -61,6 +61,13 @@ describe('campaign', () => {
             expect(adobe_campaign).toBe('wt_mc=' + window.utag.data['qp.wt_mc']);
 
         });
+
+        it('should return empty string if no campaign is defined', () => {
+        
+            const adobe_campaign = s._campaignObj.getAdobeCampaign();
+            expect(adobe_campaign).toBe('');
+
+        });
     });
 
     describe('setCampaignVariables', () => {

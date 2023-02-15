@@ -44,6 +44,31 @@ describe('directOrderObj', () => {
         });
     });
 
+    describe('isPaywall()', function () {
+        it('should be set to false if no conditions are met', function () {
+            expect(s._directOrderObj.isPaywall()).toBe(false);
+        });
+
+        it('should be set to true if first condition is met', function () {
+            window.utag.data.event_name = 'offer-module';
+            window.utag.data.event_action = 'load';
+            window.utag.data.event_label = 'article';
+            expect(s._directOrderObj.isPaywall()).toBe(true);
+        });
+
+        it('should be set to true if second condition is met', function () {
+            window.utag.data.is_status_premium_visibility = 'false';
+            window.utag.data.is_status_premium = 'true';
+            expect(s._directOrderObj.isPaywall()).toBe(true);
+        });
+
+        it('should be set to true if thrid condition is met', function () {
+            window.utag.data.user_statusValidAbo_String = 'false';
+            window.utag.data.page_isPremium = 'true';
+            expect(s._directOrderObj.isPaywall()).toBe(true);
+        });
+    });
+
     describe('setDirectOrderValues(s)', function () {
         let saveToCookieMock;
         let deleteFromCookieMockOtb;

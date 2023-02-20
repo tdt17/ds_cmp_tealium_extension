@@ -2,9 +2,13 @@
 const s = window.s || {};
 
 // START: Pre-defined Adobe Plugins
-/* istanbul ignore next */
+
 /* Adobe Consulting Plugin: getPreviousValue v3.0 */
 s.getPreviousValue = function(v,c){var k=v,d=c;if("-v"===k)return{plugin:"getPreviousValue",version:"3.0"};var a=function(){if("undefined"!==typeof window.s_c_il)for(var c=0,b;c<window.s_c_il.length;c++)if(b=window.s_c_il[c],b._c&&"s_c"===b._c)return b}();"undefined"!==typeof a&&(a.contextData.getPreviousValue="3.0");window.cookieWrite=window.cookieWrite||function(c,b,f){if("string"===typeof c){var h=window.location.hostname,a=window.location.hostname.split(".").length-1;if(h&&!/^[0-9.]+$/.test(h)){a=2<a?a:2;var e=h.lastIndexOf(".");if(0<=e){for(;0<=e&&1<a;)e=h.lastIndexOf(".",e-1),a--;e=0<e?h.substring(e):h}}g=e;b="undefined"!==typeof b?""+b:"";if(f||""===b)if(""===b&&(f=-60),"number"===typeof f){var d=new Date;d.setTime(d.getTime()+6E4*f)}else d=f;return c&&(document.cookie=encodeURIComponent(c)+"="+encodeURIComponent(b)+"; path=/;"+(f?" expires="+d.toUTCString()+";":"")+(g?" domain="+g+";":""),"undefined"!==typeof cookieRead)?cookieRead(c)===b:!1}};window.cookieRead=window.cookieRead||function(c){if("string"===typeof c)c=encodeURIComponent(c);else return"";var b=" "+document.cookie,a=b.indexOf(" "+c+"="),d=0>a?a:b.indexOf(";",a);return(c=0>a?"":decodeURIComponent(b.substring(a+2+c.length,0>d?b.length:d)))?c:""};var l;d=d||"s_gpv";a=new Date;a.setTime(a.getTime()+18E5);window.cookieRead(d)&&(l=window.cookieRead(d));k?window.cookieWrite(d,k,a):window.cookieWrite(d,l,a);return l};
+/* istanbul ignore next */
+/* Adobe Consulting Plugin: p_fo (pageFirstOnly) v3.0 (Requires AppMeasurement) */
+s.p_fo = function (c) { if ("-v" === c) return { plugin: "p_fo", version: "3.0" }; a: { if ("undefined" !== typeof window.s_c_il) { var a = 0; for (var b; a < window.s_c_il.length; a++)if (b = window.s_c_il[a], b._c && "s_c" === b._c) { a = b; break a } } a = void 0 } "undefined" !== typeof a && (a.contextData.p_fo = "3.0"); window.__fo || (window.__fo = {}); if (window.__fo[c]) return !1; window.__fo[c] = {}; return !0 };
+/* istanbul ignore next */
 /* Adobe Consulting Plugin: apl (appendToList) v4.0 */
 s.apl = function (lv, va, d1, d2, cc) { var b = lv, d = va, e = d1, c = d2, g = cc; if ("-v" === b) return { plugin: "apl", version: "4.0" }; var h = function () { if ("undefined" !== typeof window.s_c_il) for (var k = 0, b; k < window.s_c_il.length; k++)if (b = window.s_c_il[k], b._c && "s_c" === b._c) return b }(); "undefined" !== typeof h && (h.contextData.apl = "4.0"); window.inList = window.inList || function (b, d, c, e) { if ("string" !== typeof d) return !1; if ("string" === typeof b) b = b.split(c || ","); else if ("object" !== typeof b) return !1; c = 0; for (a = b.length; c < a; c++)if (1 == e && d === b[c] || d.toLowerCase() === b[c].toLowerCase()) return !0; return !1 }; if (!b || "string" === typeof b) { if ("string" !== typeof d || "" === d) return b; e = e || ","; c = c || e; 1 == c && (c = e, g || (g = 1)); 2 == c && 1 != g && (c = e); d = d.split(","); h = d.length; for (var f = 0; f < h; f++)window.inList(b, d[f], e, g) || (b = b ? b + c + d[f] : d[f]) } return b };
 /******************************************** END CODE TO DEPLOY ********************************************/
@@ -109,6 +113,36 @@ s._eventsObj = {
     }
 };
 
+/**
+ * previous Page tracking.
+ */
+s._prevPageObj = {
+    isFirstRun: true,
+
+    setPrevPageData: function (s) {
+        
+        if (s.pageName){
+            s.eVar33 = s.prop61 = s._prevPage = s.getPreviousValue(s.pageName);
+            // BILD APP Home Page IDs
+            const isFromHomePageId = s._prevPage.includes('20595788') || s._prevPage.includes('52081556') ||s._prevPage.includes('26324062') || s._prevPage.includes('52081598');
+            // Current Page is type article
+            const isAtArticlePage = s.pageName.includes('article') || s.pageName.includes('media');
+    
+            if (this.isFirstRun) {
+            // Should be executed only once.
+                this.isFirstRun = false;
+                if (isFromHomePageId) {
+                    if(isAtArticlePage){ 
+                        s._eventsObj.addEvent('event22,event20');
+                    } else {
+                        s._eventsObj.addEvent('event20');
+                    }
+                }
+            }
+        }
+    },
+};
+
 s._bildAppsInit = function (s) {
     s.usePlugins = true;
     s.currencyCode = 'EUR';
@@ -120,30 +154,6 @@ s._bildAppsInit = function (s) {
         s.eVar94 = window.screen.width + 'x' + window.screen.height;
     }
 
-};
-
-/**
- * previous Page tracking.
- */
-s._prevPageObj = {
-
-    isPrevPageFromHome: function () {
-        const prevPage = s.getPreviousValue(s.pageName);
-        const isHomePage = prevPage.includes('20595788') || prevPage.includes('52081556')
-                            ||prevPage.includes('26324062') || prevPage.includes('52081598');
-        return isHomePage ? 'event22' : '';
-    },
-
-    setData: function (s) {
-        s.eVar33 = s.prop61 = s.getPreviousValue(s.pageName);
-        s._eventsObj.addEvent(this.isPrevPageFromHome());
-    },
-
-    setPrevPageProperties: function (s) {
-        if (s._ppvPreviousPage && s._ppvPreviousPage !== 'undefined') {
-            this.setData(s);
-        }
-    }
 };
 
 s.doPlugins = function (s) {
@@ -161,7 +171,7 @@ s.doPlugins = function (s) {
     s._orderViaArticle(s);
     s._setPageCmsPathWithoutBild(s);
     s._setPageAgeForCheckout();
-    s._prevPageObj.setPrevPageProperties();
+    s._prevPageObj.setPrevPageData(s);
     s._eventsObj.setEventsProperty(s);
 };
 

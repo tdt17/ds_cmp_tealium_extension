@@ -11,7 +11,6 @@ describe('_prevPageObj', () => {
 
         // Provide a fresh copy of the s-object for each test.
         s = { ...sObject };
-        jest.spyOn(s._prevPageObj, 'setPrevPageData').mockImplementation(jest.fn());
     });
 
     afterEach(() => {
@@ -20,7 +19,7 @@ describe('_prevPageObj', () => {
 
     describe('setPrevPageData', () => {
 
-        afterEach( ()=>{
+        beforeEach( ()=>{
             s._prevPageObj.isFirstRun = true;
         });
 
@@ -49,6 +48,17 @@ describe('_prevPageObj', () => {
             expect(s.eVar33).toBe(s._ppvPreviousPage);
             expect(s.prop61).toBe(s._ppvPreviousPage);
 
+        });
+
+        it('should set event20 and event22 if isFromHomePageId and isAtArticlePage are true', () => {
+            jest.spyOn(s._prevPageObj, 'getPreviousPageValue').mockImplementation(jest.fn());
+            jest.spyOn(s._prevPageObj, 'isFromHomePageId').mockReturnValue(true);
+            jest.spyOn(s._prevPageObj, 'isAtArticlePage').mockReturnValue(true);
+            const addEventMock = jest.spyOn(s._eventsObj, 'addEvent');
+
+            s._prevPageObj.setPrevPageData(s);
+
+            expect(addEventMock).toHaveBeenCalledWith('event22,event20');
         });
 
         

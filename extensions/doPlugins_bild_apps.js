@@ -119,26 +119,26 @@ s._eventsObj = {
 s._prevPageObj = {
     isFirstRun: true,
 
-    getPreviousValue: function (s) {
+    getPreviousPageValue: function (s) {
         //if (s.pageName){
-            s.eVar33 = s.prop61 = s.getPreviousValue(s.pageName);
+        s.eVar33 = s.prop61 = s.getPreviousValue(s.pageName);
         //}
     },
    
     isFromHomePageId: function (s) {
         //return s._prevPage.includes('20595788') || s._prevPage.includes('52081556') ||s._prevPage.includes('26324062') || s._prevPage.includes('52081598');
-        return s._ppvPreviousPage.includes('20595788') || s._ppvPreviousPage.includes('52081556') ||s._ppvPreviousPage.includes('26324062') || s._ppvPreviousPage.includes('52081598');
+        return s._ppvPreviousPage && (s._ppvPreviousPage.includes('20595788') || s._ppvPreviousPage.includes('52081556') ||s._ppvPreviousPage.includes('26324062') || s._ppvPreviousPage.includes('52081598'));
     },
 
     isAtArticlePage: function (s) {
-        return s.pageName.includes('article') || s.pageName.includes('media');
+        return s.pageName && (s.pageName.includes('article') || s.pageName.includes('media'));
     },
 
     setPrevPageData: function (s) {
         if (this.isFirstRun) {
-            this.getPreviousValue();
-            const isFromHomePageId = this.isFromHomePageId();
-            const isAtArticlePage = this.isAtArticlePage();
+            this.getPreviousPageValue(s);
+            const isFromHomePageId = this.isFromHomePageId(s);
+            const isAtArticlePage = this.isAtArticlePage(s);
             // Should be executed only once.
             this.isFirstRun = false;
             if (isFromHomePageId) {
@@ -149,7 +149,6 @@ s._prevPageObj = {
                 }
             }
         }
-
         /* if (s.pageName){
             s.eVar33 = s.prop61 = s._prevPage = s.getPreviousValue(s.pageName);
             // BILD APP Home Page IDs

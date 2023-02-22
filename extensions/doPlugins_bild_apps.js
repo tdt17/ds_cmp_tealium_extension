@@ -121,7 +121,7 @@ s._prevPageObj = {
 
     getPreviousValue: function (s) {
         //if (s.pageName){
-            s.eVar33 = s.prop61 = s._prevPage = s.getPreviousValue(s.pageName);
+            s.eVar33 = s.prop61 = s.getPreviousValue(s.pageName);
         //}
     },
    
@@ -137,8 +137,8 @@ s._prevPageObj = {
     setPrevPageData: function (s) {
         if (this.isFirstRun) {
             this.getPreviousValue();
-            const isFromHomePageId = this.isAtArticlePage(s._prevPage);
-            const isAtArticlePage = this.isAtArticlePage(s.pageName);
+            const isFromHomePageId = this.isFromHomePageId();
+            const isAtArticlePage = this.isAtArticlePage();
             // Should be executed only once.
             this.isFirstRun = false;
             if (isFromHomePageId) {
@@ -195,6 +195,7 @@ s.doPlugins = function (s) {
     s.eVar184 = new Date().getHours().toString();
     s.eVar181 = new Date().getMinutes().toString();
     s.eVar185 = window.utag.data.myCW || '';
+    s.eVar33 = s.prop61 = s.getPreviousValue(s.pageName);
 
     s._bildAppsPageNameObj.setAppsPageName(s);
     s._orderViaArticle(s);

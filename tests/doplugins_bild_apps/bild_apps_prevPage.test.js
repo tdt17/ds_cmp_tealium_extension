@@ -35,7 +35,7 @@ describe('_prevPageObj', () => {
 
         it('should run only once', () => {
             s.pageName = 'test_pageName';
-            s._prevPage = 'test_prevPage';
+            s._ppvPreviousPage = 'test_prevPage';
 
             const setData = jest.spyOn(s._prevPageObj, 'setPrevPageData');
             s._prevPageObj.setPrevPageData(s);
@@ -46,7 +46,6 @@ describe('_prevPageObj', () => {
             s.pageName = 'test_ppvPreviousPage';
             s._prevPageObj.setPrevPageData(s);
 
-            expect(s._prevPage).toBe(s._ppvPreviousPage);
             expect(s.eVar33).toBe(s._ppvPreviousPage);
             expect(s.prop61).toBe(s._ppvPreviousPage);
 

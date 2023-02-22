@@ -12,6 +12,7 @@ describe('s.doPlugins()', () => {
 
         // Provide a fresh copy of the s-object for each test.
         s = { ...sObject };
+        jest.spyOn(s, 'getPreviousValue').mockImplementation(jest.fn());
 
     });
 
@@ -25,7 +26,7 @@ describe('s.doPlugins()', () => {
         s.visitor = {
             version: 'test_visitor_version'
         };
-        //s.getPreviousValue.mockReturnValue('test_value');
+        s.getPreviousValue.mockReturnValue('test_value');
         
         s.doPlugins(s);
 
@@ -35,8 +36,8 @@ describe('s.doPlugins()', () => {
         expect(s.eVar184.length).toBeGreaterThanOrEqual(1);
         expect(s.eVar181.length).toBeGreaterThanOrEqual(1);
         expect(s.eVar185).toBe(window.utag.data.myCW);
-        //expect(s.prop61).toBe('test_value');
-        //expect(s.eVar33).toBe('test_value');
+        expect(s.prop61).toBe('test_value');
+        expect(s.eVar33).toBe('test_value');
 
     });
 

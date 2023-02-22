@@ -119,9 +119,38 @@ s._eventsObj = {
 s._prevPageObj = {
     isFirstRun: true,
 
+    getPreviousValue: function (s) {
+        //if (s.pageName){
+            s.eVar33 = s.prop61 = s._prevPage = s.getPreviousValue(s.pageName);
+        //}
+    },
+   
+    isFromHomePageId: function (s) {
+        //return s._prevPage.includes('20595788') || s._prevPage.includes('52081556') ||s._prevPage.includes('26324062') || s._prevPage.includes('52081598');
+        return s._ppvPreviousPage.includes('20595788') || s._ppvPreviousPage.includes('52081556') ||s._ppvPreviousPage.includes('26324062') || s._ppvPreviousPage.includes('52081598');
+    },
+
+    isAtArticlePage: function (s) {
+        return s.pageName.includes('article') || s.pageName.includes('media');
+    },
+
     setPrevPageData: function (s) {
-        
-        if (s.pageName){
+        if (this.isFirstRun) {
+            this.getPreviousValue();
+            const isFromHomePageId = this.isAtArticlePage(s._prevPage);
+            const isAtArticlePage = this.isAtArticlePage(s.pageName);
+            // Should be executed only once.
+            this.isFirstRun = false;
+            if (isFromHomePageId) {
+                if(isAtArticlePage){ 
+                    s._eventsObj.addEvent('event22,event20');
+                } else {
+                    s._eventsObj.addEvent('event20');
+                }
+            }
+        }
+
+        /* if (s.pageName){
             s.eVar33 = s.prop61 = s._prevPage = s.getPreviousValue(s.pageName);
             // BILD APP Home Page IDs
             const isFromHomePageId = s._prevPage.includes('20595788') || s._prevPage.includes('52081556') ||s._prevPage.includes('26324062') || s._prevPage.includes('52081598');
@@ -139,7 +168,7 @@ s._prevPageObj = {
                     }
                 }
             }
-        }
+        }*/
     },
 };
 

@@ -44,12 +44,11 @@ describe('_prevPageObj', () => {
         
         it('should call setPrevPageData if pageName is defined', () => {
             s.pageName = 'test_ppvPreviousPage';
-            //s.getPreviousValue(s.pageName);
             s._prevPageObj.setPrevPageData(s);
 
-            expect(s._prevPage).toBe(s.pageName);
-            expect(s.eVar33).toBe(s.pageName);
-            expect(s.prop61).toBe(s.pageName);
+            expect(s._prevPage).toBe(s._ppvPreviousPage);
+            expect(s.eVar33).toBe(s._ppvPreviousPage);
+            expect(s.prop61).toBe(s._ppvPreviousPage);
 
         });
 

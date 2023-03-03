@@ -127,27 +127,27 @@ s._prevPageObj = {
         return s._prevPage.includes('20595788') || s._prevPage.includes('52081556') ||s._prevPage.includes('26324062') || s._prevPage.includes('52081598');
     },
 
-    isAtArticlePage: function (s) {
+    isArticlePage: function (s) {
         return s.pageName && (s.pageName.includes('article') || s.pageName.includes('media'));
     },
 
-    isNotAtHomePage: function (s) {
-        return !(s.pageName.includes('20595788') || s.pageName.includes('52081556') ||s.pageName.includes('26324062') || s.pageName.includes('52081598'));
+    isHomePage: function (s) {
+        return (s.pageName.includes('20595788') || s.pageName.includes('52081556') ||s.pageName.includes('26324062') || s.pageName.includes('52081598'));
     },
 
     setPrevPageData: function (s) {
         if (this.isFirstRun && s.pageName) {
             this.getPreviousPageValue(s);
             const isFromHomePageId = this.isFromHomePageId(s);
-            const isAtArticlePage = this.isAtArticlePage(s);
-            const isNotAtHomePage = this.isNotAtHomePage(s);
+            const isArticlePage = this.isArticlePage(s);
+            const isHomePage = this.isHomePage(s);
 
             // Should be executed only once.
             this.isFirstRun = false;
             if (isFromHomePageId) {
-                if(isAtArticlePage){ 
+                if(isArticlePage){ 
                     s._eventsObj.addEvent('event22,event20');
-                } else if (isNotAtHomePage) {
+                } else if (!isHomePage) {
                     s._eventsObj.addEvent('event20');
                 }
             }

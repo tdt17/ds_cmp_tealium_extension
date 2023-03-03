@@ -54,33 +54,33 @@ describe('_prevPageObj', () => {
 
         it('should return TRUE if pageName is article', function () {
             s.pageName = 'test_pageName_article';
-            const result = s._prevPageObj.isAtArticlePage(s);
+            const result = s._prevPageObj.isArticlePage(s);
             expect(result).toBe(true);
         });
 
         it('should return FALSE if pageName is Not article', function () {
             s.pageName = 'test_pageName';
-            const result = s._prevPageObj.isAtArticlePage(s);
+            const result = s._prevPageObj.isArticlePage(s);
             expect(result).toBe(false);
         });
 
         it('should return TRUE if pageName is not Homepage', function () {
             s.pageName = 'test_pageName';
-            const result = s._prevPageObj.isNotAtHomePage(s);
-            expect(result).toBe(true);
+            const result = s._prevPageObj.isHomePage(s);
+            expect(result).toBe(false);
         });
 
         it('should return FALSE if pageName is Homepage', function () {
             s.pageName = 'test_pageName_20595788';
-            const result = s._prevPageObj.isNotAtHomePage(s);
-            expect(result).toBe(false);
+            const result = s._prevPageObj.isHomePage(s);
+            expect(result).toBe(true);
         });
 
-        it('should set event20 and event22 if isFromHomePageId and isAtArticlePage are true', () => {
+        it('should set event20 and event22 if isFromHomePageId and isArticlePage are true', () => {
             s.pageName = 'test_pageName';
             jest.spyOn(s._prevPageObj, 'getPreviousPageValue').mockImplementation(jest.fn());
             jest.spyOn(s._prevPageObj, 'isFromHomePageId').mockReturnValue(true);
-            jest.spyOn(s._prevPageObj, 'isAtArticlePage').mockReturnValue(true);
+            jest.spyOn(s._prevPageObj, 'isArticlePage').mockReturnValue(true);
             const addEventMock = jest.spyOn(s._eventsObj, 'addEvent');
 
             s._prevPageObj.setPrevPageData(s);
@@ -88,12 +88,12 @@ describe('_prevPageObj', () => {
             expect(addEventMock).toHaveBeenCalledWith('event22,event20');
         });
 
-        it('should set event20 isFromHomePageId and isNotAtHomePage are true and isAtArticlePage is false', () => {
+        it('should set event20 isFromHomePageId is true and isHomePage is false and isArticlePage is false', () => {
             s.pageName = 'test_pageName';
             jest.spyOn(s._prevPageObj, 'getPreviousPageValue').mockImplementation(jest.fn());
             jest.spyOn(s._prevPageObj, 'isFromHomePageId').mockReturnValue(true);
-            jest.spyOn(s._prevPageObj, 'isNotAtHomePage').mockReturnValue(true);
-            jest.spyOn(s._prevPageObj, 'isAtArticlePage').mockReturnValue(false);
+            jest.spyOn(s._prevPageObj, 'isHomePage').mockReturnValue(false);
+            jest.spyOn(s._prevPageObj, 'isArticlePage').mockReturnValue(false);
             const addEventMock = jest.spyOn(s._eventsObj, 'addEvent');
 
             s._prevPageObj.setPrevPageData(s);

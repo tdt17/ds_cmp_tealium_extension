@@ -400,16 +400,16 @@ s._setExternalReferringDomainEvents = function (s) {
     const domainsToEventMapping = [
         {
             domains: ['news.google'],
-            event: 'event48',
+            event: 'event48,event211',
         },
         {
             domains: ['www.google.com', 'www.google.de'],
-            event: 'event49',
+            event: 'event49,event212',
             matchExact: 'true',
         },
         {
             domains: ['googlequicksearchbox/'],
-            event: 'event49',
+            event: 'event49,event212',
         },
         {
             domains: ['googlequicksearchbox'],
@@ -426,19 +426,19 @@ s._setExternalReferringDomainEvents = function (s) {
         },
         {
             domains: ['instagram.com'],
-            event: 'event53',
+            event: 'event53,event224',
         },
         {
             domains: ['youtube.com'],
-            event: 'event50',
+            event: 'event50,event223',
         },
         {
             domains: ['t.co', 'twitter.com', 'android-app://com.twitter.android'],
-            event: 'event51',
+            event: 'event51,event222',
         },
         {
             domains: ['facebook.com'],
-            event: 'event52',
+            event: 'event52,event221',
         },
         {
             domains: ['telegram.org', 'org.telegram'],
@@ -496,16 +496,16 @@ s._setTrackingValueEvents = function (s) {
                     s._eventsObj.addEvent('event225');
                     break;
                 case isSocialTrackingValue.includes('.instagram.'):
-                    s._eventsObj.addEvent('event53');
+                    s._eventsObj.addEvent('event53,event224');
                     break;
                 case isSocialTrackingValue.includes('.youtube.'):
-                    s._eventsObj.addEvent('event50');
+                    s._eventsObj.addEvent('event50,event223');
                     break;
                 case isSocialTrackingValue.includes('.twitter.'):
-                    s._eventsObj.addEvent('event51');
+                    s._eventsObj.addEvent('event51,event222');
                     break;
                 case isSocialTrackingValue.includes('.facebook.'):
-                    s._eventsObj.addEvent('event52');
+                    s._eventsObj.addEvent('event52,event221');
                     break;
                 case isSocialTrackingValue.includes('.linkedin.'):
                     s._eventsObj.addEvent('event227');

@@ -27,10 +27,10 @@ describe('_prevPageObj', () => {
 
         it('should run only once', () => {
             s._prevPage = 'test_prevPage';
+            s._prevPageObj.isFirstRun = false;
 
             const setData = jest.spyOn(s._prevPageObj, 'setPrevPageData');
-            s._prevPageObj.setPrevPageData(s);
-            expect(setData).toHaveBeenCalledTimes(1);
+            expect(setData).not.toHaveBeenCalled();
         });
 
         it('should set eVar33, prop61, _prevPage', () => {
@@ -85,7 +85,8 @@ describe('_prevPageObj', () => {
 
             s._prevPageObj.setPrevPageData(s);
 
-            expect(addEventMock).toHaveBeenCalledWith('event22,event20');
+            expect(addEventMock).toHaveBeenCalledWith('event22');
+            expect(addEventMock).toHaveBeenCalledWith('event20');
         });
 
         it('should set event20 isFromHomePageId is true and isHomePage is false and isArticlePage is false', () => {

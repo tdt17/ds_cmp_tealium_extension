@@ -144,12 +144,11 @@ s._prevPageObj = {
 
             // Should be executed only once.
             this.isFirstRun = false;
-            if (isFromHomePageId) {
-                if(isArticlePage){ 
-                    s._eventsObj.addEvent('event22,event20');
-                } else if (!isHomePage) {
-                    s._eventsObj.addEvent('event20');
-                }
+            if (isFromHomePageId && isArticlePage) {
+                s._eventsObj.addEvent('event22');
+            } 
+            if (isFromHomePageId && !isHomePage) {
+                s._eventsObj.addEvent('event20');
             }
         }
     },

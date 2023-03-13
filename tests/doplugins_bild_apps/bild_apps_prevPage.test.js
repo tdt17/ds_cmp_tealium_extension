@@ -64,13 +64,13 @@ describe('_prevPageObj', () => {
             expect(result).toBe(false);
         });
 
-        it('should return TRUE if pageName is not Homepage', function () {
+        it('should return FALSE if pageName is not Homepage', function () {
             s.pageName = 'test_pageName';
             const result = s._prevPageObj.isHomePage(s);
             expect(result).toBe(false);
         });
 
-        it('should return FALSE if pageName is Homepage', function () {
+        it('should return TRUE if pageName is Homepage', function () {
             s.pageName = 'test_pageName_20595788';
             const result = s._prevPageObj.isHomePage(s);
             expect(result).toBe(true);

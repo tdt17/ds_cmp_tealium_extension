@@ -13,6 +13,7 @@ describe('s.doPlugins()', () => {
         // Provide a fresh copy of the s-object for each test.
         s = { ...sObject };
         jest.spyOn(s, 'getPreviousValue').mockImplementation(jest.fn());
+
     });
 
     afterEach(() => {
@@ -25,7 +26,6 @@ describe('s.doPlugins()', () => {
         s.visitor = {
             version: 'test_visitor_version'
         };
-
         s.getPreviousValue.mockReturnValue('test_value');
         
         s.doPlugins(s);

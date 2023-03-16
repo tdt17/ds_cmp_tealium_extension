@@ -312,9 +312,9 @@ s._articleViewTypeObj = {
         } else if (this.isFromRecommendation(referringDomain)) {
             return 'event230,event233'; // Referrer is Outbrain Recommendation
         }  else if (!referringDomain) {
-            return 'event26'; // Dark Social
+            return 'event26,event202'; // Dark Social
         } else {
-            return 'event27'; // Other External (Referrer)
+            return 'event27,event203'; // Other External (Referrer)
         }
     },
 

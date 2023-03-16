@@ -491,12 +491,12 @@ describe('articleViewType()', () => {
         it('should return event26 (DarkSocial) if no referrer', function () {
             const noReferrerMock = jest.spyOn(s._utils, 'getDomainFromURLString').mockReturnValue('');
             const result = s._articleViewTypeObj.getExternalType(noReferrerMock);
-            expect(result).toBe('event26');
+            expect(result).toBe('event26,event202');
         });
 
         it('should return event27 (other external) in any other cases', function () {
             const result = s._articleViewTypeObj.getExternalType(anyReferrer);
-            expect(result).toBe('event27');
+            expect(result).toBe('event27,event203');
         });
     });
 

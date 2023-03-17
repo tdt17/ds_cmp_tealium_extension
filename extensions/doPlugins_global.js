@@ -286,9 +286,9 @@ s._articleViewTypeObj = {
         }
 
         if (this.isFromHome(referrer)) {
-            return 'event22'; //Home
+            return 'event22,event200'; //Home
         } else {
-            return 'event23'; //Other Internal
+            return 'event23,event201'; //Other Internal
         }
     },
 
@@ -298,7 +298,7 @@ s._articleViewTypeObj = {
         if (this.isFromSearch(referringDomain)) {
             return 'event24,event210'; //Search
         } else if (this.isFromSocial(referrer)) {
-            return 'event25'; //Social
+            return 'event25,event220'; //Social
         } else if (this.isFromBild(referringDomain) && this.isFromHome(referrer)) {
             return 'event76,event205'; // Bild home
         } else if (this.isFromBildMobile(referringDomain) && this.isFromHome(referrer)) {
@@ -306,9 +306,9 @@ s._articleViewTypeObj = {
         } else if (this.isFromAsDomain(referrer)) {
             return 'event205'; // Axel Springer Domains except bild.de
         } else if (this.isFromSecureMypass(referrer)) {
-            return 'event23'; // Login via secure.mypass
+            return 'event23,event201'; // Login via secure.mypass
         } else if (this.isFromPaypal(referrer)) {
-            return 'event23'; // After Payment via Paypal
+            return 'event23,event201'; // After Payment via Paypal
         } else if (this.isFromRecommendation(referringDomain)) {
             return 'event230,event233'; // Referrer is Outbrain Recommendation
         }  else if (!referringDomain) {
@@ -339,9 +339,13 @@ s._articleViewTypeObj = {
         const isMarketing = this.isPaidMarketing(); 
 
         if (trackingValue.startsWith('sea.')) {
-            articleViewType = 'event24,event206'; // Search
+            articleViewType = 'event24,event206,event242'; // Search
+        } else if (trackingValue.startsWith('social_paid')) {
+            articleViewType = 'event25,event206,event241'; //Social Paid Marketing
+        } else if (trackingValue.startsWith('socialmediapaid')) {
+            articleViewType = 'event25,event206,event241'; //Social Paid Marketing
         } else if (trackingValue.startsWith('social')) {
-            articleViewType = 'event25,event206'; //Social
+            articleViewType = 'event25,event220'; //Social
         } else if (trackingValue.startsWith('kooperation.article.outbrain.')) {
             articleViewType = 'event102,event230,event232'; //Outbrain Reco at Articles
         }  else if (trackingValue.startsWith('kooperation.home.outbrain.desktop.') || trackingValue.startsWith('kooperation.home.outbrain.tablet.')) {
@@ -368,7 +372,7 @@ s._articleViewTypeObj = {
     },
 
     isPageViewFromHome: function (pageViewType) {
-        const viewTypesFromHome = ['event22', 'event76', 'event77', 'event76,event205','event77,event205'];
+        const viewTypesFromHome = ['event22,event200', 'event76', 'event77', 'event76,event205','event77,event205'];
         return viewTypesFromHome.includes(pageViewType);
     },
 

@@ -384,7 +384,7 @@ describe('articleViewType()', () => {
             isFromHomeMock.mockReturnValue(true);
             const result = s._articleViewTypeObj.getInternalType('http://www.any-domain.de');
             expect(isFromHomeMock).toHaveBeenCalledWith(anyReferrer);
-            expect(result).toBe('event22');
+            expect(result).toBe('event22,event200');
         });
 
         it('should return event23 if referrer is NOT a home page', function () {
@@ -392,7 +392,7 @@ describe('articleViewType()', () => {
             isFromHomeMock.mockReturnValue(false);
             const result = s._articleViewTypeObj.getInternalType(anyReferrer);
             expect(isFromHomeMock).toHaveBeenCalledWith(anyReferrer);
-            expect(result).toBe('event23');
+            expect(result).toBe('event23,event201');
         });
 
         it('should return an empty string in case of same page redirects', function () {
@@ -440,7 +440,7 @@ describe('articleViewType()', () => {
             isFromSocialMock.mockReturnValue(true);
             const result = s._articleViewTypeObj.getExternalType(anyReferrer);
             expect(isFromSocialMock).toHaveBeenCalledWith(anyReferrer);
-            expect(result).toBe('event25');
+            expect(result).toBe('event25,event220');
         });
 
         it('should return event76,event205 if referrer is Bild desktop homepage', function () {
@@ -471,14 +471,14 @@ describe('articleViewType()', () => {
             isFromSecureMypassMock.mockReturnValue(true);
             const result = s._articleViewTypeObj.getExternalType(anyReferrer);
             expect(isFromSecureMypassMock).toHaveBeenCalledWith(anyReferrer);
-            expect(result).toBe('event23');
+            expect(result).toBe('event23,event201');
         });        
 
         it('should return event23 if referrer is from Paypal', function () {
             isFromPaypalMock.mockReturnValue(true);
             const result = s._articleViewTypeObj.getExternalType(anyReferrer);
             expect(isFromPaypalMock).toHaveBeenCalledWith(anyReferrer);
-            expect(result).toBe('event23');
+            expect(result).toBe('event23,event201');
         });
 
         it('should return event230,event233 if referrer is from Recommendation', function () {
@@ -613,13 +613,25 @@ describe('articleViewType()', () => {
         it('it should return the right event name if tracking value is of type: Search', () => {
             getTrackingValueMock.mockReturnValue('sea.');
             const result = s._articleViewTypeObj.getViewTypeByTrackingProperty();
-            expect(result).toBe('event24,event206');
+            expect(result).toBe('event24,event206,event242');
+        });
+
+        it('it should return the right event name if tracking value is of type: Social', () => {
+            getTrackingValueMock.mockReturnValue('social_paid');
+            const result = s._articleViewTypeObj.getViewTypeByTrackingProperty();
+            expect(result).toBe('event25,event206,event241');
+        });
+
+        it('it should return the right event name if tracking value is of type: Social', () => {
+            getTrackingValueMock.mockReturnValue('socialmediapaid');
+            const result = s._articleViewTypeObj.getViewTypeByTrackingProperty();
+            expect(result).toBe('event25,event206,event241');
         });
 
         it('it should return the right event name if tracking value is of type: Social', () => {
             getTrackingValueMock.mockReturnValue('social');
             const result = s._articleViewTypeObj.getViewTypeByTrackingProperty();
-            expect(result).toBe('event25,event206');
+            expect(result).toBe('event25,event220');
         });
 
         it('it should return the right event name if tracking value is of type: Outbrain Article Recommendation', () => {
@@ -692,17 +704,17 @@ describe('articleViewType()', () => {
 
     describe('isPageViewFromHome', () => {
         it('should return TRUE if page-view-type is event22', function () {
-            const result = s._articleViewTypeObj.isPageViewFromHome('event22');
+            const result = s._articleViewTypeObj.isPageViewFromHome('event22,event200');
             expect(result).toBe(true);
         });
 
         it('should return TRUE if page-view-type is event76', function () {
-            const result = s._articleViewTypeObj.isPageViewFromHome('event22');
+            const result = s._articleViewTypeObj.isPageViewFromHome('event22,event200');
             expect(result).toBe(true);
         });
 
         it('should return TRUE if page-view-type is event77', function () {
-            const result = s._articleViewTypeObj.isPageViewFromHome('event22');
+            const result = s._articleViewTypeObj.isPageViewFromHome('event22,event200');
             expect(result).toBe(true);
         });
 

@@ -179,6 +179,21 @@ describe('_setTrackingValueEvents (URL Parameter like cid)', () => {
         s._setTrackingValueEvents(s);
         expect(addEventMock).toHaveBeenCalledWith('event226');
     });      
+ 
+    it('should not set event226 if the trackingValue start with social_paid ', () => {
+        getTrackingValueMock.mockReturnValue('social_paid');
+        isSocialTrackingParameterMock.mockReturnValue(false);
 
+        s._setTrackingValueEvents(s);
+        expect(addEventMock).not.toHaveBeenCalledWith('event226');
+    }); 
+
+    it('should not set event226 if the trackingValue start with socialmediapaid ', () => {
+        getTrackingValueMock.mockReturnValue('socialmediapaid');
+        isSocialTrackingParameterMock.mockReturnValue(false);
+
+        s._setTrackingValueEvents(s);
+        expect(addEventMock).not.toHaveBeenCalledWith('event226');
+    }); 
 
 });

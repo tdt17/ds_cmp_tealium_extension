@@ -229,7 +229,7 @@ s._articleViewTypeObj = {
     },
     
     isPaidMarketing: function () {
-        const trackingChannel = ['email.','onsite.','inapp.','push.','sea.','affiliate.','social_paid.','app.','display.','career.','print.'];
+        const trackingChannel = ['email.','onsite.','inapp.','push.','sea.','affiliate.','socialmediapaid','social_paid.','app.','display.','career.','print.'];
         const trackingValue = this.getTrackingValue();
         return trackingChannel.some(item => {
             return trackingValue.indexOf(item) === 0;
@@ -238,7 +238,7 @@ s._articleViewTypeObj = {
 
     isTrackingValueOrganicSocial: function () {
         const trackingValue = this.getTrackingValue();
-        return trackingValue.startsWith('social.');
+        return trackingValue.startsWith('social') && !(trackingValue.startsWith('socialmediapaid') || trackingValue.startsWith('social_paid'))  ;
     },
 
     isFromSecureMypass: function (referrer) {

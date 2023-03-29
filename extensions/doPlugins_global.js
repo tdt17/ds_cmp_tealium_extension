@@ -496,22 +496,22 @@ s._setTrackingValueEvents = function (s) {
             const isOtherTrackingValue = isSocialTrackingParameter ? '' : trackingValuesFromQueryParameter;
             if (isSocialTrackingParameter) {
                 switch (true) {
-                case isSocialTrackingValue.includes('.telegram.'):
+                case isSocialTrackingValue.includes('telegram'):
                     s._eventsObj.addEvent('event225');
                     break;
-                case isSocialTrackingValue.includes('.instagram.'):
+                case isSocialTrackingValue.includes('instagram'):
                     s._eventsObj.addEvent('event53,event224');
                     break;
-                case isSocialTrackingValue.includes('.youtube.'):
+                case isSocialTrackingValue.includes('youtube'):
                     s._eventsObj.addEvent('event50,event223');
                     break;
-                case isSocialTrackingValue.includes('.twitter.'):
+                case isSocialTrackingValue.includes('twitter'):
                     s._eventsObj.addEvent('event51,event222');
                     break;
-                case isSocialTrackingValue.includes('.facebook.'):
+                case isSocialTrackingValue.includes('facebook'):
                     s._eventsObj.addEvent('event52,event221');
                     break;
-                case isSocialTrackingValue.includes('.linkedin.'):
+                case isSocialTrackingValue.includes('linkedin'):
                     s._eventsObj.addEvent('event227');
                     break;
                 default:

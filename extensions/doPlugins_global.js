@@ -452,7 +452,10 @@ s._setExternalReferringDomainEvents = function (s) {
             domains: ['linkedin.com', 'org.linkedin'],
             event: 'event227',
         },
-
+        {
+            domains: ['.upday.com'],
+            event: 'event204',
+        },
         {
             domains: ['xing.com', 'away.vk.com', 'www.pinterest.de', 'linkedin.android', 'ok.ru', 'mobile.ok.ru', 'www.yammer.com', 'www.netvibes.com', 'pinterest.com', 'wordpress.com', 'blogspot.com', 'lnkd.in', 'xing.android', 'vk.com', 'com.twitter.android', 'm.ok.ru', 'welt.de/instagram', 'linkin.bio'],
             event: 'event226',

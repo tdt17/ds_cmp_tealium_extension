@@ -453,6 +453,10 @@ s._setExternalReferringDomainEvents = function (s) {
             event: 'event227',
         },
         {
+            domains: ['.upday.com'],
+            event: 'event204',
+        },
+        {
             domains: ['xing.com', 'away.vk.com', 'www.pinterest.de', 'linkedin.android', 'ok.ru', 'mobile.ok.ru', 'www.yammer.com', 'www.netvibes.com', 'pinterest.com', 'wordpress.com', 'blogspot.com', 'lnkd.in', 'xing.android', 'vk.com', 'com.twitter.android', 'm.ok.ru', 'welt.de/instagram', 'linkin.bio'],
             event: 'event226',
         },
@@ -476,6 +480,7 @@ s._setExternalReferringDomainEvents = function (s) {
             });
             if (domainMatches) {
                 s._eventsObj.addEvent(event); 
+                s._articleViewType = s.eVar44 = event;
             } 
         });
     }
@@ -484,51 +489,60 @@ s._setExternalReferringDomainEvents = function (s) {
 /**
  * Set additional events with trackingValue (cid, wtrid, wtmc) context.
  */
-
+  
 s._setTrackingValueEvents = function (s) {
 
     if (s._utils.isArticlePage()) {
         const trackingValuesFromQueryParameter = s._articleViewTypeObj.getTrackingValue();
 
         if (trackingValuesFromQueryParameter) {
-            const isSocialTrackingParameter = s._articleViewTypeObj.isTrackingValueOrganicSocial();
-            const isSocialTrackingValue = isSocialTrackingParameter ? trackingValuesFromQueryParameter : '';
-            const isOtherTrackingValue = isSocialTrackingParameter ? '' : trackingValuesFromQueryParameter;
-            if (isSocialTrackingParameter) {
+            const socialTrackingParameter = s._articleViewTypeObj.isTrackingValueOrganicSocial();
+            const socialTrackingValue = socialTrackingParameter ? trackingValuesFromQueryParameter : '';
+            const otherTrackingValue = socialTrackingParameter ? '' : trackingValuesFromQueryParameter;
+            
+            if (socialTrackingParameter) {
+                let event;
                 switch (true) {
-                case isSocialTrackingValue.includes('telegram'):
-                    s._eventsObj.addEvent('event225');
+                case socialTrackingValue.includes('telegram'):
+                    event = 'event225';
                     break;
-                case isSocialTrackingValue.includes('instagram'):
-                    s._eventsObj.addEvent('event53,event224');
+                case socialTrackingValue.includes('instagram'):
+                    event = 'event53,event224';
                     break;
-                case isSocialTrackingValue.includes('youtube'):
-                    s._eventsObj.addEvent('event50,event223');
+                case socialTrackingValue.includes('youtube'):
+                    event = 'event50,event223';
                     break;
-                case isSocialTrackingValue.includes('twitter'):
-                    s._eventsObj.addEvent('event51,event222');
+                case socialTrackingValue.includes('twitter'):
+                    event = 'event51,event222';
                     break;
-                case isSocialTrackingValue.includes('facebook'):
-                    s._eventsObj.addEvent('event52,event221');
+                case socialTrackingValue.includes('facebook'):
+                    event = 'event52,event221';
                     break;
-                case isSocialTrackingValue.includes('linkedin'):
-                    s._eventsObj.addEvent('event227');
+                case socialTrackingValue.includes('linkedin'):
+                    event = 'event227';
                     break;
                 default:
-                    s._eventsObj.addEvent('event226');
+                    event = 'event226';
                 }
-            } else if (isOtherTrackingValue && isOtherTrackingValue.length > 0) {
+                s._eventsObj.addEvent(event);
+                s._articleViewType = s.eVar44 = event;
+            } 
+            
+            if (otherTrackingValue && otherTrackingValue.length > 0) {
+                let event;
                 switch (true) {
-                case isOtherTrackingValue.startsWith('upday'):
-                    s._eventsObj.addEvent('event204');
+                case otherTrackingValue.startsWith('upday'):
+                    event = 'event204';
                     break;
-                case isOtherTrackingValue.startsWith('kooperation.article.outbrain.'):
-                    s._eventsObj.addEvent('event102');
+                case otherTrackingValue.startsWith('kooperation.article.outbrain.'):
+                    event = 'event102';
                     break;
-                case isOtherTrackingValue.startsWith('kooperation.home.outbrain.'):
-                    s._eventsObj.addEvent('event231');
+                case otherTrackingValue.startsWith('kooperation.home.outbrain.'):
+                    event = 'event231';
                     break;
                 }
+                s._eventsObj.addEvent(event);
+                s._articleViewType = s.eVar44 = event;
             }
         }
     }

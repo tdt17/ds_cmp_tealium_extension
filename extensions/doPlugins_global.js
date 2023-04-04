@@ -480,7 +480,7 @@ s._setExternalReferringDomainEvents = function (s) {
             });
             if (domainMatches) {
                 s._eventsObj.addEvent(event); 
-                s._articleViewType = s.eVar44 = event;
+                s._articleViewType = s.eVar44 += event;
             } 
         });
     }
@@ -525,7 +525,7 @@ s._setTrackingValueEvents = function (s) {
                     event = 'event226';
                 }
                 s._eventsObj.addEvent(event);
-                s._articleViewType = s.eVar44 = event;
+                s._articleViewType = s.eVar44 += ',' + event;
             } 
             
             if (otherTrackingValue && otherTrackingValue.length > 0) {
@@ -542,7 +542,7 @@ s._setTrackingValueEvents = function (s) {
                     break;
                 }
                 s._eventsObj.addEvent(event);
-                s._articleViewType = s.eVar44 = event;
+                s._articleViewType = s.eVar44 += ',' + event;
             }
         }
     }

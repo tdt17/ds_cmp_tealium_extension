@@ -130,6 +130,12 @@ s._utils = {
     },
     getReferringDomain: function () {
         return this.getDomainFromURLString(this.getReferrer());
+    },
+    isSessionStart: function () {
+        return window.utag.data['cp.utag_main_t_ss'] === '1' || window.utag.data['cp.utag_main_myPVCounter'] === '1' ;
+    },
+    isWithoutReferrer: function () {
+        return window.document.referrer === '';
     }
 };
 
@@ -260,6 +266,16 @@ s._articleViewTypeObj = {
         const trackingValue = this.getTrackingValue();
 
         return trackingValue.includes('kooperation.article.outbrain.');
+    },
+
+    isDirect: function () {
+        const noReferrer = s._utils.isWithoutReferrer();
+        const sessionStart = s._utils.isSessionStart();
+        
+        if (noReferrer && sessionStart) {
+            return;
+        }
+
     },
 
     isValidURL: function (urlString) {

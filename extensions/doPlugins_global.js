@@ -480,7 +480,7 @@ s._setExternalReferringDomainEvents = function (s) {
             });
             if (domainMatches) {
                 s._eventsObj.addEvent(event); 
-                s._articleViewType = s.eVar44 += event;
+                s._articleViewType = s.eVar44 += ',' + event;
             } 
         });
     }

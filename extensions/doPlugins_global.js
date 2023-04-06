@@ -133,9 +133,6 @@ s._utils = {
     },
     isSessionStart: function () {
         return (window.utag.data['cp.utag_main_t_ss'] === '1');
-    },
-    isWithoutReferrer: function () {
-        return window.document.referrer === '';
     }
 };
 
@@ -268,8 +265,13 @@ s._articleViewTypeObj = {
         return trackingValue.includes('kooperation.article.outbrain.');
     },
 
-    isDirect: function () {
-        const noReferrer = s._utils.isWithoutReferrer();
+    isWithoutReferrer: function (referrer) {
+        referrer = s._utils.getReferrer(referrer);
+        return referrer === '';
+    },
+
+    isDirect: function (referrer) {
+        const noReferrer = this.isWithoutReferrer(referrer);
         const sessionStart = s._utils.isSessionStart();
         
         return (noReferrer && sessionStart);

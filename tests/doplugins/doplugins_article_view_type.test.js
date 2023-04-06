@@ -328,39 +328,57 @@ describe('articleViewType()', () => {
         });
     });
 
+    describe('isWithoutReferrer()', () => {
+        let referrerMock;
+        beforeEach(() => {
+            referrerMock = jest.spyOn(s._utils, 'getReferrer');
+        });
+
+        it('should return TRUE if no referrer', () => {
+            const referrer = referrerMock.mockReturnValue('');
+            const result = s._articleViewTypeObj.isWithoutReferrer(referrer);
+            expect(result).toBe(true);
+        });
+
+        it('should return FALSE if any referrer', () => {
+            const referrer = referrerMock.mockReturnValue('any-referrer');
+            const result = s._articleViewTypeObj.isWithoutReferrer(referrer);
+            expect(result).toBe(false);
+        });
+    });    
+
     describe('isDirect()', () => {
         let isSessionStartMock;
+        let referrerMock;
         beforeEach(() => {
             isSessionStartMock = jest.spyOn(s._utils, 'isSessionStart');
+            referrerMock = jest.spyOn(s._articleViewTypeObj, 'isWithoutReferrer');
         });
 
         it('should return TRUE if no referrer at session start', () => {
             isSessionStartMock.mockReturnValue(true);
-            //window.utag.data['cp.utag_main_t_ss'] === '1';
-            const referringDomain = '';
-            const result = s._articleViewTypeObj.isDirect(referringDomain);
+            const referrer = referrerMock.mockReturnValue(true);
+            const result = s._articleViewTypeObj.isDirect(referrer);
             expect(result).toBe(true);
         });
 
         it('should return FALSE if any referrer at session start', () => {
+            const referrer = referrerMock.mockReturnValue(false);
             isSessionStartMock.mockReturnValue(true);
-            //window.utag.data['cp.utag_main_t_ss'] === '1';
-            const referringDomain = 'any-domain.de';
-            const result = s._articleViewTypeObj.isDirect(referringDomain);
+            const result = s._articleViewTypeObj.isDirect(referrer);
             expect(result).toBe(false);
         });
 
         it('should return FALSE if no referrer and not session start', () => {
             isSessionStartMock.mockReturnValue(false);
-            //window.utag.data['cp.utag_main_t_ss'] === '2';
-            const referringDomain = '';
-            const result = s._articleViewTypeObj.isDirect(referringDomain);
+            const referrer = referrerMock.mockReturnValue(true);
+            const result = s._articleViewTypeObj.isDirect(referrer);
             expect(result).toBe(false);
         });
 
         it('should return FALSE if no referrer and no session start cookie', () => {
-            const referringDomain = '';
-            const result = s._articleViewTypeObj.isDirect(referringDomain);
+            const referrer = referrerMock.mockReturnValue(true);
+            const result = s._articleViewTypeObj.isDirect(referrer);
             expect(result).toBe(false);
         });
     });

@@ -132,7 +132,7 @@ s._utils = {
         return this.getDomainFromURLString(this.getReferrer());
     },
     isSessionStart: function () {
-        return window.utag.data['cp.utag_main_t_ss'] === '1' || window.utag.data['cp.utag_main_myPVCounter'] === '1' ;
+        return (window.utag.data['cp.utag_main_t_ss'] === '1');
     },
     isWithoutReferrer: function () {
         return window.document.referrer === '';
@@ -272,9 +272,7 @@ s._articleViewTypeObj = {
         const noReferrer = s._utils.isWithoutReferrer();
         const sessionStart = s._utils.isSessionStart();
         
-        if (noReferrer && sessionStart) {
-            return;
-        }
+        return (noReferrer && sessionStart);
 
     },
 
@@ -327,7 +325,9 @@ s._articleViewTypeObj = {
             return 'event23,event201'; // After Payment via Paypal
         } else if (this.isFromRecommendation(referringDomain)) {
             return 'event230,event233'; // Referrer is Outbrain Recommendation
-        }  else if (!referringDomain) {
+        } else if (this.isDirect(referrer)) {
+            return 'event207'; // no Referrer at Session Start
+        } else if (!referringDomain) {
             return 'event26,event202'; // Dark Social
         } else {
             return 'event27,event203'; // Other External (Referrer)

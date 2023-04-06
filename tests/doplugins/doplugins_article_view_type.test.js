@@ -328,6 +328,43 @@ describe('articleViewType()', () => {
         });
     });
 
+    describe('isDirect()', () => {
+        let isSessionStartMock;
+        beforeEach(() => {
+            isSessionStartMock = jest.spyOn(s._utils, 'isSessionStart');
+        });
+
+        it('should return TRUE if no referrer at session start', () => {
+            isSessionStartMock.mockReturnValue(true);
+            //window.utag.data['cp.utag_main_t_ss'] === '1';
+            const referringDomain = '';
+            const result = s._articleViewTypeObj.isDirect(referringDomain);
+            expect(result).toBe(true);
+        });
+
+        it('should return FALSE if any referrer at session start', () => {
+            isSessionStartMock.mockReturnValue(true);
+            //window.utag.data['cp.utag_main_t_ss'] === '1';
+            const referringDomain = 'any-domain.de';
+            const result = s._articleViewTypeObj.isDirect(referringDomain);
+            expect(result).toBe(false);
+        });
+
+        it('should return FALSE if no referrer and not session start', () => {
+            isSessionStartMock.mockReturnValue(false);
+            //window.utag.data['cp.utag_main_t_ss'] === '2';
+            const referringDomain = '';
+            const result = s._articleViewTypeObj.isDirect(referringDomain);
+            expect(result).toBe(false);
+        });
+
+        it('should return FALSE if no referrer and no session start cookie', () => {
+            const referringDomain = '';
+            const result = s._articleViewTypeObj.isDirect(referringDomain);
+            expect(result).toBe(false);
+        });
+    });
+
     describe('isTrackingValueOrganicSocial()', () => {
         let getTrackingValueMock;
         beforeEach(() => {
@@ -415,6 +452,7 @@ describe('articleViewType()', () => {
         let isFromAsDomainMock;
         let isFromPaypalMock;
         let isFromRecommendationMock;
+        let isDirectMock;
 
         beforeEach(() => {
             jest.spyOn(s._utils, 'getDomainFromURLString').mockReturnValue(anyReferrerDomain);
@@ -427,6 +465,7 @@ describe('articleViewType()', () => {
             isFromAsDomainMock = jest.spyOn(s._articleViewTypeObj, 'isFromAsDomain').mockReturnValue(false);
             isFromPaypalMock = jest.spyOn(s._articleViewTypeObj, 'isFromPaypal').mockReturnValue(false);
             isFromRecommendationMock = jest.spyOn(s._articleViewTypeObj, 'isFromRecommendation').mockReturnValue(false);
+            isDirectMock = jest.spyOn(s._articleViewTypeObj, 'isDirect').mockReturnValue(false);
         });
 
         it('should return event24 if referrer is from search engine', function () {
@@ -486,6 +525,12 @@ describe('articleViewType()', () => {
             const result = s._articleViewTypeObj.getExternalType(anyReferrerDomain);
             expect(isFromRecommendationMock).toHaveBeenCalledWith(anyReferrerDomain);
             expect(result).toBe('event230,event233');
+        });
+
+        it('should return event207 (Direct) if no referrer at session start', function () {
+            isDirectMock.mockReturnValue(true);
+            const result = s._articleViewTypeObj.getExternalType('');
+            expect(result).toBe('event207');
         });
 
         it('should return event26 (DarkSocial) if no referrer', function () {

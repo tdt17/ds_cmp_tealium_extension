@@ -647,6 +647,14 @@ s._bildPageNameObj = {
         return s._utils.setSportDatencenter();
     },
 
+    isAdWall: function () {
+        return s._utils.getDocType() === 'adwall';
+    },
+
+    isErrorPage: function () {
+        return s._utils.getDocType() === 'errorpage';
+    },
+
     setPageName: function (s) {
         if (this.isHome()) {
             window.utag.data.page_mapped_doctype_for_pagename = 'home';
@@ -669,7 +677,11 @@ s._bildPageNameObj = {
             s.prop3 = window.utag.data.page_document_type;
             s.pageName = window.utag.data.page_document_type + ' : ' +  window.utag.data['page_id'];
             s.eVar4 = window.utag.data['dom.pathname'] == '/' ? window.utag.data['dom.pathname'] + 'home' : window.utag.data['dom.pathname'];
+        } else if (this.isAdWall() || this.isErrorPage()) {
+            const pageIdSubstitute = window.utag.data._pathname1 ? window.utag.data._pathname1 :  'no-entry';
+            s.pageName = window.utag.data.page_document_type + ' : ' + pageIdSubstitute;
         }
+
     },
 
 };

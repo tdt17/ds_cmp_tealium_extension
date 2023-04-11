@@ -126,13 +126,61 @@ describe('_bildPageNameObj', () => {
 
     });
 
+    describe('isAdWall', () => {
+        let getDocTypeMock;
+
+        beforeEach(() => {
+            getDocTypeMock = jest.spyOn(s._utils, 'getDocType').mockImplementation();
+        });
+
+        it('should be false if page_mapped_doctype_for_pagename is not adwall', () => {
+            getDocTypeMock.mockReturnValue('any-non-article-type');
+
+            const returnValue = s._bildPageNameObj.isAdWall();
+            expect(returnValue).toBe(false);
+        });
+
+        it('should be true if page_mapped_doctype_for_pagename is adwall', () => {
+            getDocTypeMock.mockReturnValue('adwall');
+
+            const returnValue = s._bildPageNameObj.isAdWall();
+            expect(returnValue).toBe(true);
+        });
+    });
+
+    describe('isErrorPage', () => {
+        let getDocTypeMock;
+
+        beforeEach(() => {
+            getDocTypeMock = jest.spyOn(s._utils, 'getDocType').mockImplementation();
+        });
+
+        it('should be false if page_mapped_doctype_for_pagename is not ErrorPage', () => {
+            getDocTypeMock.mockReturnValue('any-non-article-type');
+
+            const returnValue = s._bildPageNameObj.isErrorPage();
+            expect(returnValue).toBe(false);
+        });
+
+        it('should be true if page_mapped_doctype_for_pagename is ErrorPage', () => {
+            getDocTypeMock.mockReturnValue('errorpage');
+
+            const returnValue = s._bildPageNameObj.isErrorPage();
+            expect(returnValue).toBe(true);
+        });
+    });
+
     describe('setPageName', () => {
         let isHome;
         let isLive;
+        let isAdWall;
+        let isErrorPage;
 
         beforeEach(() => {
             isHome = jest.spyOn(s._bildPageNameObj, 'isHome').mockReturnValue(false);
             isLive = jest.spyOn(s._bildPageNameObj, 'isLive').mockReturnValue(false);
+            isAdWall = jest.spyOn(s._bildPageNameObj, 'isAdWall').mockReturnValue(false);
+            isErrorPage = jest.spyOn(s._bildPageNameObj, 'isErrorPage').mockReturnValue(false);
         });
 
         afterEach(() => {
@@ -194,6 +242,24 @@ describe('_bildPageNameObj', () => {
             expect(s.eVar3).toBe('sportdaten');
             expect(s.prop3).toBe('sportdaten');
             expect(s.pageName).toBe('sportdaten : ' + window.utag.data.page_id);
+        });
+
+        it('should set relevant data if isAdWall is true', () => {
+            window.utag.data._pathname1 = 'any-pathname1';
+            window.utag.data.page_document_type = 'adwall';
+            isAdWall.mockReturnValue(true);
+            s._bildPageNameObj.setPageName(s);
+
+            expect(s.pageName).toBe('adwall : any-pathname1');
+        });
+
+        it('should set relevant data if isErrorPage is true', () => {
+            window.utag.data._pathname1 = 'any-pathname1';
+            window.utag.data.page_document_type = 'errorpage';
+            isErrorPage.mockReturnValue(true);
+            s._bildPageNameObj.setPageName(s);
+
+            expect(s.pageName).toBe('errorpage : any-pathname1');
         });
     });
 });

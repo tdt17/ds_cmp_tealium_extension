@@ -328,6 +328,61 @@ describe('articleViewType()', () => {
         });
     });
 
+    describe('isWithoutReferrer()', () => {
+        let referrerMock;
+        beforeEach(() => {
+            referrerMock = jest.spyOn(s._utils, 'getReferrer');
+        });
+
+        it('should return TRUE if no referrer', () => {
+            const referrer = referrerMock.mockReturnValue('');
+            const result = s._articleViewTypeObj.isWithoutReferrer(referrer);
+            expect(result).toBe(true);
+        });
+
+        it('should return FALSE if any referrer', () => {
+            const referrer = referrerMock.mockReturnValue('any-referrer');
+            const result = s._articleViewTypeObj.isWithoutReferrer(referrer);
+            expect(result).toBe(false);
+        });
+    });    
+
+    describe('isDirect()', () => {
+        let isSessionStartMock;
+        let referrerMock;
+        beforeEach(() => {
+            isSessionStartMock = jest.spyOn(s._utils, 'isSessionStart');
+            referrerMock = jest.spyOn(s._articleViewTypeObj, 'isWithoutReferrer');
+        });
+
+        it('should return TRUE if no referrer at session start', () => {
+            isSessionStartMock.mockReturnValue(true);
+            const referrer = referrerMock.mockReturnValue(true);
+            const result = s._articleViewTypeObj.isDirect(referrer);
+            expect(result).toBe(true);
+        });
+
+        it('should return FALSE if any referrer at session start', () => {
+            const referrer = referrerMock.mockReturnValue(false);
+            isSessionStartMock.mockReturnValue(true);
+            const result = s._articleViewTypeObj.isDirect(referrer);
+            expect(result).toBe(false);
+        });
+
+        it('should return FALSE if no referrer and not session start', () => {
+            isSessionStartMock.mockReturnValue(false);
+            const referrer = referrerMock.mockReturnValue(true);
+            const result = s._articleViewTypeObj.isDirect(referrer);
+            expect(result).toBe(false);
+        });
+
+        it('should return FALSE if no referrer and no session start cookie', () => {
+            const referrer = referrerMock.mockReturnValue(true);
+            const result = s._articleViewTypeObj.isDirect(referrer);
+            expect(result).toBe(false);
+        });
+    });
+
     describe('isTrackingValueOrganicSocial()', () => {
         let getTrackingValueMock;
         beforeEach(() => {
@@ -415,6 +470,7 @@ describe('articleViewType()', () => {
         let isFromAsDomainMock;
         let isFromPaypalMock;
         let isFromRecommendationMock;
+        let isDirectMock;
 
         beforeEach(() => {
             jest.spyOn(s._utils, 'getDomainFromURLString').mockReturnValue(anyReferrerDomain);
@@ -427,6 +483,7 @@ describe('articleViewType()', () => {
             isFromAsDomainMock = jest.spyOn(s._articleViewTypeObj, 'isFromAsDomain').mockReturnValue(false);
             isFromPaypalMock = jest.spyOn(s._articleViewTypeObj, 'isFromPaypal').mockReturnValue(false);
             isFromRecommendationMock = jest.spyOn(s._articleViewTypeObj, 'isFromRecommendation').mockReturnValue(false);
+            isDirectMock = jest.spyOn(s._articleViewTypeObj, 'isDirect').mockReturnValue(false);
         });
 
         it('should return event24 if referrer is from search engine', function () {
@@ -486,6 +543,12 @@ describe('articleViewType()', () => {
             const result = s._articleViewTypeObj.getExternalType(anyReferrerDomain);
             expect(isFromRecommendationMock).toHaveBeenCalledWith(anyReferrerDomain);
             expect(result).toBe('event230,event233');
+        });
+
+        it('should return event207 (Direct) if no referrer at session start', function () {
+            isDirectMock.mockReturnValue(true);
+            const result = s._articleViewTypeObj.getExternalType('');
+            expect(result).toBe('event207');
         });
 
         it('should return event26 (DarkSocial) if no referrer', function () {

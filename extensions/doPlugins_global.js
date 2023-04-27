@@ -310,6 +310,7 @@ s._articleViewTypeObj = {
 
     getExternalType: function (referrer) {
         const referringDomain = s._utils.getDomainFromURLString(referrer);
+        const isSessionStart = s._utils.isSessionStart();
 
         if (this.isFromSearch(referringDomain)) {
             return 'event24,event210'; //Search
@@ -321,10 +322,10 @@ s._articleViewTypeObj = {
             return 'event77,event205'; // Bild mobile home
         } else if (this.isFromAsDomain(referrer)) {
             return 'event205'; // Axel Springer Domains except bild.de
-        } else if (this.isFromSecureMypass(referrer)) {
-            return 'event23,event201'; // Login via secure.mypass
-        } else if (this.isFromPaypal(referrer)) {
-            return 'event23,event201'; // After Payment via Paypal
+        } else if ((this.isFromSecureMypass(referrer)||this.isFromPaypal(referrer)) && isSessionStart) {
+            return 'event208'; // Session start via secure.mypass or paypal
+        } else if (this.isFromSecureMypass(referrer)||this.isFromPaypal(referrer)) {
+            return 'event23,event201'; // Login via secure.mypass during session
         } else if (this.isFromRecommendation(referringDomain)) {
             return 'event230,event233'; // Referrer is Outbrain Recommendation
         } else if (this.isDirect(referrer)) {

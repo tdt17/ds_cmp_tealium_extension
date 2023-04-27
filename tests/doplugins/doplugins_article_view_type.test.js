@@ -471,9 +471,11 @@ describe('articleViewType()', () => {
         let isFromPaypalMock;
         let isFromRecommendationMock;
         let isDirectMock;
+        let isSessionStartMock;
 
         beforeEach(() => {
             jest.spyOn(s._utils, 'getDomainFromURLString').mockReturnValue(anyReferrerDomain);
+            jest.spyOn(s._utils, 'isSessionStart').mockReturnValue(true);
             isFromSearchMock = jest.spyOn(s._articleViewTypeObj, 'isFromSearch').mockReturnValue(false);
             isFromSocialMock = jest.spyOn(s._articleViewTypeObj, 'isFromSocial').mockReturnValue(false);
             isFromBildMock = jest.spyOn(s._articleViewTypeObj, 'isFromBild').mockReturnValue(false);
@@ -484,6 +486,7 @@ describe('articleViewType()', () => {
             isFromPaypalMock = jest.spyOn(s._articleViewTypeObj, 'isFromPaypal').mockReturnValue(false);
             isFromRecommendationMock = jest.spyOn(s._articleViewTypeObj, 'isFromRecommendation').mockReturnValue(false);
             isDirectMock = jest.spyOn(s._articleViewTypeObj, 'isDirect').mockReturnValue(false);
+            isSessionStartMock = jest.spyOn(s._utils, 'isSessionStart').mockReturnValue(false);
         });
 
         it('should return event24 if referrer is from search engine', function () {
@@ -522,6 +525,14 @@ describe('articleViewType()', () => {
             isFromAsDomainMock.mockReturnValue(true);
             const result = s._articleViewTypeObj.getExternalType(anyReferrer);
             expect(result).toBe('event205');
+        });
+
+        it('should return event208 if referrer is from Paypal and is session start ', function () {
+            isFromPaypalMock.mockReturnValue(true);
+            isSessionStartMock.mockReturnValue(true);
+            const result = s._articleViewTypeObj.getExternalType(anyReferrer);
+            expect(isFromPaypalMock).toHaveBeenCalledWith(anyReferrer);
+            expect(result).toBe('event208');
         });
 
         it('should return event23 if referrer is from secure mypass (login/register)', function () {

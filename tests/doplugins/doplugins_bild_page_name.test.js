@@ -167,20 +167,44 @@ describe('_bildPageNameObj', () => {
 
             const returnValue = s._bildPageNameObj.isErrorPage();
             expect(returnValue).toBe(true);
-        });
+        });    
     });
+
+    describe('isSearchPage', () => {
+        let getDocTypeMock;
+
+        beforeEach(() => {
+            getDocTypeMock = jest.spyOn(s._utils, 'getDocType').mockImplementation();
+        });
+
+        it('should be false if page_mapped_doctype_for_pagename is not SearchPage', () => {
+            getDocTypeMock.mockReturnValue('any-non-article-type');
+
+            const returnValue = s._bildPageNameObj.isSearchPage();
+            expect(returnValue).toBe(false);
+        });
+
+        it('should be true if page_mapped_doctype_for_pagename is SearchPage', () => {
+            getDocTypeMock.mockReturnValue('search');
+
+            const returnValue = s._bildPageNameObj.isSearchPage();
+            expect(returnValue).toBe(true);
+        });    
+    });   
 
     describe('setPageName', () => {
         let isHome;
         let isLive;
         let isAdWall;
         let isErrorPage;
+        let isSearchPage;
 
         beforeEach(() => {
             isHome = jest.spyOn(s._bildPageNameObj, 'isHome').mockReturnValue(false);
             isLive = jest.spyOn(s._bildPageNameObj, 'isLive').mockReturnValue(false);
             isAdWall = jest.spyOn(s._bildPageNameObj, 'isAdWall').mockReturnValue(false);
             isErrorPage = jest.spyOn(s._bildPageNameObj, 'isErrorPage').mockReturnValue(false);
+            isSearchPage = jest.spyOn(s._bildPageNameObj, 'isSearchPage').mockReturnValue(false);
         });
 
         afterEach(() => {
@@ -261,5 +285,12 @@ describe('_bildPageNameObj', () => {
 
             expect(s.pageName).toBe('errorpage : any-pathname1');
         });
+
+        it('should set relevant data if isSearchPage is true', () => {
+            window.utag.data.page_document_type = 'search';
+            isSearchPage.mockReturnValue(true);
+            s._bildPageNameObj.setPageName(s);
+            expect(s.pageName).toBe('search : search');
+        });        
     });
 });

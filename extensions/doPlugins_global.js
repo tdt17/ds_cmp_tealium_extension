@@ -673,6 +673,10 @@ s._bildPageNameObj = {
         return s._utils.getDocType() === 'errorpage';
     },
 
+    isSearchPage: function () {
+        return s._utils.getDocType() === 'search';
+    },
+
     setPageName: function (s) {
         if (this.isHome()) {
             window.utag.data.page_mapped_doctype_for_pagename = 'home';
@@ -698,6 +702,8 @@ s._bildPageNameObj = {
         } else if (this.isAdWall() || this.isErrorPage()) {
             const pageIdSubstitute = window.utag.data._pathname1 ? window.utag.data._pathname1 :  'no-entry';
             s.pageName = window.utag.data.page_document_type + ' : ' + pageIdSubstitute;
+        } else if (this.isSearchPage()) {
+            s.pageName = window.utag.data.page_document_type + ' : ' + window.utag.data.page_document_type;
         }
 
     },

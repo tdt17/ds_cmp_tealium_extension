@@ -1,5 +1,5 @@
 const sObject = require('../../extensions/doPlugins_global');
-const {createWindowMock} = require('../mocks/browserMocks');
+const { createWindowMock } = require('../mocks/browserMocks');
 
 describe('articleViewType()', () => {
     let s;
@@ -10,7 +10,7 @@ describe('articleViewType()', () => {
             .mockImplementation(() => (windowMock));
 
         // Provide a fresh copy of the s-object for each test.
-        s = {...sObject};
+        s = { ...sObject };
     });
 
     afterEach(() => {
@@ -69,7 +69,7 @@ describe('articleViewType()', () => {
 
     describe('isPaidMarketing()', () => {
         it('should return TRUE if trackingChannel is paid', function () {
-            const trackingChannel = ['email.','onsite.','inapp.','push.','sea.','affiliate.','social_paid.','app.','display.','career.','print.'];
+            const trackingChannel = ['email.', 'onsite.', 'inapp.', 'push.', 'sea.', 'affiliate.', 'social_paid.', 'app.', 'display.', 'career.', 'print.'];
             trackingChannel.forEach((item) => {
                 const trackingValue = jest.spyOn(s._articleViewTypeObj, 'getTrackingValue').mockReturnValue(item);
                 const result = s._articleViewTypeObj.isPaidMarketing(trackingValue);
@@ -185,18 +185,18 @@ describe('articleViewType()', () => {
         const anyReferrer = 'https://any-referrer-domain.com/any-path';
         const paypalDomains = 'paypal.com';
         let getDomainFromURLStringMock;
-    
+
         beforeEach(() => {
             getDomainFromURLStringMock = jest.spyOn(s._utils, 'getDomainFromURLString').mockReturnValue('');
         });
-    
+
         it('should return TRUE if referrer is from paypal (came back after payment)', function () {
             getDomainFromURLStringMock.mockReturnValue(paypalDomains);
             const result = s._articleViewTypeObj.isFromPaypal(anyReferrer);
             expect(getDomainFromURLStringMock).toHaveBeenLastCalledWith(anyReferrer);
             expect(result).toBe(true);
         });
-    
+
         it('should return FALSE if referrer is NOT from paypal (came back after payment)', function () {
             getDomainFromURLStringMock.mockReturnValue('any-other-domain.com');
             const result = s._articleViewTypeObj.isFromPaypal(anyReferrer);
@@ -209,17 +209,17 @@ describe('articleViewType()', () => {
         const anyReferrer = 'https://any-referrer-domain.com/any-path';
         const asDomains = 'fitbook.de';
         let getDomainFromURLStringMock;
-    
+
         beforeEach(() => {
             getDomainFromURLStringMock = jest.spyOn(s._utils, 'getDomainFromURLString').mockReturnValue('');
         });
-    
+
         it('should return TRUE if referrer is from internal Domain (except bild.de but like from fitbook.de)', function () {
             getDomainFromURLStringMock.mockReturnValue(asDomains);
             const result = s._articleViewTypeObj.isFromAsDomain(asDomains);
             expect(result).toBe(true);
         });
-    
+
         it('should return FALSE if referrer is NOT from internal Domain (except bild.de but like from fitbook.de)', function () {
             getDomainFromURLStringMock.mockReturnValue(anyReferrer);
             const result = s._articleViewTypeObj.isFromAsDomain(anyReferrer);
@@ -345,7 +345,7 @@ describe('articleViewType()', () => {
             const result = s._articleViewTypeObj.isWithoutReferrer(referrer);
             expect(result).toBe(false);
         });
-    });    
+    });
 
     describe('isDirect()', () => {
         let isSessionStartMock;
@@ -418,42 +418,48 @@ describe('articleViewType()', () => {
 
         it('should return FALSE if referring page is NOT the same as current page', function () {
             window.document.location.pathname = anyPathname;
-            const referrer = bildBaseURL + anyOtherPathname ;
+            const referrer = bildBaseURL + anyOtherPathname;
 
             const result = s._articleViewTypeObj.isSamePageRedirect(referrer);
             expect(result).toBe(false);
         });
     });
-/*
-    describe('isNavigated', () => {
+
+    describe.only('isNavigated', () => {
+
+        beforeEach(() => {
+            window.performance = {
+                getEntriesByType: jest.fn().mockReturnValue([])
+            };
+        });
 
         it('should return TRUE if window.performance.navigation (depricated) is zero', function () {
-            window.performance.navigation.type = 0;
+            window.performance.navigation = { type: 0 };
 
             const result = s._articleViewTypeObj.isNavigated();
             expect(result).toBe(true);
         });
 
         it('should return TRUE if window.performance is navigate', function () {
-            window.performance.getEntriesByType('navigation')[0].type = 'navigate';
+            window.performance.getEntriesByType.mockReturnValue([{ type: 'navigate' }]);
 
             const result = s._articleViewTypeObj.isNavigated();
             expect(result).toBe(true);
         });
 
         it('should return FALSE if window.performance.navigation (depricated) is NOT zero', function () {
-            window.performance.navigation.type = 1;
+            window.performance.navigation = { type: 1 };
             const result = s._articleViewTypeObj.isNavigated();
             expect(result).toBe(false);
         });
 
         it('should return FALSE if window.performance is reload', function () {
-            window.performance.getEntriesByType('navigation')[0].type = 'reload';
+            window.performance.getEntriesByType.mockReturnValue([{ type: 'reload' }]);
 
             const result = s._articleViewTypeObj.isNavigated();
-            expect(result).toBe(true);
+            expect(result).toBe(false);
         });
-    });*/
+    });
 
     describe('getInternalType()', () => {
         let isFromHomeMock;
@@ -572,7 +578,7 @@ describe('articleViewType()', () => {
             const result = s._articleViewTypeObj.getExternalType(anyReferrer);
             expect(isFromSecureMypassMock).toHaveBeenCalledWith(anyReferrer);
             expect(result).toBe('event23,event201');
-        });        
+        });
 
         it('should return event23 if referrer is from Paypal', function () {
             isFromPaypalMock.mockReturnValue(true);
@@ -709,7 +715,7 @@ describe('articleViewType()', () => {
 
         beforeEach(() => {
             getTrackingValueMock = jest.spyOn(s._articleViewTypeObj, 'getTrackingValue').mockReturnValue('');
-            isMarketingMock = jest.spyOn(s._articleViewTypeObj, 'isPaidMarketing').mockReturnValue(true); 
+            isMarketingMock = jest.spyOn(s._articleViewTypeObj, 'isPaidMarketing').mockReturnValue(true);
         });
 
         afterEach(() => {
@@ -779,7 +785,7 @@ describe('articleViewType()', () => {
             s._articleViewType = 'any-view-type';
             s._articleViewTypeObj.setPageSourceAndAgeForCheckout(s);
 
-            expect(window.utag.loader.SC).toHaveBeenCalledWith('utag_main', {'articleview': s._articleViewType + ';exp-session'});
+            expect(window.utag.loader.SC).toHaveBeenCalledWith('utag_main', { 'articleview': s._articleViewType + ';exp-session' });
             expect(window.utag.data['cp.utag_main_articleview']).toBe(s._articleViewType);
         });
 
@@ -787,7 +793,7 @@ describe('articleViewType()', () => {
             window.utag.data.page_age = 'any-publication-age';
             s._articleViewTypeObj.setPageSourceAndAgeForCheckout(s);
 
-            expect(window.utag.loader.SC).toHaveBeenCalledWith('utag_main', {'pa': window.utag.data.page_age + ';exp-session'});
+            expect(window.utag.loader.SC).toHaveBeenCalledWith('utag_main', { 'pa': window.utag.data.page_age + ';exp-session' });
             expect(window.utag.data['cp.utag_main_pa']).toBe(window.utag.data.page_age);
         });
 
@@ -795,7 +801,7 @@ describe('articleViewType()', () => {
             window.utag.data.page_datePublication_age = 'any-publication-age';
             s._articleViewTypeObj.setPageSourceAndAgeForCheckout(s);
 
-            expect(window.utag.loader.SC).toHaveBeenCalledWith('utag_main', {'pa': window.utag.data.page_datePublication_age + ';exp-session'});
+            expect(window.utag.loader.SC).toHaveBeenCalledWith('utag_main', { 'pa': window.utag.data.page_datePublication_age + ';exp-session' });
             expect(window.utag.data['cp.utag_main_pa']).toBe(window.utag.data.page_datePublication_age);
         });
 
@@ -803,7 +809,7 @@ describe('articleViewType()', () => {
             window.utag.data.screen_agePublication = 'any-publication-age';
             s._articleViewTypeObj.setPageSourceAndAgeForCheckout(s);
 
-            expect(window.utag.loader.SC).toHaveBeenCalledWith('utag_main', {'pa': window.utag.data.screen_agePublication + ';exp-session'});
+            expect(window.utag.loader.SC).toHaveBeenCalledWith('utag_main', { 'pa': window.utag.data.screen_agePublication + ';exp-session' });
             expect(window.utag.data['cp.utag_main_pa']).toBe(window.utag.data.screen_agePublication);
         });
     });

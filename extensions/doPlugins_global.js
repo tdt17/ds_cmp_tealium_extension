@@ -295,13 +295,23 @@ s._articleViewTypeObj = {
         }
     },
 
+    isNavigated: function(){
+        return ((window.performance.navigation && window.performance.navigation.type === 0) ||
+              window.performance
+                  .getEntriesByType('navigation')
+                  .map((nav) => nav.type)
+                  .includes('navigate')
+        );
+    },
+    
+
     getInternalType: function (referrer) {
         // Check if page view was caused by a viewport switch
         if (this.isSamePageRedirect(referrer)) {
             return '';
         }
 
-        if (this.isFromHome(referrer)) {
+        if (this.isFromHome(referrer) && this.isNavigated()) {
             return 'event22,event200'; //Home
         } else {
             return 'event23,event201'; //Other Internal

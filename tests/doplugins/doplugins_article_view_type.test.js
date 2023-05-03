@@ -424,19 +424,52 @@ describe('articleViewType()', () => {
             expect(result).toBe(false);
         });
     });
+/*
+    describe('isNavigated', () => {
+
+        it('should return TRUE if window.performance.navigation (depricated) is zero', function () {
+            window.performance.navigation.type = 0;
+
+            const result = s._articleViewTypeObj.isNavigated();
+            expect(result).toBe(true);
+        });
+
+        it('should return TRUE if window.performance is navigate', function () {
+            window.performance.getEntriesByType('navigation')[0].type = 'navigate';
+
+            const result = s._articleViewTypeObj.isNavigated();
+            expect(result).toBe(true);
+        });
+
+        it('should return FALSE if window.performance.navigation (depricated) is NOT zero', function () {
+            window.performance.navigation.type = 1;
+            const result = s._articleViewTypeObj.isNavigated();
+            expect(result).toBe(false);
+        });
+
+        it('should return FALSE if window.performance is reload', function () {
+            window.performance.getEntriesByType('navigation')[0].type = 'reload';
+
+            const result = s._articleViewTypeObj.isNavigated();
+            expect(result).toBe(true);
+        });
+    });*/
 
     describe('getInternalType()', () => {
         let isFromHomeMock;
         let isSamePageRedirectMock;
+        let isNavigatedMock;
 
         beforeEach(() => {
             isFromHomeMock = jest.spyOn(s._articleViewTypeObj, 'isFromHome').mockReturnValue(false);
             isSamePageRedirectMock = jest.spyOn(s._articleViewTypeObj, 'isSamePageRedirect').mockReturnValue(false);
+            isNavigatedMock = jest.spyOn(s._articleViewTypeObj, 'isNavigated').mockReturnValue(false);
         });
 
-        it('should return event22 if referrer is a home page', function () {
+        it('should return event22 if referrer is a home page and page was navigated', function () {
             const anyReferrer = 'http://www.any-domain.de';
             isFromHomeMock.mockReturnValue(true);
+            isNavigatedMock.mockReturnValue(true);
             const result = s._articleViewTypeObj.getInternalType('http://www.any-domain.de');
             expect(isFromHomeMock).toHaveBeenCalledWith(anyReferrer);
             expect(result).toBe('event22,event200');

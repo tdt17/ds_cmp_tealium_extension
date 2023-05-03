@@ -424,36 +424,42 @@ describe('articleViewType()', () => {
             expect(result).toBe(false);
         });
     });
-/*
-    describe('isNavigated', () => {
+
+    describe.only('isNavigated', () => {
+
+        beforeEach(() => {
+            window.performance = {
+                getEntriesByType: jest.fn().mockReturnValue([])
+            };
+        });
 
         it('should return TRUE if window.performance.navigation (depricated) is zero', function () {
-            window.performance.navigation.type = 0;
+            window.performance.navigation = {type: 0};
 
             const result = s._articleViewTypeObj.isNavigated();
             expect(result).toBe(true);
         });
 
         it('should return TRUE if window.performance is navigate', function () {
-            window.performance.getEntriesByType('navigation')[0].type = 'navigate';
+            window.performance.getEntriesByType.mockReturnValue([{type: 'navigate'}]);
 
             const result = s._articleViewTypeObj.isNavigated();
             expect(result).toBe(true);
         });
 
         it('should return FALSE if window.performance.navigation (depricated) is NOT zero', function () {
-            window.performance.navigation.type = 1;
+            window.performance.navigation = {type: 1};
             const result = s._articleViewTypeObj.isNavigated();
             expect(result).toBe(false);
         });
 
         it('should return FALSE if window.performance is reload', function () {
-            window.performance.getEntriesByType('navigation')[0].type = 'reload';
+            window.performance.getEntriesByType.mockReturnValue([{type: 'reload'}]);
 
             const result = s._articleViewTypeObj.isNavigated();
-            expect(result).toBe(true);
+            expect(result).toBe(false);
         });
-    });*/
+    });
 
     describe('getInternalType()', () => {
         let isFromHomeMock;

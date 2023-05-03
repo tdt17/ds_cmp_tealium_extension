@@ -296,11 +296,11 @@ s._articleViewTypeObj = {
     },
 
     isNavigated: function(){
-        return ((window.performance.navigation && window.performance.navigation.type === 0) ||
-              window.performance
+        return window.performance && ((window.performance.navigation && window.performance.navigation.type === 0) ||
+              (window.performance.getEntriesByType && window.performance
                   .getEntriesByType('navigation')
                   .map((nav) => nav.type)
-                  .includes('navigate')
+                  .includes('navigate'))
         );
     },
     
